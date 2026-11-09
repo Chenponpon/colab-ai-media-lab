@@ -296,7 +296,7 @@ def build_gallery_html(output_dir):
     run_dirs = sorted(
         [
             d for d in os.listdir(output_dir)
-            if os.path.isdir(os.path.join(output_dir, d)) and d.startswith("run_")
+            if os.path.isdir(os.path.join(output_dir, d))
         ],
         key=lambda d: os.path.getmtime(os.path.join(output_dir, d)),
         reverse=True
@@ -306,6 +306,7 @@ def build_gallery_html(output_dir):
     for run_name in run_dirs:
         rdir = os.path.join(output_dir, run_name)
         recipes = sorted([f for f in os.listdir(rdir) if f.endswith("_recipe.json")])
+        jpg_images = sorted([f for f in os.listdir(rdir) if f.lower().endswith((".jpg", ".jpeg", ".png")) and not f.endswith("_recipe.json")])
         videos = sorted([f for f in os.listdir(rdir) if f.endswith(".mp4")])
         bench_path = os.path.join(rdir, "benchmark_report.json")
 
@@ -330,14 +331,24 @@ def build_gallery_html(output_dir):
             </div>"""
 
         cards_html = []
+        # 1. 優先處理有完整 recipe.json 的圖片
+        handled_images = set()
         for r_file in recipes:
             r_path = os.path.join(rdir, r_file)
             with open(r_path, "r", encoding="utf-8") as f:
                 meta = json.load(f)
             img_file = r_file.replace("_recipe.json", ".jpg")
+            if not os.path.exists(os.path.join(rdir, img_file)):
+                # 兼容 png 或其他後綴
+                for ext in [".png", ".jpeg"]:
+                    alt = r_file.replace("_recipe.json", ext)
+                    if os.path.exists(os.path.join(rdir, alt)):
+                        img_file = alt
+                        break
+            handled_images.add(img_file)
             rel_img = f"{run_name}/{img_file}"
             ts_label = meta.get("timestamp", run_name.replace("run_", ""))
-            model_label = meta.get("model_engine", "RealVisXL V5.0 (SDXL)")
+            model_label = meta.get("model_engine", "RealVisXL / majicMIX")
 
             women_rows = ""
             for w in meta.get("women", []):
@@ -375,25 +386,40 @@ def build_gallery_html(output_dir):
                     </table>
                     <details>
                         <summary>查看完整正面、負面與換裝影片 Prompt (Positive / Negative / Video Prompts)</summary>
-                        <p><strong>🎯 SDXL 前導無截斷核心 Prompt (CLIP 77-Token Window)：</strong></p>
+                        <p><strong>🎯 SDXL / majicMIX 核心 Prompt：</strong></p>
                         <pre>{meta.get('clip_short_prompt', meta.get('full_prompt'))}</pre>
                         <p><strong>➕ 完整正面提示詞 (Full Positive Prompt)：</strong></p>
                         <pre>{meta.get('full_prompt')}</pre>
-                        <p><strong>➖ 負面提示詞 (Negative Prompt — 嚴格封鎖露點越界 + 封鎖街頭T恤與 AI 磨皮)：</strong></p>
+                        <p><strong>➖ 負面提示詞 (Negative Prompt)：</strong></p>
                         <pre>{meta.get('negative_prompt', DEFAULT_NEGATIVE_PROMPT)}</pre>
-                        <p><strong>🎬 圖片轉影片換裝動態提示詞 (I2V Changing-Clothes Motion Prompt)：</strong></p>
-                        <pre>{meta.get('video_motion_prompt', '')}</pre>
                     </details>
                 </div>
             </div>""")
 
+        # 2. 自動抓取「沒有 recipe 依然存在（例如手動拖入、Colab 產出）」的所有孤立照片，絕不遺漏！
+        for img_file in jpg_images:
+            if img_file not in handled_images:
+                rel_img = f"{run_name}/{img_file}"
+                cards_html.append(f"""
+                <div class="card">
+                    <div class="media-col">
+                        <a href="{rel_img}" target="_blank"><img src="{rel_img}" alt="{img_file}"></a>
+                        <div class="fname">{run_name}/{img_file}</div>
+                    </div>
+                    <div class="info-col">
+                        <h4>📸 {img_file} (外部 / Colab 自動匯入圖片)</h4>
+                        <p>已自動由資料夾動態掃描載入展示。</p>
+                    </div>
+                </div>""")
+
+        total_media = len(cards_html) + len(videos)
         batches_html.append(f"""
         <div class="batch-section">
-            <h2>📂 批次資料夾：<code>outputs/{run_name}/</code> （{'⏳ 雲端 GPU 正在執行算圖與算影片中...' if (len(recipes) == 0 and len(videos) == 0) else f'共 {len(recipes)} 張照片、{len(videos)} 支影片'}）</h2>
+            <h2>📂 批次資料夾：<code>outputs/{run_name}/</code> （{'⏳ 雲端執行中...' if total_media == 0 else f'共 {len(cards_html)} 張照片、{len(videos)} 支影片'}）</h2>
             {bench_html}
-            {f'<div class="bench-box" style="border-color:#fbbc04;background:#2b2618;">⏳ <strong>狀態：</strong>此批次目前正在雲端 GPU 執行中，完成後將自動填入下方圖片與換裝動態影片。<br><strong>🎯 本次已套用之新版無截斷核心 Prompt 預覽：</strong><pre>{CORE_PERSONA}</pre><strong>➖ 本次已套用之新版防越界負面 Prompt 預覽：</strong><pre>{DEFAULT_NEGATIVE_PROMPT}</pre><strong>🎬 本次已套用之換裝動態影片 Prompt 預覽：</strong><pre>{VIDEO_CHANGING_CLOTHES_PROMPTS[0]["en"]}</pre></div>' if (len(recipes) == 0 and len(videos) == 0) else ''}
-            {f'<h3>🎬 本批次圖生影動態成果 (根據產製圖片生成人物換裝/調整薄紗動作)</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
-            {f'<h3>📸 本批次寫實人像照片與參數配方</h3>{"".join(cards_html)}' if cards_html else ''}
+            {f'<div class="bench-box" style="border-color:#fbbc04;background:#2b2618;">⏳ <strong>狀態：</strong>此批次目前正在雲端執行中，完成後將自動填入下方內容。</div>' if total_media == 0 else ''}
+            {f'<h3>🎬 本批次圖生影動態成果</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
+            {f'<h3>📸 本批次照片展示</h3>{"".join(cards_html)}' if cards_html else ''}
         </div>""")
 
     html = f"""<!DOCTYPE html>
@@ -422,7 +448,12 @@ pre {{ background: #101214; padding: 10px; border-radius: 6px; white-space: pre-
 </style>
 </head>
 <body>
-<h1>🎨 AI 寫實人像與換裝動態影片 — 歷次批次資料夾總覽 (由新到舊)</h1>
+<div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #3b5998; margin-bottom: 20px;">
+    <h1 style="border-bottom:none; margin:0; padding:12px 0;">🎨 AI 寫實人像與換裝動態影片 — 歷次批次資料夾總覽 (由新到舊)</h1>
+    <div>
+        <button onclick="location.reload()" style="background:#1a73e8; color:#fff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🔄 重新整理相簿</button>
+    </div>
+</div>
 {''.join(batches_html) if batches_html else '<p>尚無批次紀錄</p>'}
 </body>
 </html>"""
