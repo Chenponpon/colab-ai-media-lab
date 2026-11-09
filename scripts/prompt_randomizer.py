@@ -2,61 +2,67 @@ import os
 import json
 import time
 import random
+import shutil
 
-# ==================== 1. 絕對鎖定的核心人設 (真實無磨皮毛孔質感 + 冷白牛乳瓷肌 + 正負面雙 Prompt) ====================
+# ==================== 1. 絕對鎖定的核心人設 (踩在性感邊界、100% 合規不露點 + 真實毛孔冷白瓷肌) ====================
 CORE_PERSONA = (
-    "Intimate indoor boudoir portrait photograph shot on 35mm Kodak Portra 400 analog film, "
-    "three gorgeous 20-year-old French-Vietnamese mixed-race Eurasian women wearing ultra-sheer see-through tulle mesh lingerie and delicate floral lace bodysuits, "
+    "Intimate indoor high-fashion boudoir portrait photograph shot on 35mm Kodak Portra 400 analog film, "
+    "three gorgeous 20-year-old French-Vietnamese mixed-race Eurasian women wearing alluring deep-V sheer tulle mesh and delicate floral lace lingerie bodysuits "
+    "(delicate floral lace embroidery artfully covering the bust apex, tasteful non-nude editorial boudoir), "
     "extremely fair milk-white translucent porcelain skin with natural rosy flush, "
     "clearly visible microscopic skin pores and realistic unretouched skin texture (zero beauty filter, not plastic), "
     "slim 165cm 50kg hourglass bodies, large natural realistic soft F-cup breasts with natural gravity and deep cleavage."
 )
 
-# 強烈封鎖日常街頭T恤、牛仔外套、戶外場景、深膚色與爆炸頭，並封鎖 AI 磨皮塑膠肌
+# 雙重防線：
+# 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
+# 2) 嚴格封鎖日常街頭T恤、牛仔外套、戶外場景與 AI 磨皮塑膠肌
 DEFAULT_NEGATIVE_PROMPT = (
+    "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, pornographic, genitalia, uncensored, "
     "t-shirt, shirt, blouse, jacket, denim jacket, coat, sweater, jeans, pants, street clothes, casual clothes, "
-    "modest clothing, opaque fabric, outdoors, street, park, plaza, water, crowd, trees, afro, frizzy hair, "
+    "modest everyday clothing, outdoors, street, park, plaza, water, crowd, trees, afro, frizzy hair, "
     "tanned skin, dark skin, olive skin, airbrushed, smooth plastic skin, beauty filter, over-smoothed skin, "
     "waxy skin, shiny oiled skin, CGI, 3d render, doll, mannequin, wax figure, silicone implants, fake breasts, "
     "digital painting, anime, cartoon, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, "
     "identical clone faces, watermark, text, blurry, low quality"
 )
 
-# ==================== 2. 影片生成專用：換衣服 / 整理薄紗內衣動態 Prompt 池 ====================
+# ==================== 2. 影片生成專用：合規性感「換裝 / 褪下外罩衫 / 整理蕾絲肩帶」動態 Prompt 池 ====================
 VIDEO_CHANGING_CLOTHES_PROMPTS = [
     {
-        "zh": "緩緩褪下透明絲質薄袍換裝、雙手輕撫調整深 V 蕾絲連身衣肩帶與自然胸口呼吸律動",
+        "zh": "【合規換裝動感 A】緩緩將絲質晨袍從雙肩褪下，露出內搭深 V 透膚蕾絲連身衣、雙手輕調細肩帶與自然呼吸律動",
         "en": (
-            "Three young Eurasian women in a sunlit bedroom changing clothes, slowly slipping sheer translucent silk robes "
-            "off their bare shoulders to reveal delicate see-through lace bodysuits, gently adjusting their thin lingerie straps "
-            "with their hands, natural soft chest breathing and upper body movement, warm alluring smiles at the camera, "
-            "photorealistic live-action human motion, high skin detail."
+            "Three young Eurasian women in a sunlit bedroom changing clothes, slowly slipping loose silk morning robes "
+            "off their shoulders to reveal alluring deep-V floral lace bodysuits underneath (remaining covered in elegant lace lingerie), "
+            "gently adjusting their thin lace straps with their hands, natural soft chest breathing and upper body movement, "
+            "warm alluring smiles at the camera, photorealistic live-action human motion, high skin detail."
         )
     },
     {
-        "zh": "在全身鏡前換穿極薄透明網紗內衣、手指輕拉蕾絲肩帶、撥弄長捲髮並轉身展現沙漏曲線",
+        "zh": "【合規換裝動感 B】在全身鏡前試穿極薄網紗蕾絲內衣、手指輕拉調整肩帶與腰身蕾絲、撥弄長捲髮並轉身展現沙漏曲線",
         "en": (
-            "Three young Eurasian women in ultra-sheer tulle mesh lingerie changing outfits in front of a large mirror, "
-            "gently pulling up translucent lace straps over their shoulders, brushing long wavy hair back with their fingers, "
-            "turning their torsos naturally to showcase their hourglass curves and cleavage, realistic body movement and soft eye blinks."
+            "Three young Eurasian women wearing sheer tulle mesh and floral lace lingerie sets in front of a large mirror, "
+            "gently pulling up and fitting delicate lace straps over their shoulders as they finish dressing, brushing long wavy hair back "
+            "with their fingers, turning their torsos naturally to admire their hourglass curves in the mirror, realistic body movement and soft eye blinks."
         )
     },
     {
-        "zh": "解開透視蕾絲薄紗外罩換裝、在純白床單上親密微傾互動與真實肢體動作",
+        "zh": "【合規換裝動感 C】解開外層透視雪紡罩衫換裝、展示內層精緻蕾絲馬甲與深邃事業線、在純白床單上親密微傾互動",
         "en": (
-            "Three young Eurasian women sitting closely on crisp white bedsheets changing into sheer lace lingerie, "
-            "slowly untying and opening a translucent chiffon negligee wrap, leaning naturally toward each other with soft smiles, "
-            "realistic hand gestures adjusting their lingerie, natural breathing and subtle body sway, photorealistic video."
+            "Three young Eurasian women sitting closely on crisp white bedsheets changing outfits, "
+            "slowly untying and slipping off an outer sheer chiffon wrap to showcase their delicate floral lace bralettes and bodysuits underneath, "
+            "leaning naturally toward each other with soft smiles, realistic hand gestures smoothing their lace lingerie, natural breathing and subtle body sway."
         )
     }
 ]
 
 DEFAULT_VIDEO_NEGATIVE_PROMPT = (
+    "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, stripping naked, "
     "static image, camera shake only, frozen body, stiff pose, t-shirt, street clothes, outdoors, "
     "distorted face, morphing features, extra limbs, deformed hands, blurry, low quality, watermark"
 )
 
-# ==================== 3. 帶中文標籤的隨機多樣化維度池 (100% 合規私房內衣寫真) ====================
+# ==================== 3. 帶中文標籤的隨機多樣化維度池 (精準踩在 ref_1 / ref_2 性感邊界、絕不露點越界) ====================
 FACE_SHAPES = [
     {"zh": "精緻鵝蛋臉", "en": "delicate oval face with soft feminine features"},
     {"zh": "小巧心形臉", "en": "petite heart-shaped face with expressive eyes"},
@@ -96,28 +102,28 @@ MAKEUP_STYLES = [
 
 ATTIRE_STYLES = [
     {
-        "zh": "【極薄隱形透明網紗】全透明深 V 薄紗內衣配極細高叉丁字褲 (Ultra-Sheer See-Through Mesh Plunge Set)",
-        "category": "ultra_sheer_mesh",
-        "needs_color": True,
-        "en": "skintight ultra-sheer almost invisible see-through tulle mesh deep-plunge bralette with unlined translucent cups and micro g-string thong, showcasing her full F-cup cleavage and curves"
-    },
-    {
-        "zh": "【深 V 爆乳透膚蕾絲連身衣】無內裡全透視高叉蕾絲連身衣 (Deep-Plunge See-Through Lace High-Cut Bodysuit)",
+        "zh": "【深 V 透膚網紗蕾絲連身衣】全透視薄紗腰身配精緻立體刺繡罩杯與高叉剪裁（對齊 ref_1 款式，性感不露點）",
         "category": "plunge_sheer_bodysuit",
         "needs_color": True,
-        "en": "alluring deep-V plunging ultra-sheer see-through floral Chantilly lace bodysuit with extreme high-cut leg openings and unlined translucent mesh over her full breasts"
+        "en": "alluring deep-V plunging sheer tulle mesh and floral Chantilly lace bodysuit with high-cut leg openings, translucent mesh midriff and delicate floral lace embroidery covering the bust cups, showcasing full F-cup cleavage"
     },
     {
-        "zh": "【蟬翼透明網紗綁帶比基尼】極小布料全透明薄紗細繩內衣組 (Micro Translucent Gossamer String Lingerie)",
-        "category": "micro_sheer_bikini",
+        "zh": "【法式薄紗蕾絲低胸內衣組】半透明網紗托胸內衣配細帶蕾絲低腰褲（對齊 ref_2 款式，凸顯事業線與平坦小腹）",
+        "category": "sheer_lace_bralette_set",
         "needs_color": True,
-        "en": "tiny gossamer-thin completely translucent mesh triangle string bikini lingerie with minimal delicate lace trim, revealing deep cleavage and toned hourglass waist"
+        "en": "delicate sheer tulle mesh and floral lace demi-cup bralette with thin spaghetti straps and matching sheer lace low-rise bikini brief, artfully covering the bust apex while accentuating deep F-cup cleavage and toned waist"
     },
     {
-        "zh": "【極致透視敞開薄紗】未扣透明蕾絲薄紗配極細丁字褲 (Open-Front See-Through Lace Veil & Micro Thong)",
-        "category": "open_sheer_veil",
+        "zh": "【微透膚綁帶蕾絲馬甲連身衣】深 V 爆乳剪裁配全透明網紗側腰與細繩高叉設計",
+        "category": "strappy_sheer_corset",
         "needs_color": True,
-        "en": "unbuttoned open-front ultra-thin see-through lace negligee draped loosely over bare full F-cup cleavage and curves, paired only with a tiny sheer mesh string thong"
+        "en": "sensual deep-plunge sheer mesh and scalloped floral lace corset bodysuit with thin strappy waist details and high-cut hips, floral lace cups covering the bust apex while revealing dramatic cleavage"
+    },
+    {
+        "zh": "【半褪絲質薄紗罩衫配蕾絲內衣】肩頭微滑落的透明薄紗睡袍，內搭深 V 蕾絲三點式內衣組",
+        "category": "silk_robe_and_lace_set",
+        "needs_color": True,
+        "en": "translucent gossamer chiffon negligee slipping slightly off her shoulders over a fitted deep-V floral lace bralette and sheer mesh panties, highlighting her full F-cup cleavage and hourglass curves"
     }
 ]
 
@@ -171,9 +177,7 @@ BACKGROUNDS_AND_LIGHTING = [
 
 def generate_diversified_prompt(seed=None, **kwargs):
     """
-    產生 100% 解決 SDXL 77-Token 截斷問題的雙層寫實 Prompt：
-    - clip_short_prompt (< 68 tokens)：把「三位20歲法越混血女孩 + 極薄透明網紗蕾絲內衣 + 冷白真實毛孔瓷肌 + 165cm 50kg 自然 F 罩杯 + 室內床單/和室全身鏡」濃縮在最前面，保證 SDXL 第一視窗 100% 讀取！
-    - full_prompt：包含三位女孩各自的臉型、髮型、髮色、內衣款式與顏色細節。
+    產生「精準踩在性感邊界、100% 合規不露點、且不超過 SDXL 77-Token 視窗」的雙層寫實 Prompt。
     """
     rng = random.Random(seed)
     image_seed = seed if seed is not None else rng.randint(10000000, 99999999)
@@ -216,12 +220,12 @@ def generate_diversified_prompt(seed=None, **kwargs):
             "category": att["category"]
         })
 
-    # 專為 SDXL 77-Token 限制設計的前導濃縮 Prompt (約 62 tokens，所有關鍵視覺 100% 在窗口內)
+    # 控制在 ~64 tokens 內，同時包含：深 V 透膚網紗蕾絲連身衣 + 蕾絲遮蔽重點部位 (non-nude) + 冷白毛孔瓷肌 + F罩杯深邃事業線 + 室內床單/和室鏡子
     clip_short_prompt = (
-        f"Intimate indoor boudoir portrait photo of three gorgeous 20yo French-Vietnamese mixed-race women "
-        f"wearing ultra-sheer see-through tulle mesh lingerie and floral lace bodysuits in {short_color_list}, "
+        f"Intimate indoor boudoir photo of three gorgeous 20yo French-Vietnamese mixed-race women "
+        f"wearing deep-V sheer tulle mesh and floral lace bodysuits in {short_color_list} (floral lace covering bust apex, non-nude), "
         f"extremely fair milk-white porcelain skin, rosy flush, visible skin pores, "
-        f"165cm 50kg slim hourglass bodies, large natural soft F-cup breasts, deep cleavage, "
+        f"165cm 50kg slim hourglass bodies, large natural soft F-cup cleavage, "
         f"{pose['short_en']} {bg['short_en']}."
     )
 
@@ -229,14 +233,14 @@ def generate_diversified_prompt(seed=None, **kwargs):
         f"{clip_short_prompt} "
         f"{' '.join(women_descriptions)} "
         f"All three are {pose['en']}, {bg['en']}. "
-        "Shot on 35mm Kodak Portra 400 film, unretouched realistic skin pores and soft breast texture, natural window light."
+        "Shot on 35mm Kodak Portra 400 film, unretouched realistic skin pores and soft natural breast cleavage texture, soft window light, tasteful high-fashion boudoir."
     )
 
     summary_lines = [
         f"🔑 隨機種子 (Seed): {image_seed}",
         f"🏞️ 場景與光線: {bg['zh']}",
         f"💃 姿勢與互動: {pose['zh']}",
-        f"🎬 對應換裝動態 Prompt: {vid_motion['zh']}"
+        f"🎬 對應合規換裝動態 Prompt: {vid_motion['zh']}"
     ]
     for w in women_metadata:
         summary_lines.append(
@@ -245,7 +249,7 @@ def generate_diversified_prompt(seed=None, **kwargs):
 
     metadata = {
         "seed": image_seed,
-        "core_persona_zh": "20歲法越混血女性 × 3、無磨皮真實毛孔質感、冷白透亮瓷肌、165cm 50kg 自然柔軟 F 罩杯沙漏體態",
+        "core_persona_zh": "20歲法越混血女性 × 3、無磨皮真實毛孔質感、冷白透亮瓷肌、165cm 50kg 自然柔軟 F 罩杯沙漏體態（深 V 透膚蕾絲精準遮蔽重點、性感不越界）",
         "background_zh": bg["zh"],
         "pose_zh": pose["zh"],
         "video_motion_zh": vid_motion["zh"],
@@ -277,16 +281,12 @@ def migrate_flat_outputs_to_subfolders(output_dir):
     if not flat_recipes:
         return
 
-    # 整理舊版檔案至 run_20261110_004108_legacy
     legacy_dir = os.path.join(output_dir, "run_20261110_004108")
     os.makedirs(legacy_dir, exist_ok=True)
     for fname in list(os.listdir(output_dir)):
         fpath = os.path.join(output_dir, fname)
         if os.path.isfile(fpath) and fname != "gallery_index.html":
             shutil.move(fpath, os.path.join(legacy_dir, fname))
-
-
-import shutil
 
 
 def build_gallery_html(output_dir):
@@ -361,7 +361,7 @@ def build_gallery_html(output_dir):
                     <div class="fname">{run_name}/{img_file}<br>(Seed: <code>{meta.get('seed')}</code>)</div>
                 </div>
                 <div class="info-col">
-                    <h4>📸 {img_file} — 隨機參數配方與雙向 Prompt</h4>
+                    <h4>📸 {img_file} — 隨機參數配方與雙向安全邊界 Prompt</h4>
                     <p><strong>🕒 批次時間：</strong><code>{ts_label}</code> | <strong>🤖 模型：</strong><code>{model_label}</code> | <strong>📐 解析度：</strong><code>{meta.get('resolution', '2K')}</code></p>
                     <p><strong>🔒 固定核心人設：</strong>{meta.get('core_persona_zh')}</p>
                     <p><strong>🏞️ 抽中場景與光線：</strong>{meta.get('background_zh')}</p>
@@ -369,7 +369,7 @@ def build_gallery_html(output_dir):
                     {vid_motion_line}
                     <table>
                         <thead>
-                            <tr><th>位置</th><th>臉型</th><th>髮色 / 髮型</th><th>妝容</th><th>極薄透視網紗/蕾絲款式與顏色</th></tr>
+                            <tr><th>位置</th><th>臉型</th><th>髮色 / 髮型</th><th>妝容</th><th>深 V 透膚網紗/蕾絲款式與顏色 (合規不露點)</th></tr>
                         </thead>
                         <tbody>{women_rows}</tbody>
                     </table>
@@ -379,7 +379,7 @@ def build_gallery_html(output_dir):
                         <pre>{meta.get('clip_short_prompt', meta.get('full_prompt'))}</pre>
                         <p><strong>➕ 完整正面提示詞 (Full Positive Prompt)：</strong></p>
                         <pre>{meta.get('full_prompt')}</pre>
-                        <p><strong>➖ 負面提示詞 (Negative Prompt — 封鎖街頭T恤、戶外與 AI 磨皮塑膠感)：</strong></p>
+                        <p><strong>➖ 負面提示詞 (Negative Prompt — 嚴格封鎖露點越界 + 封鎖街頭T恤與 AI 磨皮)：</strong></p>
                         <pre>{meta.get('negative_prompt', DEFAULT_NEGATIVE_PROMPT)}</pre>
                         <p><strong>🎬 圖片轉影片換裝動態提示詞 (I2V Changing-Clothes Motion Prompt)：</strong></p>
                         <pre>{meta.get('video_motion_prompt', '')}</pre>

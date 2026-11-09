@@ -27,12 +27,37 @@ def sync_code_to_github():
     print("✅ [GitHub 程式碼同步完成] https://github.com/Chenponpon/colab-ai-media-lab")
 
 
+def monitor_and_download_kernel(kernel_id="jpachen/colab-ai-media-lab-gpu-v2"):
+    os.environ["KAGGLE_API_TOKEN"] = os.environ.get("KAGGLE_API_TOKEN", "KGAT_5671d3ad25e2be2457b4e3f93d2a1679")
+    batch_ts = time.strftime("%Y%m%d_%H%M%S")
+    run_subdir = os.path.join(OUT_DIR, f"run_{batch_ts}")
+    os.makedirs(run_subdir, exist_ok=True)
+
+    print(f"⏳ 正在監控 Kaggle 雲端 GPU ({kernel_id})，完成後將自動存入獨立資料夾: outputs/run_{batch_ts}/")
+    while True:
+        st = subprocess.run(["kaggle", "kernels", "status", kernel_id], capture_output=True, text=True)
+        out = st.stdout.strip()
+        print(f"📡 [Kaggle 雲端狀態] {out}")
+        if "complete" in out.lower():
+            print(f"🎉 雲端執行完畢！正在將本批次圖片與換裝動態影片下載至 {run_subdir} ...")
+            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", run_subdir], check=False)
+            gallery = build_gallery_html(OUT_DIR)
+            print(f"✨ 全部下載完成！中文參數圖鑑已更新: {gallery}")
+            subprocess.run(["powershell", "-Command", f'Start-Process "{gallery}"'], check=False)
+            return True
+        if "error" in out.lower() or "cancel" in out.lower():
+            print(f"❌ 雲端執行發生錯誤，正在下載紀錄檔至 {run_subdir} 供檢查...")
+            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", run_subdir], check=False)
+            return False
+        time.sleep(15)
+
+
 def push_and_run_headless_gpu():
     sync_code_to_github()
 
     os.environ["KAGGLE_API_TOKEN"] = os.environ.get("KAGGLE_API_TOKEN", "KGAT_5671d3ad25e2be2457b4e3f93d2a1679")
     username = "jpachen"
-    slug = "colab-ai-media-lab-auto-worker"
+    slug = "colab-ai-media-lab-gpu-v2"
     kernel_id = f"{username}/{slug}"
 
     build_dir = os.path.join(REPO_DIR, ".kaggle_build")
@@ -45,10 +70,10 @@ def push_and_run_headless_gpu():
         "code_file": "auto_worker.ipynb",
         "language": "python",
         "kernel_type": "notebook",
-        "is_private": "true",
-        "enable_gpu": "true",
-        "enable_tpu": "false",
-        "enable_internet": "true",
+        "is_private": True,
+        "enable_gpu": True,
+        "enable_tpu": False,
+        "enable_internet": True,
         "dataset_sources": [],
         "competition_sources": [],
         "kernel_sources": [],
@@ -64,28 +89,11 @@ def push_and_run_headless_gpu():
         print(f"⚠️ 推送訊息: {res.stderr}")
         return False
 
-    batch_ts = time.strftime("%Y%m%d_%H%M%S")
-    run_subdir = os.path.join(OUT_DIR, f"run_{batch_ts}")
-    os.makedirs(run_subdir, exist_ok=True)
-
-    print(f"⏳ 雲端 GPU 已排程啟動，所有產出將自動存入獨立資料夾: outputs/run_{batch_ts}/")
-    while True:
-        time.sleep(15)
-        st = subprocess.run(["kaggle", "kernels", "status", kernel_id], capture_output=True, text=True)
-        out = st.stdout.strip()
-        print(f"📡 [Kaggle 雲端狀態] {out}")
-        if "complete" in out.lower():
-            print(f"🎉 雲端執行完畢！正在將本批次圖片與換裝動態影片下載至 {run_subdir} ...")
-            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", run_subdir], check=False)
-            gallery = build_gallery_html(OUT_DIR)
-            print(f"✨ 全部下載完成！中文參數圖鑑已更新: {gallery}")
-            subprocess.run(["powershell", "-Command", f'Start-Process "{gallery}"'], check=False)
-            return True
-        if "error" in out.lower() or "cancel" in out.lower():
-            print(f"❌ 雲端執行發生錯誤，正在下載紀錄檔至 {run_subdir} 供檢查...")
-            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", run_subdir], check=False)
-            return False
+    return monitor_and_download_kernel(kernel_id)
 
 
 if __name__ == "__main__":
-    push_and_run_headless_gpu()
+    if "--monitor-only" in sys.argv:
+        monitor_and_download_kernel()
+    else:
+        push_and_run_headless_gpu()
