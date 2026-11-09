@@ -180,8 +180,7 @@ def sync_code_to_github():
     print("✅ [GitHub 程式碼同步完成] https://github.com/Chenponpon/colab-ai-media-lab")
 
 
-def monitor_and_download_kernel(kernel_id="jpachen/colab-ai-media-lab-gpu-v2"):
-    os.environ["KAGGLE_API_TOKEN"] = os.environ.get("KAGGLE_API_TOKEN", "KGAT_5671d3ad25e2be2457b4e3f93d2a1679")
+def monitor_and_download_kernel(kernel_id="chenponpon/colab-ai-media-lab-gpu-v2"):
     batch_ts = time.strftime("%Y%m%d_%H%M%S")
     run_subdir = os.path.join(OUT_DIR, f"run_{batch_ts}")
     os.makedirs(run_subdir, exist_ok=True)
@@ -210,8 +209,7 @@ def push_and_run_headless_gpu():
     nb_path = build_self_contained_worker_notebook()
     sync_code_to_github()
 
-    os.environ["KAGGLE_API_TOKEN"] = os.environ.get("KAGGLE_API_TOKEN", "KGAT_5671d3ad25e2be2457b4e3f93d2a1679")
-    username = "jpachen"
+    username = "chenponpon"
     slug = "colab-ai-media-lab-gpu-v2"
     kernel_id = f"{username}/{slug}"
 
@@ -221,7 +219,6 @@ def push_and_run_headless_gpu():
 
     meta = {
         "id": kernel_id,
-        "id_no": 144034127,
         "title": slug,
         "code_file": "auto_worker.ipynb",
         "language": "python",
@@ -235,7 +232,7 @@ def push_and_run_headless_gpu():
         "competition_sources": [],
         "kernel_sources": [],
         "model_sources": [],
-        "docker_image": "gcr.io/kaggle-private-byod/python@sha256:84bb67e18341567a26c4aff1dc0fe64acb3a5550d5ec142ff0e5db6a03cf6154",
+        "docker_image_pinning_type": "latest",
         "machine_shape": "NvidiaTeslaT4"
     }
     with open(os.path.join(build_dir, "kernel-metadata.json"), "w", encoding="utf-8") as f:
