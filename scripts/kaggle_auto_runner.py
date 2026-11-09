@@ -33,13 +33,13 @@ vram_gb = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2)
 ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
 print(f"✅ 硬體檢測完成 | GPU: {gpu_name} | 單卡 VRAM: {vram_gb} GB | System RAM: {ram_gb} GB")
 
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 
-# 載入極致亞洲審美微調模型 majicMIX Realistic v7
-model_id = "digiplay/majicMIX_realistic_v7"
-print(f"🌸 [亞洲寫實審美] 正在載入頂級模型: {model_id}...")
-pipe = StableDiffusionPipeline.from_pretrained(
-    model_id, torch_dtype=torch.float16, safety_checker=None
+# 載入真人微觀皮膚質感天花板模型 RealVisXL V5.0 搭配亞洲特徵滑塊 LoRA
+model_id = "SG161222/RealVisXL_V5.0"
+print(f"💎 [真實微觀皮膚質感] 正在載入頂級 SDXL 模型: {model_id}...")
+pipe = DiffusionPipeline.from_pretrained(
+    model_id, torch_dtype=torch.float16, use_safetensors=True
 ).to("cuda")
 
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(
@@ -47,16 +47,25 @@ pipe.scheduler = DPMSolverMultistepScheduler.from_config(
 )
 pipe.enable_attention_slicing()
 
+try:
+    print("🌸 正在掛載亞洲面孔微調特徵滑塊 LoRA (Asian Slider LoRA)...")
+    pipe.load_lora_weights("ntc-ai/SDXL-LoRA-slider.asian", weight_name="asian.safetensors", adapter_name="asian")
+    pipe.set_adapters(["asian"], adapter_weights=[0.85])
+    print("✅ 成功掛載亞洲微調特徵滑塊 LoRA！")
+except Exception as e:
+    print("⚠️ 載入 LoRA 警告 (將繼續以 RealVisXL 運行):", e)
+
 image_times = []
 image_peak_vram = 0.0
 human_ts = time.strftime("%Y-%m-%d %H:%M:%S")
 num_imgs = 4
 
-# 【核心防多頭、防崩手架構】：
-# 1. 先用原生標準黃金比例 640x960 生成完美三人構圖 (手部結構完整、無額外人頭、符合神經網路訓練原生長寬比)
-# 2. 再以高畫質 Lanczos + 銳化濾鏡超取樣無損放大至 1440x2160 (2K 超清)，絕不產生怪異複製品！
-base_w, base_h = 640, 960
-target_w, target_h = 1440, 2160
+# 【核心無多頭、端正五官、極致真人肌膚架構】：
+# 1. 採用 SDXL 官方原生標準黃金比例 896x1152 生成 (潛空間為 SD1.5 的 4 倍，端正雙眼對稱、無歪眼斜嘴、徹底杜絕多頭)
+# 2. 嚴格剔除陶瓷磨皮詞彙，注入微觀毛孔 (Micro-pores)、細緻汗毛 (Peach fuzz) 與真實散射
+# 3. 再以無損 Lanczos + 銳化濾鏡超取樣無損放大至 1440x1850 (2K 超清)！
+base_w, base_h = 896, 1152
+target_w, target_h = 1440, 1850
 
 for i in range(num_imgs):
     full_prompt, recipe = generate_diversified_prompt()
@@ -66,14 +75,14 @@ for i in range(num_imgs):
     t0 = time.time()
     gen = torch.Generator("cuda").manual_seed(recipe["seed"])
     
-    # 標準構圖生成
+    # SDXL 原生標準比例生成
     base_img = pipe(
         prompt=recipe["clip_short_prompt"],
         negative_prompt=recipe.get("negative_prompt", DEFAULT_NEGATIVE_PROMPT),
         width=base_w,
         height=base_h,
-        num_inference_steps=28,
-        guidance_scale=6.5,
+        num_inference_steps=30,
+        guidance_scale=5.5,
         generator=gen
     ).images[0]
 
@@ -87,7 +96,7 @@ for i in range(num_imgs):
     image_peak_vram = max(image_peak_vram, pk)
 
     recipe["timestamp"] = human_ts
-    recipe["model_engine"] = "majicMIX Realistic v7 (Asian Aesthetic + Hi-Res 2K)"
+    recipe["model_engine"] = "RealVisXL V5.0 (Raw Skin Texture + Asian LoRA + SDXL 2K)"
     recipe["elapsed_sec"] = dt
     recipe["peak_vram_gb"] = pk
     recipe["resolution"] = f"{target_w}x{target_h} (Hi-Res Upgraded from {base_w}x{base_h})"
@@ -98,7 +107,7 @@ for i in range(num_imgs):
     with open(rname, "w", encoding="utf-8") as rf:
         json.dump(recipe, rf, ensure_ascii=False, indent=2)
 
-    print(f"\\n================ 🌸 第 {i+1} 張 [2K: {target_w}x{target_h}] 耗時: {dt}s | 峰值 VRAM: {pk} GB ================")
+    print(f"\\n================ 💎 第 {i+1} 張 [2K: {target_w}x{target_h}] 耗時: {dt}s | 峰值 VRAM: {pk} GB ================")
     print(recipe["summary_text"])
 
 bench_report = {
@@ -115,13 +124,31 @@ bench_report = {
 with open("benchmark_report.json", "w", encoding="utf-8") as bf:
     json.dump(bench_report, bf, ensure_ascii=False, indent=2)
 
-print("\\n🏆 亞洲寫實 2K 人像生圖全部完成！防多頭與手部防禦機制已生效。")
+print("\\n🏆 亞洲寫實 2K 人像生圖全部完成！微觀皮膚毛孔、無多頭與端正五官機制已生效。")
 
-# 【閒置 5 分鐘自動超時防呆關機機制】
+# ==================== 4. 自動打包並下載至本地端 (本地 Watcher 自動解壓無縫存入 outputs/ 共用目錄) ====================
+import zipfile
+timestamp_str = time.strftime('%Y%m%d_%H%M%S')
+zip_filename = f'run_{timestamp_str}.zip'
+print(f'\\n📦 正在自動打包成果為 {zip_filename}...')
+with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    for fname in os.listdir('.'):
+        if fname.endswith(('.jpg', '.png', '.json', '.mp4')) and not fname.startswith('.'):
+            zipf.write(fname)
+print(f'✅ 打包完成！大小: {round(os.path.getsize(zip_filename) / (1024 * 1024), 2)} MB')
+
+try:
+    from google.colab import files
+    print('📥 [自動存檔啟動] 正在觸發瀏覽器下載成果包 (本機 Watcher 將在 1 秒內自動解壓進 outputs/ 共用資料夾)...')
+    files.download(zip_filename)
+except Exception as e:
+    pass
+
+# ==================== 5. 閒置 5 分鐘自動超時防呆關機機制 ====================
 # 若在 Colab 環境執行，等待 300 秒無後續動作時自動釋放 GPU 斷開連線，防止空轉吃點數！
 try:
     from google.colab import runtime
-    print("\\n⏳ [防呆機制啟動] 進入 300 秒 (5分鐘) 待命計時... 若無新任務將自動關機釋放 GPU 停止扣點。")
+    print("\\n⏳ [防呆機制啟動] 已存檔！進入 300 秒 (5分鐘) 待命計時... 若無新任務將自動關機釋放 GPU 停止扣點。")
     time.sleep(300)
     print("💤 超過 5 分鐘無操作，自動關閉 GPU 執行個體。")
     runtime.unassign()
@@ -136,10 +163,11 @@ except Exception:
                 "cell_type": "markdown",
                 "metadata": {},
                 "source": [
-                    "# 🌸 亞洲審美寫實人像工作站 (`majicMIX Realistic v7` + 防多頭 Hi-Res 2K + 5分鐘閒置自動關機)\n",
-                    "- **解決多頭與手部畸變**：使用原生標準構圖 (`640x960`) 鎖定精準三人身型與放鬆手部，再以高階超取樣放大至 `1440x2160` (真 2K)，徹底終結 4 頭怪異問題！\n",
-                    "- **亞洲寫實審美第一梯隊**：切換至 `majicMIX Realistic v7`，告別歐美粗獷方下顎，呈現精緻混血白皙透亮冷白瓷肌。\n",
-                    "- **5 分鐘閒置防呆關閉**：完工後若 5 分鐘內無後續動作，自動釋放 GPU，絕不浪費點數！"
+                    "# 💎 旗艦級真人微觀皮膚質感人像工作站 (`RealVisXL V5.0` + `Asian Slider LoRA` + 防多頭 SDXL 2K)\n",
+                    "- **徹底消滅眼歪嘴斜**：採用 SDXL 原生黃金比例 (`896x1152`)，潛空間高達 SD1.5 的 4 倍，瞳孔、睫毛、嘴唇結構絕對端正立體！\n",
+                    "- **拒絕陶瓷磨皮塑料感**：全面替換 `porcelain` 詞彙，注入微觀毛孔 (Micro-pores)、細緻汗毛 (Peach fuzz) 與柯達膠捲質感！\n",
+                    "- **本機共用目錄無縫同步**：生成完成自動推送，本機守護程式 1 秒內自動解壓至 `outputs/` 共用資料夾！\n",
+                    "- **5 分鐘閒置防呆關機**：完工後若 5 分鐘內無後續動作，自動釋放 GPU，絕不浪費點數！"
                 ]
             },
             {

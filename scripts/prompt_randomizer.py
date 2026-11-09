@@ -4,27 +4,31 @@ import time
 import random
 import shutil
 
-# ==================== 1. 絕對鎖定的核心人設 (強化差異化混血特徵、真實毛孔冷白瓷肌、自然大胸沙漏體態) ====================
+# ==================== 1. 絕對鎖定的核心人設 (拒絕塑料人偶、真實微觀毛孔汗毛、端正對稱五官、自然大胸沙漏體態) ====================
 CORE_PERSONA = (
-    "Intimate indoor boudoir photo of three distinct gorgeous 20yo French-Vietnamese mixed-race Eurasian women with completely different unique faces, "
+    "Intimate indoor candid RAW boudoir photograph of three distinct gorgeous 20yo French-Vietnamese mixed-race Eurasian women with completely different unique faces, "
     "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace covering bust apex, non-nude), "
-    "extremely fair milk-white porcelain skin, rosy flush, highly visible skin pores and realistic unretouched skin texture, "
+    "authentic raw unretouched human skin, highly detailed visible microscopic skin pores, fine epidermal texture, subtle peach fuzz, natural skin creases, realistic subsurface scattering, "
+    "clear symmetrical expressive eyes with sharp iris reflections, natural detailed lips, "
     "curvy slim 165cm 50kg hourglass bodies, large natural heavy soft F-cup breasts, deep cleavage."
 )
 
 # 雙重防線：
 # 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
-# 2) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (identical faces, duplicate persons, extra heads)
-# 3) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands, fused fingers, too many fingers)
-# 4) 嚴格封鎖小胸乾癟 (flat chest, small breasts)、純白棚拍無景 (plain white background, studio backdrop)、塑膠磨皮肌
+# 2) 嚴格封鎖塑料人偶、陶瓷磨皮、美顏濾鏡 (porcelain, plastic, mannequin, doll, airbrushed, silicone)
+# 3) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
+# 4) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
+# 5) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
 DEFAULT_NEGATIVE_PROMPT = (
     "extra heads, extra faces, extra persons, 4 persons, 5 persons, more than 3 persons, "
+    "asymmetrical eyes, crooked eyes, misaligned pupils, crossed eyes, distorted mouth, crooked smile, crooked lips, "
+    "porcelain, porcelain skin, plastic skin, silicone skin, smooth skin, airbrushed, mannequin, wax figure, beauty filter, doll, cgi, 3d render, cartoon, anime, over-smoothed skin, "
     "bad hands, missing fingers, extra fingers, mutated hands, poorly drawn hands, fused fingers, too many fingers, deformed fingers, extra limbs, "
     "identical faces, clone faces, lookalike faces, same face syndrome, twin faces, "
     "flat chest, small breasts, skinny, flat hips, modest clothing, t-shirt, shirt, jacket, street clothes, "
     "plain white background, plain studio backdrop, blank wall, outdoors, street, park, "
     "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, pornographic, genitalia, "
-    "airbrushed, smooth plastic skin, beauty filter, doll, 3d render, cartoon, bad anatomy, blurry"
+    "bad anatomy, blurry"
 )
 
 # ==================== 2. 影片生成專用：合規性感「換裝 / 褪下外罩衫 / 整理蕾絲肩帶」動態 Prompt 池 ====================
@@ -220,11 +224,11 @@ def generate_diversified_prompt(seed=None, **kwargs):
             "category": att["category"]
         })
 
-    # 控制在 ~68 tokens 內，強調：三人不同混血面孔、大自然軟F罩杯深事業線、透膚蕾絲連身衣遮點、真實毛孔、清晰臥室白床單/榻榻米鏡面背景
+    # 控制在 ~68 tokens 內，強調：三人不同混血面孔、大自然軟F罩杯深事業線、透膚蕾絲連身衣遮點、微觀皮膚毛孔、清晰端正五官、清晰臥室白床單/榻榻米鏡面背景
     clip_short_prompt = (
-        f"Intimate indoor photo of 3 distinct 20yo French-Vietnamese mixed-race women with completely different faces, "
+        f"Intimate indoor RAW photo of 3 distinct 20yo French-Vietnamese mixed-race women with completely different unique faces, "
         f"wearing deep-V sheer mesh floral lace lingerie bodysuits in {short_color_list} (lace covering apex, non-nude), "
-        f"extremely fair milk-white porcelain skin, visible skin pores, "
+        f"authentic unretouched skin, visible microscopic skin pores, fine epidermal texture, natural skin creases, clear symmetrical eyes, "
         f"curvy slim 165cm 50kg hourglass body, large natural soft heavy F-cup breasts, deep cleavage, "
         f"{pose['short_en']} {bg['short_en']}."
     )
@@ -233,7 +237,7 @@ def generate_diversified_prompt(seed=None, **kwargs):
         f"{clip_short_prompt} "
         f"{' '.join(women_descriptions)} "
         f"All three are {pose['en']}, {bg['en']}. "
-        "Shot on 35mm Kodak Portra 400 film, unretouched realistic skin pores and soft natural breast cleavage texture, soft window light, tasteful high-fashion boudoir."
+        "Shot on 35mm f/1.8 lens, Kodak Portra 400 film, raw unedited photography, natural skin pores and soft natural breast cleavage texture, fine epidermal details, soft window light, tasteful high-fashion boudoir."
     )
 
     summary_lines = [
