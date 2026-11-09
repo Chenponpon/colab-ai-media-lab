@@ -2,12 +2,8 @@
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-
-# Generated media outputs (keep repo lightweight)
-outputs/
 .kaggle_build/
-*.mp4
-test_image_*.png
+outputs/_tmp_*.jpg
 
 # OS & Editor files
 .DS_Store

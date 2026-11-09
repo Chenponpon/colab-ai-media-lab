@@ -1,0 +1,41 @@
+{
+  "seed": 60994648,
+  "core_persona_zh": "20歲法越混血女性 × 3、無磨皮真實毛孔與細微絨毛、冷白透亮瓷肌、165cm 50kg 自然柔軟 F 罩杯沙漏體態",
+  "background_zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡反射背影 ＋ 障子紙窗柔和自然光",
+  "pose_zh": "全身站立親密互動（並肩貼近、雙手自然垂放身側、柔和眼神直視鏡頭）",
+  "women": [
+    {
+      "position_zh": "左邊女孩",
+      "face_zh": "立體柔和 V 臉",
+      "hair_color_zh": "柔霧黑棕",
+      "hair_style_zh": "及腰絲滑長直髮",
+      "makeup_zh": "水光裸妝透亮唇",
+      "attire_zh": "香檳象牙白 — 【極薄隱形透明網紗】全透明深 V 薄紗內衣配極細高叉丁字褲 (Ultra-Sheer See-Through Mesh Plunge Set)",
+      "category": "ultra_sheer_mesh"
+    },
+    {
+      "position_zh": "中間女孩",
+      "face_zh": "小巧心形臉",
+      "hair_color_zh": "黑巧克力棕",
+      "hair_style_zh": "浪漫半紮公主波浪捲",
+      "makeup_zh": "法式玫瑰腮紅配微雀斑",
+      "attire_zh": "冰川淺藍 — 【極致透視敞開薄紗】未扣透明蕾絲薄紗配極細丁字褲 (Open-Front See-Through Lace Veil & Micro Thong)",
+      "category": "open_sheer_veil"
+    },
+    {
+      "position_zh": "右邊女孩",
+      "face_zh": "清純圓潤娃娃臉",
+      "hair_color_zh": "焦糖冷灰棕",
+      "hair_style_zh": "空氣瀏海低馬尾",
+      "makeup_zh": "晨間自然紅潤透亮肌",
+      "attire_zh": "乾燥玫瑰粉 — 【蟬翼透明網紗綁帶比基尼】極小布料全透明薄紗細繩內衣組 (Micro Translucent Gossamer String Lingerie)",
+      "category": "micro_sheer_bikini"
+    }
+  ],
+  "summary_text": "🔑 隨機種子 (Seed): 60994648\n🏞️ 場景與光線: 日式傳統和室榻榻米 ＋ 背後大型全身鏡反射背影 ＋ 障子紙窗柔和自然光\n💃 姿勢與互動: 全身站立親密互動（並肩貼近、雙手自然垂放身側、柔和眼神直視鏡頭）\n👩 左邊女孩: 立體柔和 V 臉 | 柔霧黑棕及腰絲滑長直髮 | 水光裸妝透亮唇 | 香檳象牙白 — 【極薄隱形透明網紗】全透明深 V 薄紗內衣配極細高叉丁字褲 (Ultra-Sheer See-Through Mesh Plunge Set)\n👩 中間女孩: 小巧心形臉 | 黑巧克力棕浪漫半紮公主波浪捲 | 法式玫瑰腮紅配微雀斑 | 冰川淺藍 — 【極致透視敞開薄紗】未扣透明蕾絲薄紗配極細丁字褲 (Open-Front See-Through Lace Veil & Micro Thong)\n👩 右邊女孩: 清純圓潤娃娃臉 | 焦糖冷灰棕空氣瀏海低馬尾 | 晨間自然紅潤透亮肌 | 乾燥玫瑰粉 — 【蟬翼透明網紗綁帶比基尼】極小布料全透明薄紗細繩內衣組 (Micro Translucent Gossamer String Lingerie)",
+  "full_prompt": "RAW unretouched candid documentary photograph shot on 35mm Kodak Portra 400 analog film with 50mm f/1.4 lens, three real 20-year-old French-East Asian Eurasian mixed-race women with distinctly different delicate natural faces, not models or mannequins. All three have extremely fair milk-white porcelain skin with a natural matte-dewy finish (not shiny or waxy), soft rosy undertone, clearly visible microscopic skin pores, fine vellus hair (peach fuzz), subtle natural skin blemishes and moles, realistic subsurface scattering, zero beauty filter. Slim lean real hourglass bodies, 165cm 50kg proportions, large natural realistic soft F-cup breasts with natural gravity, realistic soft skin and breast texture (not fake or enhanced), slim waists, soft diffused natural side window light, subtle analog film grain. Each woman has distinctly different facial features, hairstyle, and styling: The first woman on the left has a soft V-line face with high cheekbones, soft black-brown silky straight waist-length hair, and dewy bare-faced no-makeup look with glossy lips, wearing a champagne ivory skintight ultra-sheer almost invisible see-through tulle mesh deep-plunge bralette with unlined translucent cups and micro g-string thong, showcasing her full F-cup cleavage and curves. The second woman in the center has a petite heart-shaped face with expressive eyes, dark chocolate brown long romantic half-up waves, and soft French rose tint on lips and cheeks with subtle freckles, wearing a pale ice blue unbuttoned open-front ultra-thin see-through lace negligee draped loosely over bare full F-cup cleavage and curves, paired only with a tiny sheer mesh string thong. The third woman on the right has a youthful round baby-face with innocent charm, caramel ash brown sleek low ponytail with wispy bangs, and fresh natural rosy flush with clear hydrated skin, wearing a muted dusty rose pink tiny gossamer-thin completely translucent mesh triangle string bikini lingerie with minimal delicate lace trim, revealing deep cleavage and toned hourglass waist. All three are standing close together side by side facing the camera, arms relaxed naturally at their sides, leaning slightly toward one another with soft expressions, full body visible, on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them reflecting their backs, soft natural daylight filtering through shoji paper screens. Photorealistic, 85mm f/1.8 lens, ultra-detailed realistic skin pores and delicate lace texture.",
+  "negative_prompt": "airbrushed, smooth plastic skin, beauty filter, over-smoothed skin, waxy skin, shiny oiled skin, CGI, 3d render, doll, mannequin, wax figure, silicone implants, fake breasts, oversaturated, harsh studio flash, high contrast, digital painting, anime, cartoon, tanned skin, dark skin, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, identical clone faces, watermark, text, blurry, low quality",
+  "elapsed_sec": 17.64,
+  "peak_vram_gb": "22.8 (RealVisXL V5.0 (SDXL 30-Steps + Pos/Neg Prompts))",
+  "resolution": "1440x2160"
+}

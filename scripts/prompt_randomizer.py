@@ -2,13 +2,21 @@ import os
 import json
 import random
 
-# ==================== 1. 絕對鎖定的核心人設 (冷白牛乳瓷肌 + 精緻法亞混血顏值) ====================
+# ==================== 1. 絕對鎖定的核心人設 (真實無磨皮毛孔質感 + 冷白牛乳瓷肌 + 正負面雙 Prompt) ====================
 CORE_PERSONA = (
-    "RAW candid editorial portrait photograph on 35mm Kodak Portra 400 film of three real 20-year-old French-East Asian Eurasian mixed-race women "
-    "with delicate high-fashion Korean-French facial features, not mannequins, unedited snapshot feel. "
-    "All three have extremely pale milk-white alabaster porcelain skin, cool fair complexion with a soft natural rosy blush on cheeks, "
-    "translucent glass-skin texture, visible fine pores, no tan. "
-    "Slim lean hourglass figures, 165cm 50kg proportions, natural full soft F-cup breasts with realistic shape, slim waists."
+    "RAW unretouched candid documentary photograph shot on 35mm Kodak Portra 400 analog film with 50mm f/1.4 lens, "
+    "three real 20-year-old French-East Asian Eurasian mixed-race women with distinctly different delicate natural faces, not models or mannequins. "
+    "All three have extremely fair milk-white porcelain skin with a natural matte-dewy finish (not shiny or waxy), soft rosy undertone, "
+    "clearly visible microscopic skin pores, fine vellus hair (peach fuzz), subtle natural skin blemishes and moles, realistic subsurface scattering, zero beauty filter. "
+    "Slim lean real hourglass bodies, 165cm 50kg proportions, large natural realistic soft F-cup breasts with natural gravity, "
+    "realistic soft skin and breast texture (not fake or enhanced), slim waists, soft diffused natural side window light, subtle analog film grain."
+)
+
+DEFAULT_NEGATIVE_PROMPT = (
+    "airbrushed, smooth plastic skin, beauty filter, over-smoothed skin, waxy skin, shiny oiled skin, CGI, 3d render, "
+    "doll, mannequin, wax figure, silicone implants, fake breasts, oversaturated, harsh studio flash, high contrast, "
+    "digital painting, anime, cartoon, tanned skin, dark skin, deformed hands, extra fingers, mutated limbs, "
+    "bad anatomy, fused bodies, identical clone faces, watermark, text, blurry, low quality"
 )
 
 # ==================== 2. 帶中文標籤的隨機多樣化維度池 (100% 合規不露點時尚寫真) ====================
@@ -51,28 +59,28 @@ MAKEUP_STYLES = [
 
 ATTIRE_STYLES = [
     {
-        "zh": "法式半透明薄紗花卉蕾絲連身衣 (Sheer Chantilly Lace Bodysuit)",
-        "category": "sheer_bodysuit",
+        "zh": "【極薄隱形透明網紗】全透明深 V 薄紗內衣配極細高叉丁字褲 (Ultra-Sheer See-Through Mesh Plunge Set)",
+        "category": "ultra_sheer_mesh",
         "needs_color": True,
-        "en": "delicate sheer translucent floral Chantilly lace and mesh bodysuit"
+        "en": "skintight ultra-sheer almost invisible see-through tulle mesh deep-plunge bralette with unlined translucent cups and micro g-string thong, showcasing her full F-cup cleavage and curves"
     },
     {
-        "zh": "極薄透膚蕾絲細肩帶內衣兩件組 (Sheer Lace Bralette & Briefs Set)",
-        "category": "sheer_lingerie_set",
+        "zh": "【深 V 爆乳透膚蕾絲連身衣】無內裡全透視高叉蕾絲連身衣 (Deep-Plunge See-Through Lace High-Cut Bodysuit)",
+        "category": "plunge_sheer_bodysuit",
         "needs_color": True,
-        "en": "delicate sheer translucent floral lace bralette with thin straps and matching lace briefs"
+        "en": "alluring deep-V plunging ultra-sheer see-through floral Chantilly lace bodysuit with extreme high-cut leg openings and unlined translucent mesh over her full breasts"
     },
     {
-        "zh": "薄紗網布刺繡馬甲連身衣 (Sheer Tulle Mesh Corset Bodysuit)",
-        "category": "corset_bodysuit",
+        "zh": "【蟬翼透明網紗綁帶比基尼】極小布料全透明薄紗細繩內衣組 (Micro Translucent Gossamer String Lingerie)",
+        "category": "micro_sheer_bikini",
         "needs_color": True,
-        "en": "fitted sheer translucent tulle mesh and delicate floral lace corset bodysuit"
+        "en": "tiny gossamer-thin completely translucent mesh triangle string bikini lingerie with minimal delicate lace trim, revealing deep cleavage and toned hourglass waist"
     },
     {
-        "zh": "蟬翼薄紗蕾絲滾邊細肩帶兩件組 (Gossamer Mesh & Lace Set)",
-        "category": "mesh_set",
+        "zh": "【極致透視敞開薄紗】未扣透明蕾絲薄紗配極細丁字褲 (Open-Front See-Through Lace Veil & Micro Thong)",
+        "category": "open_sheer_veil",
         "needs_color": True,
-        "en": "ultra-thin translucent mesh and delicate lace-trimmed lingerie set"
+        "en": "unbuttoned open-front ultra-thin see-through lace negligee draped loosely over bare full F-cup cleavage and curves, paired only with a tiny sheer mesh string thong"
     }
 ]
 
@@ -186,12 +194,13 @@ def generate_diversified_prompt(seed=None, **kwargs):
 
     metadata = {
         "seed": image_seed,
-        "core_persona_zh": "20歲法越混血女性 × 3、極致白皙透亮瓷肌（粉嫩血色/真實毛孔）、165cm 50kg 沙漏體態",
+        "core_persona_zh": "20歲法越混血女性 × 3、無磨皮真實毛孔與細微絨毛、冷白透亮瓷肌、165cm 50kg 自然柔軟 F 罩杯沙漏體態",
         "background_zh": bg["zh"],
         "pose_zh": pose["zh"],
         "women": women_metadata,
         "summary_text": "\n".join(summary_lines),
-        "full_prompt": full_prompt
+        "full_prompt": full_prompt,
+        "negative_prompt": DEFAULT_NEGATIVE_PROMPT
     }
     return full_prompt, metadata
 
@@ -253,8 +262,11 @@ def build_gallery_html(output_dir):
                     <tbody>{women_rows}</tbody>
                 </table>
                 <details>
-                    <summary>查看完整英文 Prompt (點擊展開)</summary>
+                    <summary>查看完整正面與負面 Prompt (Positive & Negative Prompts)</summary>
+                    <p><strong>➕ 正面提示詞 (Positive Prompt)：</strong></p>
                     <pre>{meta.get('full_prompt')}</pre>
+                    <p><strong>➖ 負面提示詞 (Negative Prompt — 禁止 AI 磨皮與塑膠感)：</strong></p>
+                    <pre>{meta.get('negative_prompt', DEFAULT_NEGATIVE_PROMPT)}</pre>
                 </details>
             </div>
         </div>""")
