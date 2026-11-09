@@ -1,20 +1,21 @@
 {
-  "job_id": "job_001_portrait_and_i2v",
+  "job_id": "job_002_diversified_persona_and_i2v",
   "ntfy_topic": "chenponpon_agy_colab_9f8a7b6c5d",
   "auto_shutdown_a100": true,
   "image_generation": {
     "enabled": true,
     "model_id": "SG161222/RealVisXL_V5.0",
-    "use_ref_image_as_base": true,
+    "randomize_prompt": true,
+    "use_ref_image_as_base": false,
     "base_image": "assets/ref_1.jpg",
-    "denoising_strength": 0.55,
-    "num_images": 2,
+    "denoising_strength": 0.65,
+    "num_images": 4,
     "width": 832,
     "height": 1216,
     "steps": 30,
     "guidance_scale": 5.5,
-    "prompt": "RAW candid documentary-style medium-full portrait photograph on 35mm Kodak Portra 400 film, three real 20-year-old French-Vietnamese Eurasian women with distinctly different faces sitting closely together on crisp white linen bedsheets against a minimalist warm off-white wall. Left woman has long straight jet-black hair; center woman has a cute chin-length dark brown bob haircut with subtle freckles and rosy cheeks; right woman has long wavy chestnut brown hair. Extremely fair translucent skin with natural rosy flush, visible skin pores, soft realistic skin texture. Slim hourglass proportions, natural soft full breasts with realistic gravity and shape, slim waists. Wearing delicate sheer floral lace and mesh bodysuits and lingerie in muted pastel pink, nude taupe, and black. Soft diffused morning window light from the side, gentle shadows, unedited snapshot aesthetic, 85mm f/2.0 lens, ultra-detailed.",
-    "negative_prompt": "cgi, 3d render, plastic skin, airbrushed, doll, mannequin, anime, cartoon, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, identical faces, overexposed, harsh flash, watermark, text, blurry, low quality"
+    "prompt": "RAW candid documentary-style photograph on 35mm film of three real 20-year-old French-Vietnamese mixed-race Eurasian women, extremely fair translucent skin, 165cm 50kg slim hourglass natural soft F-cup proportions.",
+    "negative_prompt": "cgi, 3d render, plastic skin, airbrushed, doll, mannequin, anime, cartoon, tanned skin, dark skin, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, identical faces, clone faces, fake breasts, silicone implants, overexposed, harsh flash, watermark, text, blurry, low quality"
   },
   "video_generation": {
     "enabled": true,
@@ -23,14 +24,15 @@
       "assets/ref_1.jpg",
       "assets/ref_2.jpg"
     ],
-    "animate_generated_images": false,
+    "animate_generated_images": true,
+    "max_generated_to_animate": 1,
     "width": 544,
     "height": 832,
     "num_frames": 81,
     "steps": 25,
     "guidance_scale": 5.0,
     "fps": 16,
-    "motion_prompt": "Natural candid video of three young women sitting closely together on a soft white bed. Subtle realistic breathing movements, gentle natural eye blinks, warm soft smiles, leaning slightly toward one another and interacting softly, hair gently moving, soft morning window light, smooth subtle handheld camera sway, photorealistic, high skin detail.",
+    "motion_prompt": "Natural candid video of three young women with fair translucent skin close together. Subtle realistic breathing movements, gentle natural eye blinks, warm soft smiles, leaning slightly toward one another and interacting softly, hair gently moving, soft natural window light, smooth subtle handheld camera sway, photorealistic, high skin detail.",
     "negative_prompt": "bright tones, overexposed, static, blurred details, subtitles, watermark, distorted face, morphing features, extra limbs, deformed hands, sudden jerky movement, worst quality"
   }
 }
