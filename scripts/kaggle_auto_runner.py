@@ -239,7 +239,8 @@ def push_and_run_headless_gpu():
         json.dump(meta, f, indent=2)
 
     print(f"🚀 正在透過命令列將『內建 Kaggle SSD 模型掛載 + 免外網極速 2K 生圖任務』推送至 Kaggle 雲端 GPU ({kernel_id})...")
-    res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir], capture_output=True, text=True)
+    # 安全上限：單次 GPU Session 最多 30 分鐘，超時由 Kaggle 強制關機，避免卡住時空轉吃配額
+    res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir, "-t", "1800"], capture_output=True, text=True)
     print(res.stdout)
     if res.returncode != 0:
         print(f"⚠️ 推送訊息: {res.stderr}")

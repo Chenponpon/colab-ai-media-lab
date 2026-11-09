@@ -4,27 +4,23 @@ import time
 import random
 import shutil
 
-# ==================== 1. 絕對鎖定的核心人設 (踩在性感邊界、100% 合規不露點 + 真實毛孔冷白瓷肌) ====================
+# ==================== 1. 絕對鎖定的核心人設 (強化差異化混血特徵、真實毛孔冷白瓷肌、自然大胸沙漏體態) ====================
 CORE_PERSONA = (
-    "Intimate indoor high-fashion boudoir portrait photograph shot on 35mm Kodak Portra 400 analog film, "
-    "three gorgeous 20-year-old French-Vietnamese mixed-race Eurasian women wearing alluring deep-V sheer tulle mesh and delicate floral lace lingerie bodysuits "
-    "(delicate floral lace embroidery artfully covering the bust apex, tasteful non-nude editorial boudoir), "
-    "extremely fair milk-white translucent porcelain skin with natural rosy flush, "
-    "clearly visible microscopic skin pores and realistic unretouched skin texture (zero beauty filter, not plastic), "
-    "slim 165cm 50kg hourglass bodies, large natural realistic soft F-cup breasts with natural gravity and deep cleavage."
+    "Intimate indoor boudoir photo of three distinct gorgeous 20yo French-Vietnamese mixed-race Eurasian women with completely different unique faces, "
+    "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace covering bust apex, non-nude), "
+    "extremely fair milk-white porcelain skin, rosy flush, highly visible skin pores and realistic unretouched skin texture, "
+    "curvy slim 165cm 50kg hourglass bodies, large natural heavy soft F-cup breasts, deep cleavage."
 )
 
 # 雙重防線：
 # 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
-# 2) 嚴格封鎖日常街頭T恤、牛仔外套、戶外場景與 AI 磨皮塑膠肌
+# 2) 嚴格封鎖撞臉/複製人臉 (identical faces, clone faces)、小胸乾癟 (flat chest, small breasts)、純白棚拍無景 (plain white background, studio backdrop)、塑膠磨皮肌
 DEFAULT_NEGATIVE_PROMPT = (
-    "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, pornographic, genitalia, uncensored, "
-    "t-shirt, shirt, blouse, jacket, denim jacket, coat, sweater, jeans, pants, street clothes, casual clothes, "
-    "modest everyday clothing, outdoors, street, park, plaza, water, crowd, trees, afro, frizzy hair, "
-    "tanned skin, dark skin, olive skin, airbrushed, smooth plastic skin, beauty filter, over-smoothed skin, "
-    "waxy skin, shiny oiled skin, CGI, 3d render, doll, mannequin, wax figure, silicone implants, fake breasts, "
-    "digital painting, anime, cartoon, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, "
-    "identical clone faces, watermark, text, blurry, low quality"
+    "identical faces, clone faces, lookalike faces, same face syndrome, twin faces, "
+    "flat chest, small breasts, skinny, flat hips, modest clothing, t-shirt, shirt, jacket, street clothes, "
+    "plain white background, plain studio backdrop, blank wall, outdoors, street, park, "
+    "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, pornographic, genitalia, "
+    "airbrushed, smooth plastic skin, beauty filter, doll, 3d render, cartoon, deformed hands, bad anatomy, blurry"
 )
 
 # ==================== 2. 影片生成專用：合規性感「換裝 / 褪下外罩衫 / 整理蕾絲肩帶」動態 Prompt 池 ====================
@@ -64,12 +60,12 @@ DEFAULT_VIDEO_NEGATIVE_PROMPT = (
 
 # ==================== 3. 帶中文標籤的隨機多樣化維度池 (精準踩在 ref_1 / ref_2 性感邊界、絕不露點越界) ====================
 FACE_SHAPES = [
-    {"zh": "精緻鵝蛋臉", "en": "delicate oval face with soft feminine features"},
-    {"zh": "小巧心形臉", "en": "petite heart-shaped face with expressive eyes"},
-    {"zh": "立體柔和 V 臉", "en": "soft V-line face with high cheekbones"},
-    {"zh": "清純圓潤娃娃臉", "en": "youthful round baby-face with innocent charm"},
-    {"zh": "法越混血立體輪廓", "en": "sculpted delicate jawline with classic French-Vietnamese features"},
-    {"zh": "優雅菱形臉", "en": "graceful diamond-shaped face with deep-set eyes"}
+    {"zh": "法式深邃立體混血鵝蛋臉（高挺混血鼻樑、微翹厚唇）", "en": "distinct Eurasian French-Vietnamese face with high bridge nose, full lips, deep-set hazel eyes"},
+    {"zh": "清純甜美法亞心形臉（精緻下巴、大雙眼皮深邃眼眸）", "en": "distinct heart-shaped Eurasian face with delicate chin, large expressive double-eyelid almond eyes"},
+    {"zh": "成熟優雅立體法亞 V 臉（高顴骨、柔和混血輪廓）", "en": "distinct sculptured Eurasian face with high cheekbones and elegant soft French jawline"},
+    {"zh": "精靈感混血娃娃臉（微圓雙頰、俏皮法式微翹唇）", "en": "distinct cute Eurasian baby-face with naturally plump cheeks and subtle French pout"},
+    {"zh": "高貴混血菱形輪廓（深邃眼窩、立體五官線條）", "en": "distinct diamond-shaped Eurasian face with striking high cheekbones and defined features"},
+    {"zh": "清冷氣質法亞混血輪廓（立體下顎線、迷人法式混血眼妝）", "en": "distinct chic Eurasian face with sharp defined jawline, captivating French-Asian facial geometry"}
 ]
 
 HAIR_STYLES = [
@@ -220,12 +216,12 @@ def generate_diversified_prompt(seed=None, **kwargs):
             "category": att["category"]
         })
 
-    # 控制在 ~64 tokens 內，同時包含：深 V 透膚網紗蕾絲連身衣 + 蕾絲遮蔽重點部位 (non-nude) + 冷白毛孔瓷肌 + F罩杯深邃事業線 + 室內床單/和室鏡子
+    # 控制在 ~68 tokens 內，強調：三人不同混血面孔、大自然軟F罩杯深事業線、透膚蕾絲連身衣遮點、真實毛孔、清晰臥室白床單/榻榻米鏡面背景
     clip_short_prompt = (
-        f"Intimate indoor boudoir photo of three gorgeous 20yo French-Vietnamese mixed-race women "
-        f"wearing deep-V sheer tulle mesh and floral lace bodysuits in {short_color_list} (floral lace covering bust apex, non-nude), "
-        f"extremely fair milk-white porcelain skin, rosy flush, visible skin pores, "
-        f"165cm 50kg slim hourglass bodies, large natural soft F-cup cleavage, "
+        f"Intimate indoor photo of 3 distinct 20yo French-Vietnamese mixed-race women with completely different faces, "
+        f"wearing deep-V sheer mesh floral lace lingerie bodysuits in {short_color_list} (lace covering apex, non-nude), "
+        f"extremely fair milk-white porcelain skin, visible skin pores, "
+        f"curvy slim 165cm 50kg hourglass body, large natural soft heavy F-cup breasts, deep cleavage, "
         f"{pose['short_en']} {bg['short_en']}."
     )
 
