@@ -5,6 +5,11 @@ import time
 import shutil
 import subprocess
 
+try:
+    sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
+except Exception:
+    pass
+
 REPO_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 OUT_DIR = os.path.join(REPO_DIR, "outputs")
 sys.path.insert(0, os.path.dirname(__file__))
