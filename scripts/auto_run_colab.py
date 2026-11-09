@@ -62,6 +62,8 @@ def send_ack(tunnel_url):
     except Exception as e:
         print(f"⚠️ ACK 發送警告 (Colab 仍會在逾時後自動關機): {e}")
 
+from prompt_randomizer import build_gallery_html
+
 def listen_for_colab_events(ntfy_topic):
     stream_url = f"https://ntfy.sh/{ntfy_topic}/json"
     print(f"📡 [本機端] 正在監聽 Colab 雲端回傳通道 ({ntfy_topic})...")
@@ -102,9 +104,19 @@ def listen_for_colab_events(ntfy_topic):
                 if download_file(furl, dest):
                     print(f"🎉 [下載成功] 檔案已儲存至本機: {dest}")
                     downloaded_files.append(dest)
+                    try:
+                        gallery_path = build_gallery_html(OUT_DIR)
+                        print(f"📊 [參數圖鑑已更新] {gallery_path}")
+                    except Exception as ge:
+                        print(f"⚠️ 圖鑑更新略過: {ge}")
             elif ev == "JOB_COMPLETED":
                 print(f"\n🏁 [任務完成] {msg}")
                 send_ack(tunnel_url)
+                try:
+                    gallery_path = build_gallery_html(OUT_DIR)
+                    subprocess.run(["powershell", "-Command", f'Start-Process "{gallery_path}"'], check=False)
+                except Exception:
+                    pass
             elif ev == "SHUTDOWN":
                 print(f"🛑 [自動省額度關機] {msg}")
                 print("\n==========================================")
