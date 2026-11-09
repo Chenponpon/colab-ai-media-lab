@@ -5,6 +5,7 @@ __pycache__/
 
 # Generated media outputs (keep repo lightweight)
 outputs/
+.kaggle_build/
 *.mp4
 test_image_*.png
 
