@@ -2,13 +2,13 @@ import os
 import json
 import random
 
-# ==================== 1. 絕對鎖定的核心人設 (100% 符合平台規範之時尚寫真設定) ====================
+# ==================== 1. 絕對鎖定的核心人設 (冷白牛乳瓷肌 + 精緻法亞混血顏值) ====================
 CORE_PERSONA = (
-    "RAW candid editorial fashion portrait photograph on 35mm Kodak Portra 400 film of three real 20-year-old French-Vietnamese mixed-race Eurasian women, "
-    "not mannequins, unedited snapshot feel. "
-    "All three have extremely fair, clear, translucent porcelain skin with a natural healthy flush, soft rosy undertone, "
-    "visible fine pores, and subtle realistic skin texture. "
-    "Slim lean hourglass figures, 165cm 50kg proportions, natural full feminine curves, slim waists."
+    "RAW candid editorial portrait photograph on 35mm Kodak Portra 400 film of three real 20-year-old French-East Asian Eurasian mixed-race women "
+    "with delicate high-fashion Korean-French facial features, not mannequins, unedited snapshot feel. "
+    "All three have extremely pale milk-white alabaster porcelain skin, cool fair complexion with a soft natural rosy blush on cheeks, "
+    "translucent glass-skin texture, visible fine pores, no tan. "
+    "Slim lean hourglass figures, 165cm 50kg proportions, natural full soft F-cup breasts with realistic shape, slim waists."
 )
 
 # ==================== 2. 帶中文標籤的隨機多樣化維度池 (100% 合規不露點時尚寫真) ====================
@@ -51,34 +51,28 @@ MAKEUP_STYLES = [
 
 ATTIRE_STYLES = [
     {
-        "zh": "法式精緻花卉蕾絲連身衣 (Chantilly Lace Bodysuit)",
-        "category": "fashion_bodysuit",
+        "zh": "法式半透明薄紗花卉蕾絲連身衣 (Sheer Chantilly Lace Bodysuit)",
+        "category": "sheer_bodysuit",
         "needs_color": True,
-        "en": "elegant French floral Chantilly lace bodysuit with lined cups"
+        "en": "delicate sheer translucent floral Chantilly lace and mesh bodysuit"
     },
     {
-        "zh": "細肩帶絲綢拼接蕾絲居家兩件組 (Silk & Lace Loungewear Set)",
-        "category": "silk_loungewear",
+        "zh": "極薄透膚蕾絲細肩帶內衣兩件組 (Sheer Lace Bralette & Briefs Set)",
+        "category": "sheer_lingerie_set",
         "needs_color": True,
-        "en": "delicate silk satin and floral lace bralette and high-waisted loungewear set"
+        "en": "delicate sheer translucent floral lace bralette with thin straps and matching lace briefs"
     },
     {
-        "zh": "薄紗網布刺繡馬甲連身衣 (Embroidered Tulle Corset Bodysuit)",
+        "zh": "薄紗網布刺繡馬甲連身衣 (Sheer Tulle Mesh Corset Bodysuit)",
         "category": "corset_bodysuit",
         "needs_color": True,
-        "en": "fitted embroidered tulle mesh and satin corset-style bodysuit"
+        "en": "fitted sheer translucent tulle mesh and delicate floral lace corset bodysuit"
     },
     {
-        "zh": "法式柔滑真絲細肩帶睡裙 (Silk Chiffon Camisole Slip)",
-        "category": "silk_slip",
+        "zh": "蟬翼薄紗蕾絲滾邊細肩帶兩件組 (Gossamer Mesh & Lace Set)",
+        "category": "mesh_set",
         "needs_color": True,
-        "en": "luxurious draped silk chiffon camisole slip with delicate lace trim"
-    },
-    {
-        "zh": "復古方領蕾絲滾邊緊身連體衣 (Vintage Lace-Trimmed Bustier)",
-        "category": "vintage_bustier",
-        "needs_color": True,
-        "en": "vintage-inspired floral lace-trimmed bustier top and matching high-waist briefs"
+        "en": "ultra-thin translucent mesh and delicate lace-trimmed lingerie set"
     }
 ]
 
@@ -95,24 +89,16 @@ LINGERIE_COLORS = [
 
 POSES_AND_INTERACTIONS = [
     {
-        "zh": "全身站立親密互動（輕觸手臂與肩膀、微傾靠近彼此微笑）",
-        "en": "standing close together facing the camera, light affectionate touches on arms and shoulders, leaning slightly toward one another with shared soft smiles, full body visible"
+        "zh": "跪坐在柔軟純白床單上親密貼近（雙手自然撐在床面、微傾靠近彼此看鏡頭）",
+        "en": "kneeling and sitting closely together on soft white bedding, hands resting naturally on the bedsheets, leaning slightly toward one another looking softly at the camera"
     },
     {
-        "zh": "跪坐緊靠互動（一人下巴輕靠對方肩頭、自然放鬆直視鏡頭）",
-        "en": "kneeling and sitting closely together, one resting her chin gently on another's shoulder, relaxed candid posture and warm eye contact with the camera"
+        "zh": "全身站立親密互動（並肩貼近、雙手自然垂放身側、柔和眼神直視鏡頭）",
+        "en": "standing close together side by side facing the camera, arms relaxed naturally at their sides, leaning slightly toward one another with soft expressions, full body visible"
     },
     {
-        "zh": "並肩自然擁抱（微側身姿、柔和眼神看鏡頭、全身入鏡）",
-        "en": "standing side by side in a natural candid group embrace, slight hip tilt, looking toward the lens with soft natural expressions, full body visible from head to toe"
-    },
-    {
-        "zh": "優雅斜倚牽手（親密倚靠、展現自然曲線與柔和微笑）",
-        "en": "lounging gracefully close together, playfully holding hands and leaning in with gentle candid smiles"
-    },
-    {
-        "zh": "四分之三側身回眸（貼近彼此、微轉頭看向鏡頭展現迷人神情）",
-        "en": "standing at slight three-quarter angles close to each other, turning their heads toward the camera with soft expressions, full body visible"
+        "zh": "微側身親密依靠（一人輕靠對方肩頭、展現沙漏腰臀曲線、眼神迷人看鏡頭）",
+        "en": "sitting closely together at slight three-quarter angles, leaning gently against each other's shoulders, showcasing hourglass curves and warm eye contact with the lens"
     }
 ]
 
