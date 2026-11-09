@@ -2,13 +2,14 @@
 
 這個儲存庫用來存放跨電腦同步的 **Google Colab 生圖 / 生影片測試筆記本與腳本**，支援在不同電腦與 Google Colab（T4 / L4 / A100 GPU）之間無痛轉移。
 
-## 🚀 快速在 Colab 開啟
+## 🚀 快速在 Colab 開啟（一鍵啟動）
 
-將此專案推送到 GitHub 後，你可以直接在任何電腦打開 Google Colab：
-1. 前往 [Google Colab](https://colab.research.google.com/)
-2. 點選 **「GitHub」** 分頁
-3. 輸入你的 GitHub 帳號與此儲存庫名稱（若為私人儲存庫，勾選「包含私人儲存庫」並授權）
-4. 直接點選 [`notebooks/colab_image_video_benchmark.ipynb`](notebooks/colab_image_video_benchmark.ipynb) 即可一鍵在雲端開啟並使用 **L4 / A100 GPU**！
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Chenponpon/colab-ai-media-lab/blob/main/notebooks/colab_image_video_benchmark.ipynb)
+
+👉 **直接點擊上方「Open in Colab」按鈕**，或點擊此連結：
+https://colab.research.google.com/github/Chenponpon/colab-ai-media-lab/blob/main/notebooks/colab_image_video_benchmark.ipynb
+
+這會直接從你的 GitHub (`Chenponpon/colab-ai-media-lab`) 將測試筆記本載入到 Google Colab，在任何一台電腦都能一鍵開啟並切換 **L4 / A100 GPU**！
 
 ---
 
