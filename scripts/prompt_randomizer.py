@@ -5,28 +5,64 @@ import random
 
 # ==================== 1. 絕對鎖定的核心人設 (真實無磨皮毛孔質感 + 冷白牛乳瓷肌 + 正負面雙 Prompt) ====================
 CORE_PERSONA = (
-    "RAW unretouched candid documentary photograph shot on 35mm Kodak Portra 400 analog film with 50mm f/1.4 lens, "
-    "three real 20-year-old French-East Asian Eurasian mixed-race women with distinctly different delicate natural faces, not models or mannequins. "
-    "All three have extremely fair milk-white porcelain skin with a natural matte-dewy finish (not shiny or waxy), soft rosy undertone, "
-    "clearly visible microscopic skin pores, fine vellus hair (peach fuzz), subtle natural skin blemishes and moles, realistic subsurface scattering, zero beauty filter. "
-    "Slim lean real hourglass bodies, 165cm 50kg proportions, large natural realistic soft F-cup breasts with natural gravity, "
-    "realistic soft skin and breast texture (not fake or enhanced), slim waists, soft diffused natural side window light, subtle analog film grain."
+    "Intimate indoor boudoir portrait photograph shot on 35mm Kodak Portra 400 analog film, "
+    "three gorgeous 20-year-old French-Vietnamese mixed-race Eurasian women wearing ultra-sheer see-through tulle mesh lingerie and delicate floral lace bodysuits, "
+    "extremely fair milk-white translucent porcelain skin with natural rosy flush, "
+    "clearly visible microscopic skin pores and realistic unretouched skin texture (zero beauty filter, not plastic), "
+    "slim 165cm 50kg hourglass bodies, large natural realistic soft F-cup breasts with natural gravity and deep cleavage."
 )
 
+# 強烈封鎖日常街頭T恤、牛仔外套、戶外場景、深膚色與爆炸頭，並封鎖 AI 磨皮塑膠肌
 DEFAULT_NEGATIVE_PROMPT = (
-    "airbrushed, smooth plastic skin, beauty filter, over-smoothed skin, waxy skin, shiny oiled skin, CGI, 3d render, "
-    "doll, mannequin, wax figure, silicone implants, fake breasts, oversaturated, harsh studio flash, high contrast, "
-    "digital painting, anime, cartoon, tanned skin, dark skin, deformed hands, extra fingers, mutated limbs, "
-    "bad anatomy, fused bodies, identical clone faces, watermark, text, blurry, low quality"
+    "t-shirt, shirt, blouse, jacket, denim jacket, coat, sweater, jeans, pants, street clothes, casual clothes, "
+    "modest clothing, opaque fabric, outdoors, street, park, plaza, water, crowd, trees, afro, frizzy hair, "
+    "tanned skin, dark skin, olive skin, airbrushed, smooth plastic skin, beauty filter, over-smoothed skin, "
+    "waxy skin, shiny oiled skin, CGI, 3d render, doll, mannequin, wax figure, silicone implants, fake breasts, "
+    "digital painting, anime, cartoon, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, "
+    "identical clone faces, watermark, text, blurry, low quality"
 )
 
-# ==================== 2. 帶中文標籤的隨機多樣化維度池 (100% 合規不露點時尚寫真) ====================
+# ==================== 2. 影片生成專用：換衣服 / 整理薄紗內衣動態 Prompt 池 ====================
+VIDEO_CHANGING_CLOTHES_PROMPTS = [
+    {
+        "zh": "緩緩褪下透明絲質薄袍換裝、雙手輕撫調整深 V 蕾絲連身衣肩帶與自然胸口呼吸律動",
+        "en": (
+            "Three young Eurasian women in a sunlit bedroom changing clothes, slowly slipping sheer translucent silk robes "
+            "off their bare shoulders to reveal delicate see-through lace bodysuits, gently adjusting their thin lingerie straps "
+            "with their hands, natural soft chest breathing and upper body movement, warm alluring smiles at the camera, "
+            "photorealistic live-action human motion, high skin detail."
+        )
+    },
+    {
+        "zh": "在全身鏡前換穿極薄透明網紗內衣、手指輕拉蕾絲肩帶、撥弄長捲髮並轉身展現沙漏曲線",
+        "en": (
+            "Three young Eurasian women in ultra-sheer tulle mesh lingerie changing outfits in front of a large mirror, "
+            "gently pulling up translucent lace straps over their shoulders, brushing long wavy hair back with their fingers, "
+            "turning their torsos naturally to showcase their hourglass curves and cleavage, realistic body movement and soft eye blinks."
+        )
+    },
+    {
+        "zh": "解開透視蕾絲薄紗外罩換裝、在純白床單上親密微傾互動與真實肢體動作",
+        "en": (
+            "Three young Eurasian women sitting closely on crisp white bedsheets changing into sheer lace lingerie, "
+            "slowly untying and opening a translucent chiffon negligee wrap, leaning naturally toward each other with soft smiles, "
+            "realistic hand gestures adjusting their lingerie, natural breathing and subtle body sway, photorealistic video."
+        )
+    }
+]
+
+DEFAULT_VIDEO_NEGATIVE_PROMPT = (
+    "static image, camera shake only, frozen body, stiff pose, t-shirt, street clothes, outdoors, "
+    "distorted face, morphing features, extra limbs, deformed hands, blurry, low quality, watermark"
+)
+
+# ==================== 3. 帶中文標籤的隨機多樣化維度池 (100% 合規私房內衣寫真) ====================
 FACE_SHAPES = [
     {"zh": "精緻鵝蛋臉", "en": "delicate oval face with soft feminine features"},
     {"zh": "小巧心形臉", "en": "petite heart-shaped face with expressive eyes"},
     {"zh": "立體柔和 V 臉", "en": "soft V-line face with high cheekbones"},
     {"zh": "清純圓潤娃娃臉", "en": "youthful round baby-face with innocent charm"},
-    {"zh": "法亞立體下顎輪廓", "en": "sculpted delicate jawline with classic French-Asian features"},
+    {"zh": "法越混血立體輪廓", "en": "sculpted delicate jawline with classic French-Vietnamese features"},
     {"zh": "優雅菱形臉", "en": "graceful diamond-shaped face with deep-set eyes"}
 ]
 
@@ -98,45 +134,47 @@ LINGERIE_COLORS = [
 
 POSES_AND_INTERACTIONS = [
     {
-        "zh": "跪坐在柔軟純白床單上親密貼近（雙手自然撐在床面、微傾靠近彼此看鏡頭）",
+        "zh": "跪坐在柔軟純白床單上親密貼近（雙手自然撐在床面、微傾靠近彼此看鏡頭，對齊 ref_1 / ref_2）",
+        "short_en": "kneeling closely together on crisp white bedsheets",
         "en": "kneeling and sitting closely together on soft white bedding, hands resting naturally on the bedsheets, leaning slightly toward one another looking softly at the camera"
     },
     {
-        "zh": "全身站立親密互動（並肩貼近、雙手自然垂放身側、柔和眼神直視鏡頭）",
-        "en": "standing close together side by side facing the camera, arms relaxed naturally at their sides, leaning slightly toward one another with soft expressions, full body visible"
+        "zh": "全身站立於日式榻榻米親密互動（並肩貼近、輕觸彼此手臂與肩膀，對齊原始 Prompt）",
+        "short_en": "standing close together full-body on Japanese tatami mats",
+        "en": "standing close together facing the camera full body visible from head to toe, light touches on arms and shoulders, leaning slightly toward one another with shared soft smiles"
     },
     {
-        "zh": "微側身親密依靠（一人輕靠對方肩頭、展現沙漏腰臀曲線、眼神迷人看鏡頭）",
-        "en": "sitting closely together at slight three-quarter angles, leaning gently against each other's shoulders, showcasing hourglass curves and warm eye contact with the lens"
+        "zh": "微側身親密依靠在床邊（一人輕靠對方肩頭、展現沙漏腰臀與深邃事業線，對齊 ref_2）",
+        "short_en": "sitting closely together at three-quarter angles on a white bed",
+        "en": "sitting closely together at slight three-quarter angles, leaning gently against each other's shoulders, showcasing hourglass curves, full F-cup cleavage, and warm eye contact"
     }
 ]
 
 BACKGROUNDS_AND_LIGHTING = [
     {
-        "zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡反射背影 ＋ 障子紙窗柔和自然光",
-        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them reflecting their backs, soft natural daylight filtering through shoji paper screens"
+        "zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡清晰反射美背與全身曲線 ＋ 障子紙窗自然柔光（原始 Prompt 場景）",
+        "short_en": "in a Japanese washitsu tatami room with a large mirror behind them reflecting their backs, shoji window light",
+        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them clearly reflecting their full backs and bodies, natural window light from shoji screens"
     },
     {
-        "zh": "巴黎極簡純白床單臥室 ＋ 側邊柔和晨光與自然光影（對齊參考圖風格）",
-        "en": "on crisp white linen bedsheets in a minimalist sunlit Parisian bedroom against a warm off-white wall, soft diffused morning window light casting gentle shadows"
+        "zh": "巴黎極簡純白床單臥室 ＋ 暖白牆面與側邊柔和晨光（完全對齊 ref_1 & ref_2 參考圖場景）",
+        "short_en": "on crisp white linen bedsheets in a minimalist bedroom against a clean warm-white wall, soft morning window light",
+        "en": "on crisp white linen bedsheets in a minimalist sunlit bedroom against a warm off-white wall, soft diffused morning window light casting gentle shadows"
     },
     {
-        "zh": "北歐落地窗陽光閣樓 ＋ 無框大型全身鏡 ＋ 黃金時刻暖陽",
-        "en": "in a bright Scandinavian loft studio with floor-to-ceiling windows and a large full-length frameless mirror, bathed in soft golden-hour sunlight"
-    },
-    {
-        "zh": "現代奢華極簡套房 ＋ 暖色洞石牆與微風吹拂的白紗簾自然光",
-        "en": "in a luxury modern minimalist suite with warm travertine stone walls, sheer white curtains blowing gently, and bright natural daylight"
-    },
-    {
-        "zh": "陽光玻璃花房 ＋ 奶油白絲絨躺椅與柔和逆光",
-        "en": "on a plush cream velvet daybed in a sunlit conservatory room with soft natural backlight and airy ambient illumination"
+        "zh": "北歐落地窗陽光臥室 ＋ 無框大型全身鏡反射背影 ＋ 黃金時刻柔光",
+        "short_en": "in a bright bedroom studio with a large full-length mirror reflecting their backs, golden-hour window light",
+        "en": "in a bright Scandinavian bedroom with floor-to-ceiling windows and a large full-length frameless mirror reflecting their backs, bathed in soft golden-hour sunlight"
     }
 ]
 
 
 def generate_diversified_prompt(seed=None, **kwargs):
-    """產生 100% 符合平台安全規範之「保留核心人設 + 隨機多樣化維度」Prompt 與中英雙語參數對照表 (Recipe)。"""
+    """
+    產生 100% 解決 SDXL 77-Token 截斷問題的雙層寫實 Prompt：
+    - clip_short_prompt (< 68 tokens)：把「三位20歲法越混血女孩 + 極薄透明網紗蕾絲內衣 + 冷白真實毛孔瓷肌 + 165cm 50kg 自然 F 罩杯 + 室內床單/和室全身鏡」濃縮在最前面，保證 SDXL 第一視窗 100% 讀取！
+    - full_prompt：包含三位女孩各自的臉型、髮型、髮色、內衣款式與顏色細節。
+    """
     rng = random.Random(seed)
     image_seed = seed if seed is not None else rng.randint(10000000, 99999999)
 
@@ -149,11 +187,14 @@ def generate_diversified_prompt(seed=None, **kwargs):
 
     pose = rng.choice(POSES_AND_INTERACTIONS)
     bg = rng.choice(BACKGROUNDS_AND_LIGHTING)
+    vid_motion = rng.choice(VIDEO_CHANGING_CLOTHES_PROMPTS)
 
     women_descriptions = []
     women_metadata = []
-    positions_en = ["The first woman on the left", "The second woman in the center", "The third woman on the right"]
+    positions_en = ["left woman", "center woman", "right woman"]
     positions_zh = ["左邊女孩", "中間女孩", "右邊女孩"]
+
+    short_color_list = ", ".join([c["en"] for c in lingerie_colors])
 
     for idx in range(3):
         att = attires[idx]
@@ -161,8 +202,8 @@ def generate_diversified_prompt(seed=None, **kwargs):
         attire_zh = f"{lingerie_colors[idx]['zh']} — {att['zh']}"
 
         desc = (
-            f"{positions_en[idx]} has a {faces[idx]['en']}, {colors[idx]['en']} {hairs[idx]['en']}, "
-            f"and {makeups[idx]['en']}, {attire_en}."
+            f"The {positions_en[idx]} has a {faces[idx]['en']}, {colors[idx]['en']} {hairs[idx]['en']}, "
+            f"{makeups[idx]['en']}, {attire_en}."
         )
         women_descriptions.append(desc)
         women_metadata.append({
@@ -175,23 +216,27 @@ def generate_diversified_prompt(seed=None, **kwargs):
             "category": att["category"]
         })
 
-    # 將「私房寫真 (boudoir) + 極薄透視網紗蕾絲內衣 + 白皙透亮真實毛孔瓷肌 + 165cm/50kg自然F罩杯沙漏身材」放在最開頭黃金權重區！
+    # 專為 SDXL 77-Token 限制設計的前導濃縮 Prompt (約 62 tokens，所有關鍵視覺 100% 在窗口內)
+    clip_short_prompt = (
+        f"Intimate indoor boudoir portrait photo of three gorgeous 20yo French-Vietnamese mixed-race women "
+        f"wearing ultra-sheer see-through tulle mesh lingerie and floral lace bodysuits in {short_color_list}, "
+        f"extremely fair milk-white porcelain skin, rosy flush, visible skin pores, "
+        f"165cm 50kg slim hourglass bodies, large natural soft F-cup breasts, deep cleavage, "
+        f"{pose['short_en']} {bg['short_en']}."
+    )
+
     full_prompt = (
-        "Highly realistic candid boudoir photograph, three real 20-year-old French-Vietnamese mixed-race Eurasian women "
-        "wearing ultra-sheer almost invisible see-through tulle mesh lingerie and delicate floral lace bodysuits, "
-        "extremely fair clear translucent porcelain skin with natural healthy flush, soft rosy undertone, visible microscopic skin pores, "
-        "and subtle realistic unretouched skin texture (not airbrushed or plastic). "
-        "Slim lean real hourglass bodies, 165cm 50kg proportions, large natural realistic soft F-cup breasts with natural gravity, shape, and texture (not fake), "
-        "slim waists, realistic soft curves. "
-        f"Each woman has distinctly different facial features, hairstyle, and lingerie: {' '.join(women_descriptions)} "
+        f"{clip_short_prompt} "
+        f"{' '.join(women_descriptions)} "
         f"All three are {pose['en']}, {bg['en']}. "
-        "Soft diffused natural window light, photorealistic, unedited snapshot feel, realistic skin pores and breast texture, high detail."
+        "Shot on 35mm Kodak Portra 400 film, unretouched realistic skin pores and soft breast texture, natural window light."
     )
 
     summary_lines = [
         f"🔑 隨機種子 (Seed): {image_seed}",
         f"🏞️ 場景與光線: {bg['zh']}",
         f"💃 姿勢與互動: {pose['zh']}",
+        f"🎬 對應換裝動態 Prompt: {vid_motion['zh']}"
     ]
     for w in women_metadata:
         summary_lines.append(
@@ -200,131 +245,185 @@ def generate_diversified_prompt(seed=None, **kwargs):
 
     metadata = {
         "seed": image_seed,
-        "core_persona_zh": "20歲法越混血女性 × 3、無磨皮真實毛孔與細微絨毛、冷白透亮瓷肌、165cm 50kg 自然柔軟 F 罩杯沙漏體態",
+        "core_persona_zh": "20歲法越混血女性 × 3、無磨皮真實毛孔質感、冷白透亮瓷肌、165cm 50kg 自然柔軟 F 罩杯沙漏體態",
         "background_zh": bg["zh"],
         "pose_zh": pose["zh"],
+        "video_motion_zh": vid_motion["zh"],
+        "video_motion_prompt": vid_motion["en"],
+        "video_negative_prompt": DEFAULT_VIDEO_NEGATIVE_PROMPT,
         "women": women_metadata,
         "summary_text": "\n".join(summary_lines),
+        "clip_short_prompt": clip_short_prompt,
         "full_prompt": full_prompt,
         "negative_prompt": DEFAULT_NEGATIVE_PROMPT
     }
     return full_prompt, metadata
 
 
+def migrate_flat_outputs_to_subfolders(output_dir):
+    """將早期散落在 outputs/ 根目錄的舊檔案自動整理進 outputs/run_YYYYMMDD_HHMMSS/ 獨立子資料夾，保持根目錄乾淨。"""
+    os.makedirs(output_dir, exist_ok=True)
+    tmp_flux = os.path.join(output_dir, "_tmp_flux.jpg")
+    if os.path.exists(tmp_flux):
+        try:
+            os.remove(tmp_flux)
+        except OSError:
+            pass
+
+    flat_recipes = [
+        f for f in os.listdir(output_dir)
+        if os.path.isfile(os.path.join(output_dir, f)) and f.endswith("_recipe.json")
+    ]
+    if not flat_recipes:
+        return
+
+    # 整理舊版檔案至 run_20261110_004108_legacy
+    legacy_dir = os.path.join(output_dir, "run_20261110_004108")
+    os.makedirs(legacy_dir, exist_ok=True)
+    for fname in list(os.listdir(output_dir)):
+        fpath = os.path.join(output_dir, fname)
+        if os.path.isfile(fpath) and fname != "gallery_index.html":
+            shutil.move(fpath, os.path.join(legacy_dir, fname))
+
+
+import shutil
+
+
 def build_gallery_html(output_dir):
-    """自動掃描 outputs/ 資料夾內所有歷史 Timestamp 批次的圖片、影片與 *_recipe.json，由新到舊排列，方便迭代比對！"""
-    recipes = sorted(
-        [f for f in os.listdir(output_dir) if f.endswith("_recipe.json")],
-        key=lambda x: os.path.getmtime(os.path.join(output_dir, x)),
+    """掃描 outputs/ 下所有 run_YYYYMMDD_HHMMSS/ 獨立批次資料夾，由新到舊分組展示每批產出的照片、參數卡與換裝動態影片！"""
+    migrate_flat_outputs_to_subfolders(output_dir)
+
+    run_dirs = sorted(
+        [
+            d for d in os.listdir(output_dir)
+            if os.path.isdir(os.path.join(output_dir, d)) and d.startswith("run_")
+        ],
+        key=lambda d: os.path.getmtime(os.path.join(output_dir, d)),
         reverse=True
     )
-    videos = sorted(
-        [f for f in os.listdir(output_dir) if f.endswith(".mp4")],
-        key=lambda x: os.path.getmtime(os.path.join(output_dir, x)),
-        reverse=True
-    )
-    bench_path = os.path.join(output_dir, "benchmark_report.json")
-    bench_html = ""
-    if os.path.exists(bench_path):
-        with open(bench_path, "r", encoding="utf-8") as bf:
-            bdata = json.load(bf)
-        bench_html = f"""
-        <div class="bench-box">
-            <h2>⚡ 最新批次雲端 GPU 硬體算圖與算影片極限壓測報告</h2>
-            <p><strong>🖥️ 配發 GPU 與模型：</strong><code>{bdata.get('gpu_name')}</code> (單卡顯存: <code>{bdata.get('vram_gb')} GB</code> | 系統 RAM: <code>{bdata.get('ram_gb')} GB</code>)</p>
-            <p><strong>🖼️ 生圖平均速度與顯存峰值：</strong>每張耗時 <code>{bdata.get('avg_image_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('image_peak_vram_gb')} GB</code> | 解析度: <code>{bdata.get('max_resolution_tested')}</code></p>
-            <p><strong>🎬 生影片速度與顯存峰值：</strong>每支耗時 <code>{bdata.get('avg_video_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('video_peak_vram_gb')} GB</code> | 影片引擎: <code>{bdata.get('video_model')}</code></p>
-        </div>"""
 
-    cards_html = []
-    for r_file in recipes:
-        r_path = os.path.join(output_dir, r_file)
-        with open(r_path, "r", encoding="utf-8") as f:
-            meta = json.load(f)
-        img_file = r_file.replace("_recipe.json", ".jpg")
-        ts_label = meta.get("timestamp", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(r_path))))
-        model_label = meta.get("model_engine", "RealVisXL V5.0 / FLUX")
-        women_rows = ""
-        for w in meta.get("women", []):
-            women_rows += f"""
-            <tr>
-                <td><strong>{w['position_zh']}</strong></td>
-                <td>{w['face_zh']}</td>
-                <td>{w['hair_color_zh']} / {w['hair_style_zh']}</td>
-                <td>{w['makeup_zh']}</td>
-                <td><span class="badge">{w['attire_zh']}</span></td>
-            </tr>"""
+    batches_html = []
+    for run_name in run_dirs:
+        rdir = os.path.join(output_dir, run_name)
+        recipes = sorted([f for f in os.listdir(rdir) if f.endswith("_recipe.json")])
+        videos = sorted([f for f in os.listdir(rdir) if f.endswith(".mp4")])
+        bench_path = os.path.join(rdir, "benchmark_report.json")
 
-        perf_line = f"<p><strong>🕒 產製時間：</strong><code>{ts_label}</code> | <strong>🤖 使用模型：</strong><code>{model_label}</code>"
-        if meta.get("elapsed_sec"):
-            perf_line += f" | <strong>⏱️ 耗時：</strong><code>{meta.get('elapsed_sec')} 秒</code> | <strong>📐 解析度：</strong><code>{meta.get('resolution')}</code>"
-        perf_line += "</p>"
+        bench_html = ""
+        if os.path.exists(bench_path):
+            with open(bench_path, "r", encoding="utf-8") as bf:
+                bdata = json.load(bf)
+            bench_html = f"""
+            <div class="bench-box">
+                <strong>🖥️ 執行環境與模型：</strong><code>{bdata.get('gpu_name')}</code> |
+                <strong>🖼️ 生圖均速：</strong><code>{bdata.get('avg_image_time_sec')} 秒/張</code> ({bdata.get('max_resolution_tested')}) |
+                <strong>🎬 圖生影引擎：</strong><code>{bdata.get('video_model')}</code> (均速 <code>{bdata.get('avg_video_time_sec')} 秒/支</code>)
+            </div>"""
 
-        cards_html.append(f"""
-        <div class="card">
-            <div class="media-col">
-                <a href="{img_file}" target="_blank"><img src="{img_file}" alt="{img_file}"></a>
-                <div class="fname">{img_file}<br>(Seed: <code>{meta.get('seed')}</code>)</div>
-            </div>
-            <div class="info-col">
-                <h3>📸 {img_file} — 迭代版本參數與極限數據明細</h3>
-                {perf_line}
-                <p><strong>🔒 固定核心人設：</strong>{meta.get('core_persona_zh')}</p>
-                <p><strong>🏞️ 抽中場景與光線：</strong>{meta.get('background_zh')}</p>
-                <p><strong>💃 抽中姿勢與互動：</strong>{meta.get('pose_zh')}</p>
-                <table>
-                    <thead>
-                        <tr><th>位置</th><th>臉型</th><th>髮色 / 髮型</th><th>妝容</th><th>時尚蕾絲穿搭款式 / 顏色</th></tr>
-                    </thead>
-                    <tbody>{women_rows}</tbody>
-                </table>
-                <details>
-                    <summary>查看完整正面與負面 Prompt (Positive & Negative Prompts)</summary>
-                    <p><strong>➕ 正面提示詞 (Positive Prompt)：</strong></p>
-                    <pre>{meta.get('full_prompt')}</pre>
-                    <p><strong>➖ 負面提示詞 (Negative Prompt — 禁止 AI 磨皮與塑膠感)：</strong></p>
-                    <pre>{meta.get('negative_prompt', DEFAULT_NEGATIVE_PROMPT)}</pre>
-                </details>
-            </div>
+        video_cards = ""
+        for v_file in videos:
+            rel_v = f"{run_name}/{v_file}"
+            video_cards += f"""
+            <div class="vid-box">
+                <video controls autoplay loop muted width="320"><source src="{rel_v}" type="video/mp4"></video>
+                <div class="fname">🎬 <a href="{rel_v}" target="_blank" style="color:#8ab4f8;">{run_name}/{v_file}</a></div>
+            </div>"""
+
+        cards_html = []
+        for r_file in recipes:
+            r_path = os.path.join(rdir, r_file)
+            with open(r_path, "r", encoding="utf-8") as f:
+                meta = json.load(f)
+            img_file = r_file.replace("_recipe.json", ".jpg")
+            rel_img = f"{run_name}/{img_file}"
+            ts_label = meta.get("timestamp", run_name.replace("run_", ""))
+            model_label = meta.get("model_engine", "RealVisXL V5.0 (SDXL)")
+
+            women_rows = ""
+            for w in meta.get("women", []):
+                women_rows += f"""
+                <tr>
+                    <td><strong>{w['position_zh']}</strong></td>
+                    <td>{w['face_zh']}</td>
+                    <td>{w['hair_color_zh']} / {w['hair_style_zh']}</td>
+                    <td>{w['makeup_zh']}</td>
+                    <td><span class="badge">{w['attire_zh']}</span></td>
+                </tr>"""
+
+            vid_motion_line = ""
+            if meta.get("video_motion_zh"):
+                vid_motion_line = f"<p><strong>🎬 換裝動態影片設定：</strong>{meta.get('video_motion_zh')}</p>"
+
+            cards_html.append(f"""
+            <div class="card">
+                <div class="media-col">
+                    <a href="{rel_img}" target="_blank"><img src="{rel_img}" alt="{img_file}"></a>
+                    <div class="fname">{run_name}/{img_file}<br>(Seed: <code>{meta.get('seed')}</code>)</div>
+                </div>
+                <div class="info-col">
+                    <h4>📸 {img_file} — 隨機參數配方與雙向 Prompt</h4>
+                    <p><strong>🕒 批次時間：</strong><code>{ts_label}</code> | <strong>🤖 模型：</strong><code>{model_label}</code> | <strong>📐 解析度：</strong><code>{meta.get('resolution', '2K')}</code></p>
+                    <p><strong>🔒 固定核心人設：</strong>{meta.get('core_persona_zh')}</p>
+                    <p><strong>🏞️ 抽中場景與光線：</strong>{meta.get('background_zh')}</p>
+                    <p><strong>💃 抽中姿勢與互動：</strong>{meta.get('pose_zh')}</p>
+                    {vid_motion_line}
+                    <table>
+                        <thead>
+                            <tr><th>位置</th><th>臉型</th><th>髮色 / 髮型</th><th>妝容</th><th>極薄透視網紗/蕾絲款式與顏色</th></tr>
+                        </thead>
+                        <tbody>{women_rows}</tbody>
+                    </table>
+                    <details>
+                        <summary>查看完整正面、負面與換裝影片 Prompt (Positive / Negative / Video Prompts)</summary>
+                        <p><strong>🎯 SDXL 前導無截斷核心 Prompt (CLIP 77-Token Window)：</strong></p>
+                        <pre>{meta.get('clip_short_prompt', meta.get('full_prompt'))}</pre>
+                        <p><strong>➕ 完整正面提示詞 (Full Positive Prompt)：</strong></p>
+                        <pre>{meta.get('full_prompt')}</pre>
+                        <p><strong>➖ 負面提示詞 (Negative Prompt — 封鎖街頭T恤、戶外與 AI 磨皮塑膠感)：</strong></p>
+                        <pre>{meta.get('negative_prompt', DEFAULT_NEGATIVE_PROMPT)}</pre>
+                        <p><strong>🎬 圖片轉影片換裝動態提示詞 (I2V Changing-Clothes Motion Prompt)：</strong></p>
+                        <pre>{meta.get('video_motion_prompt', '')}</pre>
+                    </details>
+                </div>
+            </div>""")
+
+        batches_html.append(f"""
+        <div class="batch-section">
+            <h2>📂 批次資料夾：<code>outputs/{run_name}/</code> （共 {len(recipes)} 張照片、{len(videos)} 支影片）</h2>
+            {bench_html}
+            {f'<h3>🎬 本批次圖生影動態成果 (根據產製圖片生成人物換裝/調整薄紗動作)</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
+            <h3>📸 本批次寫實人像照片與參數配方</h3>
+            {''.join(cards_html)}
         </div>""")
-
-    video_cards = ""
-    for v_file in videos:
-        video_cards += f"""
-        <div class="vid-box">
-            <video controls autoplay loop muted width="320"><source src="{v_file}" type="video/mp4"></video>
-            <div class="fname">🎬 {v_file}</div>
-        </div>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<title>AI 寫實人像與動態影片 — 極限壓測與參數配方圖鑑</title>
+<title>AI 寫實人像與換裝動態影片 — 歷次批次資料夾總覽</title>
 <style>
 body {{ font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #121316; color: #e8eaed; margin: 0; padding: 24px; }}
-h1, h2 {{ color: #f8f9fa; border-bottom: 1px solid #2d3139; padding-bottom: 10px; }}
-.bench-box {{ background: #1a2332; border: 1px solid #3b5998; border-radius: 12px; padding: 18px 24px; margin-bottom: 28px; }}
-.card {{ display: flex; gap: 24px; background: #1e2025; border: 1px solid #2d3139; border-radius: 12px; padding: 20px; margin-bottom: 24px; align-items: flex-start; }}
+h1 {{ color: #f8f9fa; border-bottom: 2px solid #3b5998; padding-bottom: 12px; }}
+.batch-section {{ background: #181a1f; border: 1px solid #2d3139; border-radius: 14px; padding: 22px; margin-bottom: 36px; }}
+.batch-section h2 {{ margin-top: 0; color: #8ab4f8; border-bottom: 1px solid #2d3139; padding-bottom: 10px; }}
+.bench-box {{ background: #1a2332; border: 1px solid #3b5998; border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; font-size: 14px; }}
+.card {{ display: flex; gap: 24px; background: #1e2025; border: 1px solid #2d3139; border-radius: 12px; padding: 20px; margin-bottom: 20px; align-items: flex-start; }}
 .media-col img {{ width: 300px; border-radius: 8px; object-fit: cover; border: 1px solid #3c4043; }}
 .fname {{ text-align: center; margin-top: 8px; font-size: 13px; color: #9aa0a6; }}
 .info-col {{ flex: 1; }}
-table {{ width: 100%; border-collapse: collapse; margin: 14px 0; background: #16181c; border-radius: 8px; overflow: hidden; }}
-th, td {{ padding: 10px 12px; border-bottom: 1px solid #2d3139; text-align: left; font-size: 14px; }}
+.info-col h4 {{ margin-top: 0; color: #f1f3f4; }}
+table {{ width: 100%; border-collapse: collapse; margin: 12px 0; background: #16181c; border-radius: 8px; overflow: hidden; }}
+th, td {{ padding: 9px 12px; border-bottom: 1px solid #2d3139; text-align: left; font-size: 13.5px; }}
 th {{ background: #252830; color: #8ab4f8; }}
-.badge {{ background: #28353b; color: #81d4fa; padding: 3px 8px; border-radius: 4px; font-size: 13px; }}
-pre {{ background: #101214; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 12px; color: #bdc1c6; }}
-.vid-grid {{ display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }}
+.badge {{ background: #28353b; color: #81d4fa; padding: 3px 8px; border-radius: 4px; font-size: 12.5px; }}
+pre {{ background: #101214; padding: 10px; border-radius: 6px; white-space: pre-wrap; font-size: 12px; color: #bdc1c6; }}
+.vid-grid {{ display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 24px; }}
 .vid-box {{ background: #1e2025; padding: 12px; border-radius: 10px; border: 1px solid #2d3139; }}
 </style>
 </head>
 <body>
-<h1>🎨 AI 寫實人像與動態影片 — 硬體極限壓測 & 隨機參數對照總覽</h1>
-{bench_html}
-<h2>🎬 動態影片成果 ({len(videos)} 支)</h2>
-<div class="vid-grid">{video_cards if video_cards else '<p>尚無影片</p>'}</div>
-<h2>📸 寫實人像照片與隨機參數配方卡 ({len(recipes)} 張)</h2>
-{''.join(cards_html)}
+<h1>🎨 AI 寫實人像與換裝動態影片 — 歷次批次資料夾總覽 (由新到舊)</h1>
+{''.join(batches_html) if batches_html else '<p>尚無批次紀錄</p>'}
 </body>
 </html>"""
 

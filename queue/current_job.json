@@ -1,36 +1,28 @@
 {
-  "job_id": "job_003_compliant_benchmark_and_i2v",
+  "job_id": "job_004_2k_boudoir_and_changing_clothes_i2v",
   "auto_shutdown_a100": true,
   "image_generation": {
     "enabled": true,
     "model_id": "SG161222/RealVisXL_V5.0",
     "randomize_prompt": true,
-    "use_ref_image_as_base": false,
-    "base_image": "assets/ref_1.jpg",
-    "denoising_strength": 0.6,
     "num_images": 4,
-    "width": 832,
-    "height": 1216,
-    "steps": 28,
-    "guidance_scale": 5.5,
-    "prompt": "RAW candid editorial fashion portrait photograph on 35mm Kodak Portra 400 film of three real 20-year-old French-Vietnamese mixed-race Eurasian women, extremely fair translucent porcelain skin, 165cm 50kg slim hourglass proportions.",
-    "negative_prompt": "nude, nudity, topless, nipples, explicit, nsfw, cgi, 3d render, plastic skin, airbrushed, doll, mannequin, anime, cartoon, tanned skin, dark skin, deformed hands, extra fingers, mutated limbs, bad anatomy, fused bodies, identical faces, clone faces, overexposed, harsh flash, watermark, text, blurry, low quality"
+    "native_width": 960,
+    "native_height": 1440,
+    "target_width": 1440,
+    "target_height": 2160,
+    "steps": 30,
+    "guidance_scale": 5.5
   },
   "video_generation": {
     "enabled": true,
     "model_id": "Lightricks/LTX-Video",
-    "input_images": [
-      "assets/ref_1.jpg",
-      "assets/ref_2.jpg"
-    ],
-    "animate_generated_images": false,
+    "animate_generated_images": true,
+    "num_videos_from_generated": 2,
     "width": 512,
     "height": 768,
     "num_frames": 81,
     "steps": 25,
     "guidance_scale": 5.0,
-    "fps": 16,
-    "motion_prompt": "Natural candid video of three young women in elegant lace bodysuits sitting closely together on a soft white bed. Subtle realistic breathing movements, gentle natural eye blinks, warm soft smiles, leaning slightly toward one another and interacting softly, hair gently moving, soft natural window light, smooth subtle handheld camera sway, photorealistic, high skin detail.",
-    "negative_prompt": "nude, nudity, explicit, nsfw, bright tones, overexposed, static, blurred details, subtitles, watermark, distorted face, morphing features, extra limbs, deformed hands, sudden jerky movement, worst quality"
+    "fps": 16
   }
 }
