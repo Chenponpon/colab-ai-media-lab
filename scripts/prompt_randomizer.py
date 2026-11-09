@@ -8,24 +8,27 @@ import shutil
 CORE_PERSONA = (
     "Intimate indoor candid RAW boudoir photograph of three distinct gorgeous 20yo French-Vietnamese mixed-race Eurasian women with completely different unique faces, "
     "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace covering bust apex, non-nude), "
-    "authentic raw unretouched human skin, highly detailed visible microscopic skin pores, fine epidermal texture, subtle peach fuzz, natural skin creases, realistic subsurface scattering, "
+    "extremely fair pale milk-white skin tone with subtle rosy flush, authentic raw unretouched human skin, highly detailed visible microscopic skin pores, fine epidermal texture, subtle peach fuzz, natural skin creases, realistic subsurface scattering, "
     "clear symmetrical expressive eyes with sharp iris reflections, natural detailed lips, "
-    "curvy slim 165cm 50kg hourglass bodies, large natural heavy soft F-cup breasts, deep cleavage."
+    "curvy voluptuous slim 165cm 50kg hourglass bodies, prominent large natural heavy soft F-cup breasts, deep cleavage."
 )
 
 # 雙重防線：
 # 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
 # 2) 嚴格封鎖塑料人偶、陶瓷磨皮、美顏濾鏡 (porcelain, plastic, mannequin, doll, airbrushed, silicone)
 # 3) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
-# 4) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
-# 5) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
+# 4) 嚴格封鎖深膚色/曬黑 (dark skin, tanned skin, bronze skin)、小胸平胸 (flat chest, small breasts)
+# 5) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
+# 6) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
 DEFAULT_NEGATIVE_PROMPT = (
     "extra heads, extra faces, extra persons, 4 persons, 5 persons, more than 3 persons, "
     "asymmetrical eyes, crooked eyes, misaligned pupils, crossed eyes, distorted mouth, crooked smile, crooked lips, "
+    "dark skin, tanned skin, bronze skin, sunburn, dusky skin, dark complexion, "
+    "flat chest, small breasts, modest chest, petite breasts, skinny, flat hips, "
     "porcelain, porcelain skin, plastic skin, silicone skin, smooth skin, airbrushed, mannequin, wax figure, beauty filter, doll, cgi, 3d render, cartoon, anime, over-smoothed skin, "
     "bad hands, missing fingers, extra fingers, mutated hands, poorly drawn hands, fused fingers, too many fingers, deformed fingers, extra limbs, "
     "identical faces, clone faces, lookalike faces, same face syndrome, twin faces, "
-    "flat chest, small breasts, skinny, flat hips, modest clothing, t-shirt, shirt, jacket, street clothes, "
+    "modest clothing, t-shirt, shirt, jacket, street clothes, "
     "plain white background, plain studio backdrop, blank wall, outdoors, street, park, "
     "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, pornographic, genitalia, "
     "bad anatomy, blurry"
@@ -228,8 +231,8 @@ def generate_diversified_prompt(seed=None, **kwargs):
     clip_short_prompt = (
         f"Intimate indoor RAW photo of 3 distinct 20yo French-Vietnamese mixed-race women with completely different unique faces, "
         f"wearing deep-V sheer mesh floral lace lingerie bodysuits in {short_color_list} (lace covering apex, non-nude), "
-        f"authentic unretouched skin, visible microscopic skin pores, fine epidermal texture, natural skin creases, clear symmetrical eyes, "
-        f"curvy slim 165cm 50kg hourglass body, large natural soft heavy F-cup breasts, deep cleavage, "
+        f"extremely fair pale milk-white skin tone with subtle rosy flush, authentic unretouched skin, visible microscopic skin pores, fine epidermal texture, natural skin creases, clear symmetrical eyes, "
+        f"curvy hourglass body, prominent large natural heavy soft F-cup breasts, deep cleavage, "
         f"{pose['short_en']} {bg['short_en']}."
     )
 
