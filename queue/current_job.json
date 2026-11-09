@@ -3,15 +3,13 @@
   "auto_shutdown_a100": true,
   "image_generation": {
     "enabled": true,
-    "model_id": "SG161222/RealVisXL_V5.0",
-    "randomize_prompt": true,
-    "num_images": 4,
-    "native_width": 960,
-    "native_height": 1440,
+    "model_id": "digiplay/majicMIX_realistic_v7",
+    "base_width": 640,
+    "base_height": 960,
     "target_width": 1440,
     "target_height": 2160,
-    "steps": 30,
-    "guidance_scale": 5.5
+    "steps": 28,
+    "guidance_scale": 6.5
   },
   "video_generation": {
     "enabled": false,

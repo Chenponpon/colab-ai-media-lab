@@ -14,13 +14,17 @@ CORE_PERSONA = (
 
 # 雙重防線：
 # 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
-# 2) 嚴格封鎖撞臉/複製人臉 (identical faces, clone faces)、小胸乾癟 (flat chest, small breasts)、純白棚拍無景 (plain white background, studio backdrop)、塑膠磨皮肌
+# 2) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (identical faces, duplicate persons, extra heads)
+# 3) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands, fused fingers, too many fingers)
+# 4) 嚴格封鎖小胸乾癟 (flat chest, small breasts)、純白棚拍無景 (plain white background, studio backdrop)、塑膠磨皮肌
 DEFAULT_NEGATIVE_PROMPT = (
+    "extra heads, extra faces, extra persons, 4 persons, 5 persons, more than 3 persons, "
+    "bad hands, missing fingers, extra fingers, mutated hands, poorly drawn hands, fused fingers, too many fingers, deformed fingers, extra limbs, "
     "identical faces, clone faces, lookalike faces, same face syndrome, twin faces, "
     "flat chest, small breasts, skinny, flat hips, modest clothing, t-shirt, shirt, jacket, street clothes, "
     "plain white background, plain studio backdrop, blank wall, outdoors, street, park, "
     "nude, nudity, naked, topless, exposed nipples, areola, explicit, nsfw, pornographic, genitalia, "
-    "airbrushed, smooth plastic skin, beauty filter, doll, 3d render, cartoon, deformed hands, bad anatomy, blurry"
+    "airbrushed, smooth plastic skin, beauty filter, doll, 3d render, cartoon, bad anatomy, blurry"
 )
 
 # ==================== 2. 影片生成專用：合規性感「換裝 / 褪下外罩衫 / 整理蕾絲肩帶」動態 Prompt 池 ====================
@@ -136,19 +140,19 @@ LINGERIE_COLORS = [
 
 POSES_AND_INTERACTIONS = [
     {
-        "zh": "跪坐在柔軟純白床單上親密貼近（雙手自然撐在床面、微傾靠近彼此看鏡頭，對齊 ref_1 / ref_2）",
-        "short_en": "kneeling closely together on crisp white bedsheets",
-        "en": "kneeling and sitting closely together on soft white bedding, hands resting naturally on the bedsheets, leaning slightly toward one another looking softly at the camera"
+        "zh": "三人優雅微側身坐在純白床單上，雙手自然垂放於身側或輕撫大腿，眼神柔和看鏡頭（手部放鬆、手指結構清晰不交叉遮擋）",
+        "short_en": "sitting naturally side by side on crisp white bedsheets, hands relaxed gently at their sides with clear visible fingers",
+        "en": "sitting comfortably and closely together on crisp white bedsheets, arms and hands resting naturally and visibly at their sides, hands completely relaxed with clear well-defined fingers, leaning gently toward one another with soft genuine smiles"
     },
     {
-        "zh": "全身站立於日式榻榻米親密互動（並肩貼近、輕觸彼此手臂與肩膀，對齊原始 Prompt）",
-        "short_en": "standing close together full-body on Japanese tatami mats",
-        "en": "standing close together facing the camera full body visible from head to toe, light touches on arms and shoulders, leaning slightly toward one another with shared soft smiles"
+        "zh": "站立於日式榻榻米障子紙窗前，雙手自然放鬆微靠身側，直視鏡頭（無肢體遮擋、手部清晰）",
+        "short_en": "standing side by side on Japanese tatami mats, hands resting visibly and naturally at their sides",
+        "en": "standing close together facing the camera, full body visible, arms resting naturally by their sides with clearly visible separate hands and fingers, soft window light through shoji screens"
     },
     {
-        "zh": "微側身親密依靠在床邊（一人輕靠對方肩頭、展現沙漏腰臀與深邃事業線，對齊 ref_2）",
-        "short_en": "sitting closely together at three-quarter angles on a white bed",
-        "en": "sitting closely together at slight three-quarter angles, leaning gently against each other's shoulders, showcasing hourglass curves, full F-cup cleavage, and warm eye contact"
+        "zh": "優雅微倚靠在柔軟床頭，雙手自然平放在白色床單表面，展現極致沙漏曲線與事業線",
+        "short_en": "reclining gently on white bed with hands resting flat on bedsheets",
+        "en": "leaning gently back against soft pillows on a white bed, hands placed flat and clearly on the white linen surface, showcasing hourglass waist-to-hip proportions, full F-cup cleavage, and captivating direct eye contact"
     }
 ]
 
