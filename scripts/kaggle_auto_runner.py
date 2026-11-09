@@ -34,12 +34,7 @@ def ensure_kaggle_credentials():
     return None
 
 def push_and_run_headless_gpu():
-    creds = ensure_kaggle_credentials()
-    if not creds:
-        print("❌ 尚未找到 kaggle.json 憑證！請在 https://www.kaggle.com/settings 點擊『Create New Token』下載 kaggle.json。")
-        return False
-
-    username = creds["username"]
+    username = "jpachen"
     slug = "colab-ai-media-lab-auto-worker"
     kernel_id = f"{username}/{slug}"
 
