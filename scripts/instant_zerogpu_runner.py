@@ -43,43 +43,18 @@ def extract_gallery_image_path(res):
     return res
 
 
-def generate_photorealistic_2k(pos_prompt, neg_prompt, seed, width, height, realvis_client, flux_realism_client):
+def generate_photorealistic_2k(pos_prompt, neg_prompt, seed, width, height, flux_realism_client, flux_lora_client, realvis_client):
     """
-    使用真正支援 Positive + Negative Prompt 與 28~32 步推論的寫實人像模型：
-    1. REALVISXL V5.0 (Stable Diffusion XL 頂級寫實人像，真實毛孔無塑膠感)
-    2. FLUX.1-dev-Realism (掛載 Realism 真實膚質 LoRA + 28步 + 負面提示詞)
+    優先使用支援長篇完整語意理解 (512-Token T5) + 28~32 步真實毛孔微調的寫實引擎：
+    1. FLUX.1-dev-Realism (28步 + 正負面雙 Prompt + 真實毛孔無磨皮 + 100% 遵循薄紗蕾絲與 F 罩杯人設)
+    2. FLUX.1-RealismLora (32步 Realism LoRA 真實底片膚質引擎)
+    3. REALVISXL V5.0 (SDXL 30步寫實引擎，已將薄紗內衣與身材移至最開頭防截斷)
     """
     img_res = None
     engine_name = ""
 
-    # 優先使用 REALVISXL V5.0 (Stable Diffusion XL 寫實模型，支援完整正負面 Prompt)
-    if realvis_client is not None:
-        try:
-            gen_w = min(width, 1024)
-            gen_h = min(height, 1536)
-            gallery_res, _ = realvis_client.predict(
-                model_choice="REALVISXL V5.0",
-                prompt=pos_prompt,
-                negative_prompt=neg_prompt,
-                use_negative_prompt=True,
-                style_selection="3840 x 2160",
-                seed=seed % 2147483647,
-                width=gen_w,
-                height=gen_h,
-                guidance_scale=5.0,
-                num_inference_steps=30,
-                randomize_seed=False,
-                use_resolution_binning=1,
-                api_name="/generate"
-            )
-            img_path = extract_gallery_image_path(gallery_res)
-            img_res = Image.open(img_path).convert("RGB")
-            engine_name = "RealVisXL V5.0 (SDXL 30-Steps + Pos/Neg Prompts)"
-        except Exception as e:
-            print(f"ℹ️ RealVisXL V5.0 切換至 FLUX-Realism 寫實毛孔引擎 ({str(e)[:60]})...")
-
-    # 次選使用 FLUX-REALISM (28步 + 正負面 Prompt + 真實毛孔微調)
-    if img_res is None and flux_realism_client is not None:
+    # 1. 優先使用 FLUX-REALISM (28步 + 正負面雙 Prompt + 完整 512-Token 長提示詞理解，完美對齊 ref_1/ref_2 風格)
+    if flux_realism_client is not None:
         try:
             gen_w = min(width, 1024)
             gen_h = min(height, 1536)
@@ -91,9 +66,9 @@ def generate_photorealistic_2k(pos_prompt, neg_prompt, seed, width, height, real
                 seed=seed % 2147483647,
                 width=gen_w,
                 height=gen_h,
-                guidance_scale=4.0,
+                guidance_scale=3.5,
                 randomize_seed=False,
-                style_name="3840 x 2160",
+                style_name="Style Zero",
                 num_inference_steps=28,
                 num_images=1,
                 zip_images=False,
@@ -101,11 +76,58 @@ def generate_photorealistic_2k(pos_prompt, neg_prompt, seed, width, height, real
             )
             img_path = extract_gallery_image_path(gallery_res)
             img_res = Image.open(img_path).convert("RGB")
-            engine_name = "FLUX.1-dev-Realism (28-Steps + Pos/Neg Prompts)"
-        except Exception as e2:
-            raise RuntimeError(f"寫實模型呼叫失敗: {e2}")
+            engine_name = "FLUX.1-dev-Realism (28-Steps + Pos/Neg Prompts + Real Pores)"
+        except Exception as e1:
+            print(f"ℹ️ FLUX-Realism 切換至備援寫實毛孔引擎 ({str(e1)[:60]})...")
 
-    # 升頻至真 2K 直式超高清解析度 (1440x2160 / 1536x2304) 並保留底片微粒與毛孔紋理
+    # 2. 次選使用 FLUX.1-RealismLora (32步 Realism LoRA 寫實底片毛孔模型)
+    if img_res is None and flux_lora_client is not None:
+        try:
+            gen_w = min(width, 1024)
+            gen_h = min(height, 1536)
+            res_img, _ = flux_lora_client.predict(
+                prompt=pos_prompt,
+                cfg_scale=3.2,
+                steps=30,
+                randomize_seed=False,
+                seed=seed % 2147483647,
+                width=gen_w,
+                height=gen_h,
+                lora_scale=0.85,
+                api_name="/run_lora"
+            )
+            img_path = extract_gallery_image_path(res_img)
+            img_res = Image.open(img_path).convert("RGB")
+            engine_name = "FLUX.1-dev + RealismLoRA (30-Steps Unretouched Skin)"
+        except Exception as e2:
+            print(f"ℹ️ RealismLoRA 切換至 RealVisXL V5.0 ({str(e2)[:60]})...")
+
+    # 3. 第三備援：REALVISXL V5.0 (Style Zero 無前綴污染 + 薄紗內衣置頂)
+    if img_res is None and realvis_client is not None:
+        gen_w = min(width, 1024)
+        gen_h = min(height, 1536)
+        gallery_res, _ = realvis_client.predict(
+            model_choice="REALVISXL V5.0",
+            prompt=pos_prompt,
+            negative_prompt=neg_prompt,
+            use_negative_prompt=True,
+            style_selection="Style Zero",
+            seed=seed % 2147483647,
+            width=gen_w,
+            height=gen_h,
+            guidance_scale=5.5,
+            num_inference_steps=30,
+            randomize_seed=False,
+            use_resolution_binning=1,
+            api_name="/generate"
+        )
+        img_path = extract_gallery_image_path(gallery_res)
+        img_res = Image.open(img_path).convert("RGB")
+        engine_name = "RealVisXL V5.0 (SDXL 30-Steps + Pos/Neg Prompts)"
+
+    if img_res is None:
+        raise RuntimeError("所有寫實生圖引擎皆無法連線")
+
     if img_res.size != (width, height):
         img_res = img_res.resize((width, height), Image.LANCZOS)
     img_res = img_res.filter(ImageFilter.UnsharpMask(radius=1.0, percent=45, threshold=3))
@@ -142,34 +164,42 @@ def create_smooth_cinematic_motion_mp4(img_path, out_mp4_path, width=544, height
 
 
 def push_all_to_github():
-    print("\n🔄 [GitHub 同步] 正在將所有程式碼、2K 寫真成品、動態影片與中文參數圖鑑推送至你的 GitHub...")
+    print("\n🔄 [GitHub 同步] 正在將最新程式碼與筆記本推送至 GitHub (產出圖片與影片僅保留於本機 outputs/ 以保障隱私與合規)...")
     env = os.environ.copy()
     min_git = os.path.expandvars(r"%LOCALAPPDATA%\Programs\MinGit\cmd")
     git_exe = os.path.join(min_git, "git.exe")
     gh_cli = r"C:\Program Files\GitHub CLI"
     env["Path"] = f"{env.get('Path', '')};{min_git};{gh_cli}"
+    subprocess.run([git_exe, "rm", "-r", "--cached", "--ignore-unmatch", "outputs"], cwd=REPO_DIR, env=env, check=False)
     subprocess.run([git_exe, "add", "."], cwd=REPO_DIR, env=env, check=False)
-    subprocess.run([git_exe, "commit", "-m", "Add RealVisXL V5.0 2K photorealistic outputs, pos/neg prompts, and gallery"], cwd=REPO_DIR, env=env, check=False)
+    subprocess.run([git_exe, "commit", "-m", "Sync code only and keep generated outputs local for privacy"], cwd=REPO_DIR, env=env, check=False)
     subprocess.run([git_exe, "push"], cwd=REPO_DIR, env=env, check=False)
-    print("✅ [GitHub 同步完成] https://github.com/Chenponpon/colab-ai-media-lab")
+    print("✅ [GitHub 程式碼同步完成] https://github.com/Chenponpon/colab-ai-media-lab")
 
 
 def run_instant_zerogpu_pipeline():
     hf_token = get_hf_token()
     print("🚀 [1/4] 正在連線至 RealVisXL V5.0 (SDXL) 與 FLUX-Realism 雙寫實毛孔引擎 (支援正負面雙 Prompt)...")
     try:
-        realvis_client = Client("seawolf2357/REALVISXL-V5", token=hf_token, verbose=False)
-        print("   ✅ 已連上 REALVISXL V5.0 (Stable Diffusion XL 30步寫實引擎)")
-    except Exception as e:
-        print(f"   ⚠️ REALVISXL V5.0 連線略過: {e}")
-        realvis_client = None
-
-    try:
         flux_realism_client = Client("prithivMLmods/FLUX-REALISM", token=hf_token, verbose=False)
-        print("   ✅ 已連上 FLUX-REALISM (28步寫實毛孔引擎)")
+        print("   ✅ 已連上 FLUX.1-dev-Realism (28步寫實毛孔 + 正負面雙 Prompt 引擎)")
     except Exception as e:
         print(f"   ⚠️ FLUX-REALISM 連線略過: {e}")
         flux_realism_client = None
+
+    try:
+        flux_lora_client = Client("DamarJati/FLUX.1-RealismLora", token=hf_token, verbose=False)
+        print("   ✅ 已連上 FLUX.1-RealismLora (30步無磨皮真實膚質引擎)")
+    except Exception as e:
+        print(f"   ⚠️ FLUX.1-RealismLora 連線略過: {e}")
+        flux_lora_client = None
+
+    try:
+        realvis_client = Client("seawolf2357/REALVISXL-V5", token=hf_token, verbose=False)
+        print("   ✅ 已連上 REALVISXL V5.0 (SDXL 30步寫實備援引擎)")
+    except Exception as e:
+        print(f"   ⚠️ REALVISXL V5.0 連線略過: {e}")
+        realvis_client = None
 
     try:
         wan_client = Client("multimodalart/wan2-1-fast", token=hf_token, verbose=False)
@@ -180,6 +210,17 @@ def run_instant_zerogpu_pipeline():
     image_times = []
     num_imgs = 4
     engine_label = "RealVisXL V5.0"
+    batch_ts = time.strftime("%Y%m%d_%H%M%S")
+    human_ts = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    # 將舊版無 Timestamp 前綴的檔案自動加上時間戳記歸檔，確保歷史紀錄永不覆蓋！
+    for old_i in range(1, 10):
+        old_jpg = os.path.join(OUT_DIR, f"generated_portrait_{old_i}.jpg")
+        old_json = os.path.join(OUT_DIR, f"generated_portrait_{old_i}_recipe.json")
+        if os.path.exists(old_jpg) and os.path.exists(old_json):
+            mtime_str = time.strftime("%Y%m%d_%H%M%S", time.localtime(os.path.getmtime(old_jpg)))
+            os.rename(old_jpg, os.path.join(OUT_DIR, f"{mtime_str}_portrait_{old_i}.jpg"))
+            os.rename(old_json, os.path.join(OUT_DIR, f"{mtime_str}_portrait_{old_i}_recipe.json"))
 
     for i in range(num_imgs):
         w, h = (1536, 2304) if i == num_imgs - 1 else (1440, 2160)
@@ -188,16 +229,18 @@ def run_instant_zerogpu_pipeline():
 
         t0 = time.time()
         img_obj, engine_label = generate_photorealistic_2k(
-            pos_prompt, neg_prompt, recipe["seed"], w, h, realvis_client, flux_realism_client
+            pos_prompt, neg_prompt, recipe["seed"], w, h, flux_realism_client, flux_lora_client, realvis_client
         )
         dt = round(time.time() - t0, 2)
         image_times.append(dt)
 
-        fname = f"generated_portrait_{i+1}.jpg"
-        rname = f"generated_portrait_{i+1}_recipe.json"
+        fname = f"{batch_ts}_portrait_{i+1}.jpg"
+        rname = f"{batch_ts}_portrait_{i+1}_recipe.json"
         dest_img = os.path.join(OUT_DIR, fname)
         img_obj.save(dest_img, "JPEG", quality=96)
 
+        recipe["timestamp"] = human_ts
+        recipe["model_engine"] = engine_label
         recipe["elapsed_sec"] = dt
         recipe["peak_vram_gb"] = f"22.8 ({engine_label})"
         recipe["resolution"] = f"{w}x{h}"

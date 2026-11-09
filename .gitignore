@@ -3,7 +3,11 @@ __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 .kaggle_build/
-outputs/_tmp_*.jpg
+
+# Keep generated media outputs locally only (do not upload to public GitHub)
+outputs/
+*.mp4
+test_image_*.png
 
 # OS & Editor files
 .DS_Store

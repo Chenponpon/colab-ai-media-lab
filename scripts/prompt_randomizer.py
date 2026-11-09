@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import random
 
 # ==================== 1. 絕對鎖定的核心人設 (真實無磨皮毛孔質感 + 冷白牛乳瓷肌 + 正負面雙 Prompt) ====================
@@ -174,12 +175,17 @@ def generate_diversified_prompt(seed=None, **kwargs):
             "category": att["category"]
         })
 
+    # 將「私房寫真 (boudoir) + 極薄透視網紗蕾絲內衣 + 白皙透亮真實毛孔瓷肌 + 165cm/50kg自然F罩杯沙漏身材」放在最開頭黃金權重區！
     full_prompt = (
-        f"{CORE_PERSONA} "
-        f"Each woman has distinctly different facial features, hairstyle, and styling: "
-        f"{' '.join(women_descriptions)} "
+        "Highly realistic candid boudoir photograph, three real 20-year-old French-Vietnamese mixed-race Eurasian women "
+        "wearing ultra-sheer almost invisible see-through tulle mesh lingerie and delicate floral lace bodysuits, "
+        "extremely fair clear translucent porcelain skin with natural healthy flush, soft rosy undertone, visible microscopic skin pores, "
+        "and subtle realistic unretouched skin texture (not airbrushed or plastic). "
+        "Slim lean real hourglass bodies, 165cm 50kg proportions, large natural realistic soft F-cup breasts with natural gravity, shape, and texture (not fake), "
+        "slim waists, realistic soft curves. "
+        f"Each woman has distinctly different facial features, hairstyle, and lingerie: {' '.join(women_descriptions)} "
         f"All three are {pose['en']}, {bg['en']}. "
-        f"Photorealistic, 85mm f/1.8 lens, ultra-detailed realistic skin pores and delicate lace texture."
+        "Soft diffused natural window light, photorealistic, unedited snapshot feel, realistic skin pores and breast texture, high detail."
     )
 
     summary_lines = [
@@ -206,9 +212,17 @@ def generate_diversified_prompt(seed=None, **kwargs):
 
 
 def build_gallery_html(output_dir):
-    """自動掃描 outputs/ 資料夾內的所有圖片、影片、壓測報告與 *_recipe.json，生成一目了然的中文參數對照網頁 gallery_index.html"""
-    recipes = sorted([f for f in os.listdir(output_dir) if f.endswith("_recipe.json")])
-    videos = sorted([f for f in os.listdir(output_dir) if f.endswith(".mp4")])
+    """自動掃描 outputs/ 資料夾內所有歷史 Timestamp 批次的圖片、影片與 *_recipe.json，由新到舊排列，方便迭代比對！"""
+    recipes = sorted(
+        [f for f in os.listdir(output_dir) if f.endswith("_recipe.json")],
+        key=lambda x: os.path.getmtime(os.path.join(output_dir, x)),
+        reverse=True
+    )
+    videos = sorted(
+        [f for f in os.listdir(output_dir) if f.endswith(".mp4")],
+        key=lambda x: os.path.getmtime(os.path.join(output_dir, x)),
+        reverse=True
+    )
     bench_path = os.path.join(output_dir, "benchmark_report.json")
     bench_html = ""
     if os.path.exists(bench_path):
@@ -216,9 +230,9 @@ def build_gallery_html(output_dir):
             bdata = json.load(bf)
         bench_html = f"""
         <div class="bench-box">
-            <h2>⚡ 雲端 GPU 硬體算圖與算影片極限壓測報告</h2>
-            <p><strong>🖥️ 配發 GPU 型號：</strong><code>{bdata.get('gpu_name')}</code> (單卡顯存: <code>{bdata.get('vram_gb')} GB</code> | 系統 RAM: <code>{bdata.get('ram_gb')} GB</code>)</p>
-            <p><strong>🖼️ 生圖平均速度與顯存峰值：</strong>每張耗時 <code>{bdata.get('avg_image_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('image_peak_vram_gb')} GB</code> | 極限解析度測試: <code>{bdata.get('max_resolution_tested')}</code></p>
+            <h2>⚡ 最新批次雲端 GPU 硬體算圖與算影片極限壓測報告</h2>
+            <p><strong>🖥️ 配發 GPU 與模型：</strong><code>{bdata.get('gpu_name')}</code> (單卡顯存: <code>{bdata.get('vram_gb')} GB</code> | 系統 RAM: <code>{bdata.get('ram_gb')} GB</code>)</p>
+            <p><strong>🖼️ 生圖平均速度與顯存峰值：</strong>每張耗時 <code>{bdata.get('avg_image_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('image_peak_vram_gb')} GB</code> | 解析度: <code>{bdata.get('max_resolution_tested')}</code></p>
             <p><strong>🎬 生影片速度與顯存峰值：</strong>每支耗時 <code>{bdata.get('avg_video_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('video_peak_vram_gb')} GB</code> | 影片引擎: <code>{bdata.get('video_model')}</code></p>
         </div>"""
 
@@ -228,6 +242,8 @@ def build_gallery_html(output_dir):
         with open(r_path, "r", encoding="utf-8") as f:
             meta = json.load(f)
         img_file = r_file.replace("_recipe.json", ".jpg")
+        ts_label = meta.get("timestamp", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(r_path))))
+        model_label = meta.get("model_engine", "RealVisXL V5.0 / FLUX")
         women_rows = ""
         for w in meta.get("women", []):
             women_rows += f"""
@@ -239,18 +255,19 @@ def build_gallery_html(output_dir):
                 <td><span class="badge">{w['attire_zh']}</span></td>
             </tr>"""
 
-        perf_line = ""
+        perf_line = f"<p><strong>🕒 產製時間：</strong><code>{ts_label}</code> | <strong>🤖 使用模型：</strong><code>{model_label}</code>"
         if meta.get("elapsed_sec"):
-            perf_line = f"<p><strong>⏱️ 本張算圖耗時：</strong><code>{meta.get('elapsed_sec')} 秒</code> | <strong>📊 顯存峰值：</strong><code>{meta.get('peak_vram_gb')} GB</code> | <strong>📐 解析度：</strong><code>{meta.get('resolution')}</code></p>"
+            perf_line += f" | <strong>⏱️ 耗時：</strong><code>{meta.get('elapsed_sec')} 秒</code> | <strong>📐 解析度：</strong><code>{meta.get('resolution')}</code>"
+        perf_line += "</p>"
 
         cards_html.append(f"""
         <div class="card">
             <div class="media-col">
                 <a href="{img_file}" target="_blank"><img src="{img_file}" alt="{img_file}"></a>
-                <div class="fname">{img_file} (Seed: <code>{meta.get('seed')}</code>)</div>
+                <div class="fname">{img_file}<br>(Seed: <code>{meta.get('seed')}</code>)</div>
             </div>
             <div class="info-col">
-                <h3>📸 {img_file} — 生成參數配方與極限數據明細</h3>
+                <h3>📸 {img_file} — 迭代版本參數與極限數據明細</h3>
                 {perf_line}
                 <p><strong>🔒 固定核心人設：</strong>{meta.get('core_persona_zh')}</p>
                 <p><strong>🏞️ 抽中場景與光線：</strong>{meta.get('background_zh')}</p>
