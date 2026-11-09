@@ -389,11 +389,11 @@ def build_gallery_html(output_dir):
 
         batches_html.append(f"""
         <div class="batch-section">
-            <h2>📂 批次資料夾：<code>outputs/{run_name}/</code> （共 {len(recipes)} 張照片、{len(videos)} 支影片）</h2>
+            <h2>📂 批次資料夾：<code>outputs/{run_name}/</code> （{'⏳ 雲端 GPU 正在執行算圖與算影片中...' if (len(recipes) == 0 and len(videos) == 0) else f'共 {len(recipes)} 張照片、{len(videos)} 支影片'}）</h2>
             {bench_html}
+            {f'<div class="bench-box" style="border-color:#fbbc04;background:#2b2618;">⏳ <strong>狀態：</strong>此批次目前正在雲端 GPU 執行中，完成後將自動填入下方圖片與換裝動態影片。<br><strong>🎯 本次已套用之新版無截斷核心 Prompt 預覽：</strong><pre>{CORE_PERSONA}</pre><strong>➖ 本次已套用之新版防越界負面 Prompt 預覽：</strong><pre>{DEFAULT_NEGATIVE_PROMPT}</pre><strong>🎬 本次已套用之換裝動態影片 Prompt 預覽：</strong><pre>{VIDEO_CHANGING_CLOTHES_PROMPTS[0]["en"]}</pre></div>' if (len(recipes) == 0 and len(videos) == 0) else ''}
             {f'<h3>🎬 本批次圖生影動態成果 (根據產製圖片生成人物換裝/調整薄紗動作)</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
-            <h3>📸 本批次寫實人像照片與參數配方</h3>
-            {''.join(cards_html)}
+            {f'<h3>📸 本批次寫實人像照片與參數配方</h3>{"".join(cards_html)}' if cards_html else ''}
         </div>""")
 
     html = f"""<!DOCTYPE html>

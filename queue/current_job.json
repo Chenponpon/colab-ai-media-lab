@@ -14,7 +14,7 @@
     "guidance_scale": 5.5
   },
   "video_generation": {
-    "enabled": true,
+    "enabled": false,
     "model_id": "Lightricks/LTX-Video",
     "animate_generated_images": true,
     "num_videos_from_generated": 2,

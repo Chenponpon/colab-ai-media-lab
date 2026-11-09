@@ -22,7 +22,7 @@ def sync_code_to_github():
     env["Path"] = f"{env.get('Path', '')};{min_git};{gh_cli}"
     subprocess.run([git_exe, "rm", "-r", "--cached", "--ignore-unmatch", "outputs"], cwd=REPO_DIR, env=env, check=False)
     subprocess.run([git_exe, "add", "."], cwd=REPO_DIR, env=env, check=False)
-    subprocess.run([git_exe, "commit", "-m", "Update per-run folder structure, anti-truncation SDXL prompts, and changing-clothes I2V"], cwd=REPO_DIR, env=env, check=False)
+    subprocess.run([git_exe, "commit", "-m", "Fast 2K image mode, skip redundant pip install, preserve Kaggle internet config"], cwd=REPO_DIR, env=env, check=False)
     subprocess.run([git_exe, "push"], cwd=REPO_DIR, env=env, check=False)
     print("✅ [GitHub 程式碼同步完成] https://github.com/Chenponpon/colab-ai-media-lab")
 
@@ -32,6 +32,7 @@ def monitor_and_download_kernel(kernel_id="jpachen/colab-ai-media-lab-gpu-v2"):
     batch_ts = time.strftime("%Y%m%d_%H%M%S")
     run_subdir = os.path.join(OUT_DIR, f"run_{batch_ts}")
     os.makedirs(run_subdir, exist_ok=True)
+    build_gallery_html(OUT_DIR)
 
     print(f"⏳ 正在監控 Kaggle 雲端 GPU ({kernel_id})，完成後將自動存入獨立資料夾: outputs/run_{batch_ts}/")
     while True:
@@ -39,7 +40,7 @@ def monitor_and_download_kernel(kernel_id="jpachen/colab-ai-media-lab-gpu-v2"):
         out = st.stdout.strip()
         print(f"📡 [Kaggle 雲端狀態] {out}")
         if "complete" in out.lower():
-            print(f"🎉 雲端執行完畢！正在將本批次圖片與換裝動態影片下載至 {run_subdir} ...")
+            print(f"🎉 雲端執行完畢！正在將本批次 2K 圖片與配方下載至 {run_subdir} ...")
             subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", run_subdir], check=False)
             gallery = build_gallery_html(OUT_DIR)
             print(f"✨ 全部下載完成！中文參數圖鑑已更新: {gallery}")
@@ -49,7 +50,7 @@ def monitor_and_download_kernel(kernel_id="jpachen/colab-ai-media-lab-gpu-v2"):
             print(f"❌ 雲端執行發生錯誤，正在下載紀錄檔至 {run_subdir} 供檢查...")
             subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", run_subdir], check=False)
             return False
-        time.sleep(15)
+        time.sleep(12)
 
 
 def push_and_run_headless_gpu():
@@ -66,6 +67,7 @@ def push_and_run_headless_gpu():
 
     meta = {
         "id": kernel_id,
+        "id_no": 144034127,
         "title": slug,
         "code_file": "auto_worker.ipynb",
         "language": "python",
@@ -74,15 +76,18 @@ def push_and_run_headless_gpu():
         "enable_gpu": True,
         "enable_tpu": False,
         "enable_internet": True,
+        "keywords": [],
         "dataset_sources": [],
         "competition_sources": [],
         "kernel_sources": [],
-        "model_sources": []
+        "model_sources": [],
+        "docker_image": "gcr.io/kaggle-images/python@sha256:0717e81990be591f8c5f98f033d29ab23e9ffde057e5b3a6bd4371f93969e962",
+        "machine_shape": "NvidiaTeslaT4"
     }
     with open(os.path.join(build_dir, "kernel-metadata.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
 
-    print(f"🚀 正在透過命令列將新版任務推送至 Kaggle 雲端 GPU ({kernel_id})...")
+    print(f"🚀 正在透過命令列將新版極速生圖任務推送至 Kaggle 雲端 GPU ({kernel_id})...")
     res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir], capture_output=True, text=True)
     print(res.stdout)
     if res.returncode != 0:
