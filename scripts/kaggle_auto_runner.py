@@ -171,7 +171,7 @@ def sync_code_to_github():
     subprocess.run([git_exe, "add", "."], cwd=REPO_DIR, env=env, check=False)
     subprocess.run([git_exe, "commit", "-m", "Upgrade to majicMIX Asian Realistic v7 with Hi-Res 2K anti-multihead and 5min idle auto-shutdown"], cwd=REPO_DIR, env=env, check=False)
     subprocess.run([git_exe, "push"], cwd=REPO_DIR, env=env, check=False)
-    print("✅ [GitHub 程式碼同步完成] https://github.com/Chenponpon/colab-ai-media-lab")
+    print("[GitHub Code Sync Complete] https://github.com/Chenponpon/colab-ai-media-lab")
 
 
 def monitor_and_download_kernel(kernel_id="chenponpon/colab-ai-media-lab-gpu-v2"):
