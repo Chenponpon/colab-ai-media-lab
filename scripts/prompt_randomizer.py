@@ -4,28 +4,29 @@ import time
 import random
 import shutil
 
-# ==================== 1. 絕對鎖定的核心人設 (拒絕塑料人偶、真實微觀毛孔汗毛、端正對稱五官、自然大胸沙漏體態) ====================
+# ==================== 1. 絕對鎖定的核心人設 (拒絕黑皮排骨、盛世美顏法越混血、極致冷白牛奶肌、豐滿柔軟 F 罩杯大胸深事業線) ====================
 CORE_PERSONA = (
-    "Intimate indoor candid RAW boudoir photograph of three distinct gorgeous 20yo French-Vietnamese mixed-race Eurasian women with completely different unique faces, "
-    "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace covering bust apex, non-nude), "
-    "extremely fair pale milk-white skin tone with subtle rosy flush, authentic raw unretouched human skin, highly detailed visible microscopic skin pores, fine epidermal texture, subtle peach fuzz, natural skin creases, realistic subsurface scattering, "
-    "clear symmetrical expressive eyes with sharp iris reflections, natural detailed lips, "
-    "curvy voluptuous slim 165cm 50kg hourglass bodies, prominent large natural heavy soft F-cup breasts, deep cleavage."
+    "Intimate waist-up boudoir photo of three distinct breathtakingly gorgeous 20yo French-Vietnamese mixed-race Eurasian beauties with unique angelic faces, "
+    "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace artfully covering bust apex, non-nude), "
+    "extremely fair luminous milk-white skin tone, healthy soft rosy cheeks, authentic tender skin texture with fine micro-pores, "
+    "curvy voluptuous hourglass bodies, large natural heavy soft F-cup breasts, prominent deep cleavage."
 )
 
 # 雙重防線：
 # 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
-# 2) 嚴格封鎖塑料人偶、陶瓷磨皮、美顏濾鏡 (porcelain, plastic, mannequin, doll, airbrushed, silicone)
-# 3) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
-# 4) 嚴格封鎖深膚色/曬黑 (dark skin, tanned skin, bronze skin)、小胸平胸 (flat chest, small breasts)
-# 5) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
-# 6) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
+# 2) 嚴格封鎖黑皮、曬黑、黃黑皮 (dark skin, tanned skin, brown skin, sunburn, dusky)
+# 3) 嚴格封鎖營養不良、排骨肋骨、乾癟瘦弱 (malnourished, skinny, bony, visible ribs, gaunt, hollow cheeks, flat chest, small breasts)
+# 4) 嚴格封鎖塑料人偶、陶瓷磨皮、美顏濾鏡 (porcelain, plastic, mannequin, doll, airbrushed, silicone)
+# 5) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
+# 6) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
+# 7) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
 DEFAULT_NEGATIVE_PROMPT = (
     "extra heads, extra faces, extra persons, 4 persons, 5 persons, more than 3 persons, "
+    "dark skin, tanned skin, brown skin, dark complexion, sunburn, bronze skin, dusky, dark tone, "
+    "malnourished, skinny, bony, visible ribs, gaunt, hollow cheeks, haggard, ugly, bad face, "
+    "flat chest, small breasts, modest chest, petite breasts, flat hips, thin arms, "
     "asymmetrical eyes, crooked eyes, misaligned pupils, crossed eyes, distorted mouth, crooked smile, crooked lips, "
-    "dark skin, tanned skin, bronze skin, sunburn, dusky skin, dark complexion, "
-    "flat chest, small breasts, modest chest, petite breasts, skinny, flat hips, "
-    "porcelain, porcelain skin, plastic skin, silicone skin, smooth skin, airbrushed, mannequin, wax figure, beauty filter, doll, cgi, 3d render, cartoon, anime, over-smoothed skin, "
+    "porcelain, plastic skin, silicone skin, smooth skin, airbrushed, mannequin, wax figure, beauty filter, doll, cgi, 3d render, cartoon, anime, over-smoothed skin, "
     "bad hands, missing fingers, extra fingers, mutated hands, poorly drawn hands, fused fingers, too many fingers, deformed fingers, extra limbs, "
     "identical faces, clone faces, lookalike faces, same face syndrome, twin faces, "
     "modest clothing, t-shirt, shirt, jacket, street clothes, "
@@ -147,19 +148,19 @@ LINGERIE_COLORS = [
 
 POSES_AND_INTERACTIONS = [
     {
-        "zh": "三人優雅微側身坐在純白床單上，雙手自然垂放於身側或輕撫大腿，眼神柔和看鏡頭（手部放鬆、手指結構清晰不交叉遮擋）",
-        "short_en": "sitting naturally side by side on crisp white bedsheets, hands relaxed gently at their sides with clear visible fingers",
-        "en": "sitting comfortably and closely together on crisp white bedsheets, arms and hands resting naturally and visibly at their sides, hands completely relaxed with clear well-defined fingers, leaning gently toward one another with soft genuine smiles"
+        "zh": "三人親密依偎坐在純白床單上（腰部以上特寫），雙手自然輕撫身側，眼神甜美誘惑凝視鏡頭，展現深邃 F 罩杯事業線與白皙鎖骨",
+        "short_en": "intimate waist-up portrait sitting closely together on white bed, hands relaxed, showcasing deep F-cup cleavage",
+        "en": "intimate waist-up portrait of three women sitting closely together on crisp white bedsheets, leaning tenderly toward one another with captivating warm gazes at the camera, hands resting naturally at their sides, showcasing dramatic F-cup cleavage, soft natural breast curves, and radiant fair shoulders"
     },
     {
-        "zh": "站立於日式榻榻米障子紙窗前，雙手自然放鬆微靠身側，直視鏡頭（無肢體遮擋、手部清晰）",
-        "short_en": "standing side by side on Japanese tatami mats, hands resting visibly and naturally at their sides",
-        "en": "standing close together facing the camera, full body visible, arms resting naturally by their sides with clearly visible separate hands and fingers, soft window light through shoji screens"
+        "zh": "三人上半身親密貼近微傾，雙手自然垂放身前，柔和晨光灑在極致白皙透亮肌膚上，直視鏡頭微笑",
+        "short_en": "close waist-up portrait, three gorgeous women leaning together, hands visible, radiant fair skin",
+        "en": "close intimate waist-up composition of three beauties close together facing the camera, full upper bodies clearly visible, arms resting softly at their sides with clear fingers, soft window light highlighting their translucent milk-white skin and voluptuous soft F-cup curves"
     },
     {
-        "zh": "優雅微倚靠在柔軟床頭，雙手自然平放在白色床單表面，展現極致沙漏曲線與事業線",
-        "short_en": "reclining gently on white bed with hands resting flat on bedsheets",
-        "en": "leaning gently back against soft pillows on a white bed, hands placed flat and clearly on the white linen surface, showcasing hourglass waist-to-hip proportions, full F-cup cleavage, and captivating direct eye contact"
+        "zh": "微倚靠在純白羽絨枕頭上（腰部以上特寫），雙手平放床單，微露甜美笑容直視鏡頭，凸顯精緻混血五官與傲人胸型",
+        "short_en": "intimate upper-body pose leaning back on pillows, hands on bedsheets, full F-cup cleavage",
+        "en": "intimate upper-body boudoir composition leaning gently back against plush white pillows, hands placed relaxed and flat on the linen, displaying breathtaking delicate Eurasian facial features, sparkling symmetrical eyes, and prominent natural soft heavy F-cup breasts with deep cleavage"
     }
 ]
 

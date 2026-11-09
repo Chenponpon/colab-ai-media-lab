@@ -47,13 +47,8 @@ pipe.scheduler = DPMSolverMultistepScheduler.from_config(
 )
 pipe.enable_attention_slicing()
 
-try:
-    print("🌸 正在掛載亞洲面孔微調特徵滑塊 LoRA (Asian Slider LoRA)...")
-    pipe.load_lora_weights("ntc-ai/SDXL-LoRA-slider.asian", weight_name="asian.safetensors", adapter_name="asian")
-    pipe.set_adapters(["asian"], adapter_weights=[0.85])
-    print("✅ 成功掛載亞洲微調特徵滑塊 LoRA！")
-except Exception as e:
-    print("⚠️ 載入 LoRA 警告 (將繼續以 RealVisXL 運行):", e)
+# 移除造成黑皮與乾癟的 slider lora，由 Prompt 精準主導白皙牛奶肌與 F 罩杯豐滿曲線
+recipe_engine_name = "RealVisXL V5.0 (Luminous Milk-White Skin + F-Cup Curves + 2K)"
 
 image_times = []
 image_peak_vram = 0.0
@@ -96,7 +91,7 @@ for i in range(num_imgs):
     image_peak_vram = max(image_peak_vram, pk)
 
     recipe["timestamp"] = human_ts
-    recipe["model_engine"] = "RealVisXL V5.0 (Raw Skin Texture + Asian LoRA + SDXL 2K)"
+    recipe["model_engine"] = "RealVisXL V5.0 (Luminous Milk-White Skin + F-Cup Curves + 2K)"
     recipe["elapsed_sec"] = dt
     recipe["peak_vram_gb"] = pk
     recipe["resolution"] = f"{target_w}x{target_h} (Hi-Res Upgraded from {base_w}x{base_h})"
