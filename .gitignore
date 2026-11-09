@@ -1,0 +1,13 @@
+# Python & Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Generated media outputs (keep repo lightweight)
+*.mp4
+test_image_*.png
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
