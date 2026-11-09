@@ -147,7 +147,15 @@ print("\\n🏆 雲端 2K 寫實生圖全部完成！")
             "accelerator": "GPU",
             "colab": {"gpuType": "T4", "provenance": []},
             "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
-            "language_info": {"name": "python"}
+            "language_info": {"name": "python"},
+            "kaggle": {
+                "accelerator": "nvidiaTeslaT4",
+                "dockerImageVersionId": 30627,
+                "isInternetEnabled": True,
+                "language": "python",
+                "sourceType": "notebook",
+                "isGpuEnabled": True
+            }
         },
         "nbformat": 4,
         "nbformat_minor": 0
@@ -227,7 +235,7 @@ def push_and_run_headless_gpu():
         "competition_sources": [],
         "kernel_sources": [],
         "model_sources": [],
-        "docker_image": "gcr.io/kaggle-images/python@sha256:0717e81990be591f8c5f98f033d29ab23e9ffde057e5b3a6bd4371f93969e962",
+        "docker_image": "gcr.io/kaggle-private-byod/python@sha256:84bb67e18341567a26c4aff1dc0fe64acb3a5550d5ec142ff0e5db6a03cf6154",
         "machine_shape": "NvidiaTeslaT4"
     }
     with open(os.path.join(build_dir, "kernel-metadata.json"), "w", encoding="utf-8") as f:
