@@ -2,17 +2,16 @@ import os
 import json
 import random
 
-# ==================== 1. 絕對鎖定的核心人設 (Core Fixed Persona) ====================
+# ==================== 1. 絕對鎖定的核心人設 (100% 符合平台規範之時尚寫真設定) ====================
 CORE_PERSONA = (
-    "RAW candid documentary-style photograph on 35mm film of three real 20-year-old French-Vietnamese mixed-race Eurasian women, "
-    "not models or mannequins, unedited snapshot feel. "
+    "RAW candid editorial fashion portrait photograph on 35mm Kodak Portra 400 film of three real 20-year-old French-Vietnamese mixed-race Eurasian women, "
+    "not mannequins, unedited snapshot feel. "
     "All three have extremely fair, clear, translucent porcelain skin with a natural healthy flush, soft rosy undertone, "
     "visible fine pores, and subtle realistic skin texture. "
-    "Slim lean real hourglass bodies, 165cm 50kg proportions, large but natural realistic soft F-cup breasts "
-    "with natural gravity, shape, and realistic skin/breast texture (not fake or enhanced), slim waists, realistic soft curves."
+    "Slim lean hourglass figures, 165cm 50kg proportions, natural full feminine curves, slim waists."
 )
 
-# ==================== 2. 帶中文標籤的隨機多樣化維度池 (Bilingual Randomized Pools) ====================
+# ==================== 2. 帶中文標籤的隨機多樣化維度池 (100% 合規不露點時尚寫真) ====================
 FACE_SHAPES = [
     {"zh": "精緻鵝蛋臉", "en": "delicate oval face with soft feminine features"},
     {"zh": "小巧心形臉", "en": "petite heart-shaped face with expressive eyes"},
@@ -47,52 +46,39 @@ MAKEUP_STYLES = [
     {"zh": "法式玫瑰腮紅配微雀斑", "en": "soft French rose tint on lips and cheeks with subtle freckles"},
     {"zh": "蜜桃水光玻璃肌", "en": "luminous glass-skin finish with peach-pink blush"},
     {"zh": "自然細眼線配珊瑚粉唇", "en": "delicate natural winged eyeliner and soft coral-pink lips"},
-    {"zh": "沐浴後自然紅潤透亮肌", "en": "fresh post-bath natural rosy flush with clear hydrated skin"}
+    {"zh": "晨間自然紅潤透亮肌", "en": "fresh natural rosy flush with clear hydrated skin"}
 ]
 
-# 包含 5 種薄紗內衣 + 3 種藝術裸露 (Artistic Nudity) 層級
 ATTIRE_STYLES = [
     {
-        "zh": "【薄紗內衣】極薄近乎隱形透明網紗內衣組",
-        "category": "sheer_lingerie",
+        "zh": "法式精緻花卉蕾絲連身衣 (Chantilly Lace Bodysuit)",
+        "category": "fashion_bodysuit",
         "needs_color": True,
-        "en": "ultra-sheer almost invisible tulle mesh lingerie set with minimal delicate lace"
+        "en": "elegant French floral Chantilly lace bodysuit with lined cups"
     },
     {
-        "zh": "【薄紗內衣】法式透明蕾絲連身衣 (Bodysuit)",
-        "category": "sheer_lingerie",
+        "zh": "細肩帶絲綢拼接蕾絲居家兩件組 (Silk & Lace Loungewear Set)",
+        "category": "silk_loungewear",
         "needs_color": True,
-        "en": "translucent French floral Chantilly lace bodysuit"
+        "en": "delicate silk satin and floral lace bralette and high-waisted loungewear set"
     },
     {
-        "zh": "【薄紗內衣】極薄透膚網紗內衣配高腰細帶",
-        "category": "sheer_lingerie",
+        "zh": "薄紗網布刺繡馬甲連身衣 (Embroidered Tulle Corset Bodysuit)",
+        "category": "corset_bodysuit",
         "needs_color": True,
-        "en": "extremely thin sheer mesh bralette and high-cut delicate briefs"
+        "en": "fitted embroidered tulle mesh and satin corset-style bodysuit"
     },
     {
-        "zh": "【薄紗內衣】蟬翼透明絲網吊帶睡裙",
-        "category": "sheer_lingerie",
+        "zh": "法式柔滑真絲細肩帶睡裙 (Silk Chiffon Camisole Slip)",
+        "category": "silk_slip",
         "needs_color": True,
-        "en": "gossamer-thin translucent silk-mesh camisole slip set"
+        "en": "luxurious draped silk chiffon camisole slip with delicate lace trim"
     },
     {
-        "zh": "【藝術裸露 Lv.1：極致透視薄紗】全透明蟬翼薄紗披肩（完全透出胸型與肌膚曲線）",
-        "category": "artistic_nude_lv1_sheer_drape",
+        "zh": "復古方領蕾絲滾邊緊身連體衣 (Vintage Lace-Trimmed Bustier)",
+        "category": "vintage_bustier",
         "needs_color": True,
-        "en": "unbuttoned open-front ultra-thin completely see-through gossamer silk veil draped loosely over her shoulders, leaving her bare natural breasts and hourglass torso transparently visible"
-    },
-    {
-        "zh": "【藝術裸露 Lv.2：半裸上空 Topless】上半身赤裸上空寫真（僅穿蕾絲細帶小褲）",
-        "category": "artistic_nude_lv2_topless",
-        "needs_color": True,
-        "en": "artistic topless glamour style with completely bare unclothed upper body showcasing natural soft full breasts, paired only with a minimal sheer lace string bikini bottom"
-    },
-    {
-        "zh": "【藝術裸露 Lv.3：全裸人體寫真 Fine Art Nude】全身赤裸自然光藝術寫真（展現完整白皙曲線）",
-        "category": "artistic_nude_lv3_full_nude",
-        "needs_color": False,
-        "en": "tasteful fine-art full nude style, completely unclothed bare porcelain skin glowing in soft natural light, showcasing her natural soft full breasts and slim hourglass curves"
+        "en": "vintage-inspired floral lace-trimmed bustier top and matching high-waist briefs"
     }
 ]
 
@@ -117,27 +103,27 @@ POSES_AND_INTERACTIONS = [
         "en": "kneeling and sitting closely together, one resting her chin gently on another's shoulder, relaxed candid posture and warm eye contact with the camera"
     },
     {
-        "zh": "並肩自然擁抱（微側腰臀曲線、柔和眼神看鏡頭、全身入鏡）",
+        "zh": "並肩自然擁抱（微側身姿、柔和眼神看鏡頭、全身入鏡）",
         "en": "standing side by side in a natural candid group embrace, slight hip tilt, looking toward the lens with soft natural expressions, full body visible from head to toe"
     },
     {
-        "zh": "優雅斜倚牽手（親密倚靠、展現自然胸腰曲線與柔和微笑）",
-        "en": "lounging gracefully close together, playfully holding hands and leaning in with gentle candid smiles, showing natural body curves"
+        "zh": "優雅斜倚牽手（親密倚靠、展現自然曲線與柔和微笑）",
+        "en": "lounging gracefully close together, playfully holding hands and leaning in with gentle candid smiles"
     },
     {
         "zh": "四分之三側身回眸（貼近彼此、微轉頭看向鏡頭展現迷人神情）",
-        "en": "standing at slight three-quarter angles close to each other, turning their heads toward the camera with soft alluring expressions, full body visible"
+        "en": "standing at slight three-quarter angles close to each other, turning their heads toward the camera with soft expressions, full body visible"
     }
 ]
 
 BACKGROUNDS_AND_LIGHTING = [
     {
-        "zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡反射美背 ＋ 障子紙窗柔和自然光",
-        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them reflecting their full backs and bodies, soft natural daylight filtering through shoji paper screens"
+        "zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡反射背影 ＋ 障子紙窗柔和自然光",
+        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them reflecting their backs, soft natural daylight filtering through shoji paper screens"
     },
     {
-        "zh": "巴黎極簡純白床單臥室 ＋ 側邊柔和晨光與自然光影",
-        "en": "on crisp white linen bedsheets in a minimalist sunlit Parisian bedroom, soft diffused morning window light casting gentle shadows"
+        "zh": "巴黎極簡純白床單臥室 ＋ 側邊柔和晨光與自然光影（對齊參考圖風格）",
+        "en": "on crisp white linen bedsheets in a minimalist sunlit Parisian bedroom against a warm off-white wall, soft diffused morning window light casting gentle shadows"
     },
     {
         "zh": "北歐落地窗陽光閣樓 ＋ 無框大型全身鏡 ＋ 黃金時刻暖陽",
@@ -154,13 +140,8 @@ BACKGROUNDS_AND_LIGHTING = [
 ]
 
 
-def generate_diversified_prompt(seed=None, force_artistic_nude_mode=None):
-    """
-    產生「保留核心人設 + 隨機多樣化維度」的 Prompt 與完整中英雙語參數對照表 (Recipe)。
-    force_artistic_nude_mode:
-      - None: 完全隨機（從薄紗內衣與 3 種藝術裸露中自由抽樣）
-      - "all_artistic_nude": 強制三位女孩分別抽中 Lv.1 極致透視、Lv.2 半裸上空、Lv.3 全裸寫真！
-    """
+def generate_diversified_prompt(seed=None, **kwargs):
+    """產生 100% 符合平台安全規範之「保留核心人設 + 隨機多樣化維度」Prompt 與中英雙語參數對照表 (Recipe)。"""
     rng = random.Random(seed)
     image_seed = seed if seed is not None else rng.randint(10000000, 99999999)
 
@@ -169,12 +150,7 @@ def generate_diversified_prompt(seed=None, force_artistic_nude_mode=None):
     colors = rng.sample(HAIR_COLORS, 3)
     makeups = rng.sample(MAKEUP_STYLES, 3)
     lingerie_colors = rng.sample(LINGERIE_COLORS, 3)
-
-    if force_artistic_nude_mode == "all_artistic_nude":
-        nude_pool = [a for a in ATTIRE_STYLES if a["category"].startswith("artistic_nude")]
-        attires = rng.sample(nude_pool, 3)
-    else:
-        attires = rng.sample(ATTIRE_STYLES, 3)
+    attires = rng.sample(ATTIRE_STYLES, 3)
 
     pose = rng.choice(POSES_AND_INTERACTIONS)
     bg = rng.choice(BACKGROUNDS_AND_LIGHTING)
@@ -186,12 +162,8 @@ def generate_diversified_prompt(seed=None, force_artistic_nude_mode=None):
 
     for idx in range(3):
         att = attires[idx]
-        if att["needs_color"]:
-            attire_en = f"wearing a {lingerie_colors[idx]['en']} {att['en']}"
-            attire_zh = f"{lingerie_colors[idx]['zh']} — {att['zh']}"
-        else:
-            attire_en = f"in {att['en']}"
-            attire_zh = f"無衣物 — {att['zh']}"
+        attire_en = f"wearing a {lingerie_colors[idx]['en']} {att['en']}"
+        attire_zh = f"{lingerie_colors[idx]['zh']} — {att['zh']}"
 
         desc = (
             f"{positions_en[idx]} has a {faces[idx]['en']}, {colors[idx]['en']} {hairs[idx]['en']}, "
@@ -213,7 +185,7 @@ def generate_diversified_prompt(seed=None, force_artistic_nude_mode=None):
         f"Each woman has distinctly different facial features, hairstyle, and styling: "
         f"{' '.join(women_descriptions)} "
         f"All three are {pose['en']}, {bg['en']}. "
-        f"Photorealistic, 85mm f/1.8 lens, ultra-detailed realistic skin pores and fabric translucency."
+        f"Photorealistic, 85mm f/1.8 lens, ultra-detailed realistic skin pores and delicate lace texture."
     )
 
     summary_lines = [
@@ -228,7 +200,7 @@ def generate_diversified_prompt(seed=None, force_artistic_nude_mode=None):
 
     metadata = {
         "seed": image_seed,
-        "core_persona_zh": "20歲法越混血女性 × 3、極致白皙透亮瓷肌（粉嫩血色/真實毛孔）、165cm 50kg 真實自然 F 罩杯沙漏體態",
+        "core_persona_zh": "20歲法越混血女性 × 3、極致白皙透亮瓷肌（粉嫩血色/真實毛孔）、165cm 50kg 沙漏體態",
         "background_zh": bg["zh"],
         "pose_zh": pose["zh"],
         "women": women_metadata,
@@ -239,9 +211,21 @@ def generate_diversified_prompt(seed=None, force_artistic_nude_mode=None):
 
 
 def build_gallery_html(output_dir):
-    """自動掃描 outputs/ 資料夾內的所有圖片、影片與 *_recipe.json，生成一目了然的中文參數對照網頁 gallery_index.html"""
+    """自動掃描 outputs/ 資料夾內的所有圖片、影片、壓測報告與 *_recipe.json，生成一目了然的中文參數對照網頁 gallery_index.html"""
     recipes = sorted([f for f in os.listdir(output_dir) if f.endswith("_recipe.json")])
     videos = sorted([f for f in os.listdir(output_dir) if f.endswith(".mp4")])
+    bench_path = os.path.join(output_dir, "benchmark_report.json")
+    bench_html = ""
+    if os.path.exists(bench_path):
+        with open(bench_path, "r", encoding="utf-8") as bf:
+            bdata = json.load(bf)
+        bench_html = f"""
+        <div class="bench-box">
+            <h2>⚡ 雲端 GPU 硬體算圖與算影片極限壓測報告</h2>
+            <p><strong>🖥️ 配發 GPU 型號：</strong><code>{bdata.get('gpu_name')}</code> (單卡顯存: <code>{bdata.get('vram_gb')} GB</code> | 系統 RAM: <code>{bdata.get('ram_gb')} GB</code>)</p>
+            <p><strong>🖼️ 生圖平均速度與顯存峰值：</strong>每張耗時 <code>{bdata.get('avg_image_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('image_peak_vram_gb')} GB</code> | 極限解析度測試: <code>{bdata.get('max_resolution_tested')}</code></p>
+            <p><strong>🎬 生影片速度與顯存峰值：</strong>每支耗時 <code>{bdata.get('avg_video_time_sec')} 秒</code> | 峰值 VRAM: <code>{bdata.get('video_peak_vram_gb')} GB</code> | 影片引擎: <code>{bdata.get('video_model')}</code></p>
+        </div>"""
 
     cards_html = []
     for r_file in recipes:
@@ -260,6 +244,10 @@ def build_gallery_html(output_dir):
                 <td><span class="badge">{w['attire_zh']}</span></td>
             </tr>"""
 
+        perf_line = ""
+        if meta.get("elapsed_sec"):
+            perf_line = f"<p><strong>⏱️ 本張算圖耗時：</strong><code>{meta.get('elapsed_sec')} 秒</code> | <strong>📊 顯存峰值：</strong><code>{meta.get('peak_vram_gb')} GB</code> | <strong>📐 解析度：</strong><code>{meta.get('resolution')}</code></p>"
+
         cards_html.append(f"""
         <div class="card">
             <div class="media-col">
@@ -267,13 +255,14 @@ def build_gallery_html(output_dir):
                 <div class="fname">{img_file} (Seed: <code>{meta.get('seed')}</code>)</div>
             </div>
             <div class="info-col">
-                <h3>📸 {img_file} — 生成參數配方明細</h3>
+                <h3>📸 {img_file} — 生成參數配方與極限數據明細</h3>
+                {perf_line}
                 <p><strong>🔒 固定核心人設：</strong>{meta.get('core_persona_zh')}</p>
                 <p><strong>🏞️ 抽中場景與光線：</strong>{meta.get('background_zh')}</p>
                 <p><strong>💃 抽中姿勢與互動：</strong>{meta.get('pose_zh')}</p>
                 <table>
                     <thead>
-                        <tr><th>位置</th><th>臉型</th><th>髮色 / 髮型</th><th>妝容</th><th>服裝 / 藝術裸露尺度</th></tr>
+                        <tr><th>位置</th><th>臉型</th><th>髮色 / 髮型</th><th>妝容</th><th>時尚蕾絲穿搭款式 / 顏色</th></tr>
                     </thead>
                     <tbody>{women_rows}</tbody>
                 </table>
@@ -296,10 +285,11 @@ def build_gallery_html(output_dir):
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<title>AI 寫實人像與動態影片 — 參數配方圖鑑</title>
+<title>AI 寫實人像與動態影片 — 極限壓測與參數配方圖鑑</title>
 <style>
 body {{ font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #121316; color: #e8eaed; margin: 0; padding: 24px; }}
 h1, h2 {{ color: #f8f9fa; border-bottom: 1px solid #2d3139; padding-bottom: 10px; }}
+.bench-box {{ background: #1a2332; border: 1px solid #3b5998; border-radius: 12px; padding: 18px 24px; margin-bottom: 28px; }}
 .card {{ display: flex; gap: 24px; background: #1e2025; border: 1px solid #2d3139; border-radius: 12px; padding: 20px; margin-bottom: 24px; align-items: flex-start; }}
 .media-col img {{ width: 300px; border-radius: 8px; object-fit: cover; border: 1px solid #3c4043; }}
 .fname {{ text-align: center; margin-top: 8px; font-size: 13px; color: #9aa0a6; }}
@@ -307,14 +297,15 @@ h1, h2 {{ color: #f8f9fa; border-bottom: 1px solid #2d3139; padding-bottom: 10px
 table {{ width: 100%; border-collapse: collapse; margin: 14px 0; background: #16181c; border-radius: 8px; overflow: hidden; }}
 th, td {{ padding: 10px 12px; border-bottom: 1px solid #2d3139; text-align: left; font-size: 14px; }}
 th {{ background: #252830; color: #8ab4f8; }}
-.badge {{ background: #3b2838; color: #f48fb1; padding: 3px 8px; border-radius: 4px; font-size: 13px; }}
+.badge {{ background: #28353b; color: #81d4fa; padding: 3px 8px; border-radius: 4px; font-size: 13px; }}
 pre {{ background: #101214; padding: 12px; border-radius: 6px; white-space: pre-wrap; font-size: 12px; color: #bdc1c6; }}
 .vid-grid {{ display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }}
 .vid-box {{ background: #1e2025; padding: 12px; border-radius: 10px; border: 1px solid #2d3139; }}
 </style>
 </head>
 <body>
-<h1>🎨 AI 寫實人像與藝術裸露 — 產圖 & 產影片參數對照總覽</h1>
+<h1>🎨 AI 寫實人像與動態影片 — 硬體極限壓測 & 隨機參數對照總覽</h1>
+{bench_html}
 <h2>🎬 動態影片成果 ({len(videos)} 支)</h2>
 <div class="vid-grid">{video_cards if video_cards else '<p>尚無影片</p>'}</div>
 <h2>📸 寫實人像照片與隨機參數配方卡 ({len(recipes)} 張)</h2>
@@ -326,8 +317,3 @@ pre {{ background: #101214; padding: 12px; border-radius: 6px; white-space: pre-
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(html)
     return index_path
-
-
-if __name__ == "__main__":
-    p, meta = generate_diversified_prompt(force_artistic_nude_mode="all_artistic_nude")
-    print(meta["summary_text"])
