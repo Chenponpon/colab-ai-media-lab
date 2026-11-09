@@ -18,11 +18,12 @@ def push_latest_job():
     print("🔄 [本機端] 正在將最新任務設定推送至 GitHub...")
     env = os.environ.copy()
     min_git = os.path.expandvars(r"%LOCALAPPDATA%\Programs\MinGit\cmd")
+    git_exe = os.path.join(min_git, "git.exe")
     gh_cli = r"C:\Program Files\GitHub CLI"
     env["Path"] = f"{env.get('Path', '')};{min_git};{gh_cli}"
-    subprocess.run(["git", "add", "."], cwd=REPO_DIR, env=env, check=False)
-    subprocess.run(["git", "commit", "-m", "Update automated Colab job config"], cwd=REPO_DIR, env=env, check=False)
-    subprocess.run(["git", "push"], cwd=REPO_DIR, env=env, check=False)
+    subprocess.run([git_exe, "add", "."], cwd=REPO_DIR, env=env, check=False)
+    subprocess.run([git_exe, "commit", "-m", "Update automated Colab job config"], cwd=REPO_DIR, env=env, check=False)
+    subprocess.run([git_exe, "push"], cwd=REPO_DIR, env=env, check=False)
     print("✅ [本機端] GitHub 任務同步完成！")
 
 def launch_browser_and_trigger_run():
