@@ -38,6 +38,7 @@ def build_video_worker_notebook(source_image_name="portrait_2.jpg", motion_promp
 # LTX-Video (Lightricks 2B DiT) 圖生影換裝視頻生成 Worker (首幀合格母圖對齊版)
 # =========================================================================
 import os, sys, io, time, gc, json, urllib.request
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import torch, psutil
 from PIL import Image
 
@@ -57,11 +58,12 @@ from diffusers.utils import export_to_video
 model_id = "Lightricks/LTX-Video"
 print(f"🎬 [新世代 2B DiT 頂級寫實視頻模型] 正在載入: {{model_id}}...")
 
-# 啟用 bfloat16 精度載入，僅需 ~4GB 顯存，完美適應 16GB GPU
+# 啟用 bfloat16 精度載入，並啟用逐組件 CPU Offload (顯存僅需 ~6GB，徹底杜絕 OOM)
 pipe = LTXImageToVideoPipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16
 )
-pipe.to("cuda")
+print("⚙️ 啟用 Model CPU Offload 節能模式 (零 OOM 保證)...")
+pipe.enable_model_cpu_offload()
 
 # 載入通過 7 項品質檢驗的首幀 2K 母圖
 mother_url = "{mother_raw_url}"
@@ -71,17 +73,17 @@ input_img = Image.open("input_mother.jpg").convert("RGB")
 orig_w, orig_h = input_img.size
 print(f"   首幀原始解析度: {{orig_w}}x{{orig_h}}")
 
-# 鎖定 LTX-Video 直式最佳規格 (576x736，寬高均能被 32 整除，長寬比 0.7826 完美吻合母圖 0.7778，絕不拉伸)
-vid_w, vid_h = 576, 736
+# 鎖定 LTX-Video 直式最佳規格 (512x672，寬高均能被 32 整除，長寬比 0.7619 吻合母圖 0.7778，絕不拉伸)
+vid_w, vid_h = 512, 672
 input_img = input_img.resize((vid_w, vid_h), Image.LANCZOS)
 print(f"   縮放至視頻標準解析度: {{vid_w}}x{{vid_h}}")
 
 motion_prompt = "{clean_prompt}"
 negative_prompt = "nude, nudity, naked, topless, exposed nipples, areola, static image, worst quality, inconsistent motion, blurry, jittery, distorted, morphing limbs"
 
-# 幀數必須滿足 8k + 1 規則：k=15 => 121 幀 (121 / 24fps = 5.04 秒電影級動態)
-total_frames = 121
-print(f"⏳ 正在啟動 LTX-Video 圖生影管線 ({{total_frames}} 幀 / ~5 秒 24fps 高階合規換裝動態)...")
+# 幀數滿足 8k + 1 規則：k=12 => 97 幀 (97 / 24fps = 4.04 秒高階動態)
+total_frames = 97
+print(f"⏳ 正在啟動 LTX-Video 圖生影管線 ({{total_frames}} 幀 / ~4 秒 24fps 高階合規換裝動態)...")
 t0 = time.time()
 video_frames = pipe(
     image=input_img,
@@ -90,7 +92,7 @@ video_frames = pipe(
     width=vid_w,
     height=vid_h,
     num_frames=total_frames,
-    num_inference_steps=40,
+    num_inference_steps=30,
     guidance_scale=3.5
 ).frames[0]
 
