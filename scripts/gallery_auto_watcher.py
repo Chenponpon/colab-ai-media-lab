@@ -12,9 +12,24 @@ if sys.stdout.encoding != "utf-8":
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from scripts.prompt_randomizer import build_gallery_html
+from scripts.auto_evaluator import generate_audit_report
 
 OUTPUTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outputs"))
 DOWNLOADS_DIR = os.path.expanduser("~/Downloads")
+
+def auto_audit_batches():
+    if not os.path.exists(OUTPUTS_DIR):
+        return
+    for item in os.listdir(OUTPUTS_DIR):
+        batch_path = os.path.join(OUTPUTS_DIR, item)
+        if os.path.isdir(batch_path) and item.startswith("run_"):
+            audit_file = os.path.join(batch_path, "audit_report.json")
+            if not os.path.exists(audit_file):
+                # 檢查是否有圖片
+                imgs = [f for f in os.listdir(batch_path) if f.lower().endswith((".jpg", ".png", ".jpeg")) and not f.endswith("_recipe.json")]
+                if imgs:
+                    print(f"[Auto-Audit] 🔍 偵測到新批次 {item}，自動執行 AI 審核並生成 audit_report.json...")
+                    generate_audit_report(batch_path)
 
 def get_state(path):
     state = {}
@@ -60,6 +75,7 @@ def check_colab_downloads():
 def main():
     print(f"[Watcher] 開始即時監控 outputs 目錄：{OUTPUTS_DIR}")
     print(f"[Auto-Sync] Colab 下載無縫自動攔截同步已啟動：{DOWNLOADS_DIR} ➔ {OUTPUTS_DIR}")
+    auto_audit_batches()
     build_gallery_html(OUTPUTS_DIR)
     prev_state = get_state(OUTPUTS_DIR)
     
@@ -67,6 +83,7 @@ def main():
         time.sleep(2.0)
         # 1. 檢查 Colab 瀏覽器自動下載並無縫搬移
         if check_colab_downloads():
+            auto_audit_batches()
             build_gallery_html(OUTPUTS_DIR)
             prev_state = get_state(OUTPUTS_DIR)
             continue
@@ -74,8 +91,9 @@ def main():
         # 2. 檢查 outputs 本地目錄變更
         curr_state = get_state(OUTPUTS_DIR)
         if curr_state != prev_state:
-            print("[Watcher] 偵測到 outputs 資料夾變更，正在自動更新 gallery_index.html...")
+            print("[Watcher] 偵測到 outputs 資料夾變更，正在自動更新審核與 gallery_index.html...")
             try:
+                auto_audit_batches()
                 build_gallery_html(OUTPUTS_DIR)
                 print("[Watcher] gallery_index.html 已自動更新完畢！")
             except Exception as e:

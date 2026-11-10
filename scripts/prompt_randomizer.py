@@ -25,11 +25,11 @@ CORE_PERSONA = (
 # 9) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
 # 10) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
 DEFAULT_NEGATIVE_PROMPT = (
-    "extra heads, extra faces, extra persons, 4 persons, 5 persons, more than 3 persons, "
+    "((4 persons:1.6)), ((four women:1.6)), ((more than 3 persons:1.6)), extra heads, extra faces, extra persons, 5 persons, "
+    "((small breasts:1.5)), ((flat chest:1.5)), ((A-cup:1.4)), ((B-cup:1.4)), ((C-cup:1.3)), modest bust, petite breasts, "
     "fat, chubby, overweight, flabby, thick arms, fat arms, thick waist, thick legs, plus-size, obese, bulky, "
     "muscular, bodybuilder, buff, ripped, six-pack abs, broad masculine shoulders, masculine physique, manly, "
     "skinny, bony, visible ribs, malnourished, gaunt, hollow cheeks, "
-    "small breasts, flat chest, modest bust, petite breasts, "
     "dark skin, tanned skin, brown skin, dark complexion, sunburn, bronze skin, dusky, dark tone, "
     "asymmetrical eyes, crooked eyes, misaligned pupils, crossed eyes, distorted mouth, crooked smile, crooked lips, "
     "porcelain, plastic skin, silicone skin, smooth skin, airbrushed, mannequin, wax figure, beauty filter, doll, cgi, 3d render, cartoon, anime, over-smoothed skin, "
@@ -244,13 +244,18 @@ def generate_diversified_prompt(seed=None, **kwargs):
             "category": att["category"]
         })
 
-    # 控制在 ~68 tokens 內，強調：三人不同混血面孔、大自然軟F罩杯深事業線、透膚蕾絲連身衣遮點、微觀皮膚毛孔、清晰端正五官、清晰臥室白床單/榻榻米鏡面背景
+    # 控制在 ~70 tokens 內，關鍵字前置以最大化 CLIP 空間注意力：
+    # 1) 人數錨定 (剛好 3 人，嚴禁 4 人)
+    # 2) 姿勢前置 (趴姿撐肘 / 仰躺 / 側臥，重力自然擠壓胸部)
+    # 3) 身材精準雙向夾擊 (四肢極致纖細精實 + 重磅天然柔軟 F 罩杯巨乳深溝)
+    # 4) 白皙冷白牛奶肌 + 真人微毛孔
     clip_short_prompt = (
-        f"Intimate indoor RAW photo of 3 distinct 20yo French-Vietnamese mixed-race women with completely different unique faces, "
+        f"Intimate indoor RAW boudoir photo of ((exactly three distinct 20yo French-Vietnamese women only:1.4)), "
+        f"{pose['short_en']}, ((huge voluptuous natural heavy soft F-cup breasts:1.45)), ((prominent deep cleavage:1.4)), "
+        f"slender toned limbs, slim graceful arms, tiny narrow waist, flat toned stomach, "
         f"wearing deep-V sheer mesh floral lace lingerie bodysuits in {short_color_list} (lace covering apex, non-nude), "
-        f"extremely fair pale milk-white skin tone with subtle rosy flush, authentic unretouched skin, visible microscopic skin pores, fine epidermal texture, natural skin creases, clear symmetrical eyes, "
-        f"slender toned limbs, tiny narrow waist, curvy hourglass body, ((voluptuous large natural heavy soft F-cup breasts:1.4)), ((prominent deep cleavage:1.3)), (plump full bust:1.3), "
-        f"{pose['short_en']} {bg['short_en']}."
+        f"extremely fair pale milk-white skin tone with subtle rosy flush, visible microscopic skin pores, fine epidermal texture, clear symmetrical eyes, "
+        f"{bg['short_en']}."
     )
 
     full_prompt = (
