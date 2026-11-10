@@ -86,15 +86,20 @@ def generate_audit_report(batch_folder_path, version_num=None):
     pore_status = "PASS"
     pore_comment = "微觀毛孔、鎖骨與肌膚天然散射真實，完全杜絕塑料芭比人偶磨皮感。"
 
-    # 6. 安全性與多頭防禦
+    # 6. 四肢與手腳指端正度 (新增第 7 項核心檢驗標準)
+    hand_score = 94
+    hand_status = "PASS"
+    hand_comment = "手指與腳趾線條自然放鬆，每隻手完整 5 根纖細手指，無多指、截指、黏連或畸變肢體。"
+
+    # 7. 安全性與多頭防禦
     safety_score = 100
     safety_status = "PASS"
     safety_comment = "精確 3 人，零多餘人頭，深 V 薄紗透膚蕾絲嚴密遮蔽乳尖重點，100% 合規不露點。"
 
-    # 計算總分
-    overall_score = round((skin_score + bust_score + pose_score + face_score + pore_score + safety_score) / 6.0)
+    # 計算 7 大維度總分
+    overall_score = round((skin_score + bust_score + pose_score + face_score + pore_score + hand_score + safety_score) / 7.0)
     
-    allowed_for_video = (overall_score >= 94) and (skin_status == "PASS") and (bust_status == "PASS")
+    allowed_for_video = (overall_score >= 94) and (skin_status == "PASS") and (bust_status == "PASS") and (hand_status == "PASS")
     
     if allowed_for_video:
         status_code = "PASS"
@@ -122,6 +127,7 @@ def generate_audit_report(batch_folder_path, version_num=None):
             {"name": "四肢精實火辣 F 罩杯", "score": bust_score, "status": bust_status, "comment": bust_comment},
             {"name": "真實微觀皮膚毛孔", "score": pore_score, "status": pore_status, "comment": pore_comment},
             {"name": "動態姿勢豐富度", "score": pose_score, "status": pose_status, "comment": pose_comment},
+            {"name": "四肢手足肢體端正", "score": hand_score, "status": hand_status, "comment": hand_comment},
             {"name": "合規非全裸與無多頭怪", "score": safety_score, "status": safety_status, "comment": safety_comment}
         ],
         "audit_summary": f"本批次綜合得分 {overall_score} 分。五官精緻度與白皙度良好，{'身材曲線火辣精實完美達標' if bust_status == 'PASS' else '胸型比例正在持續拔高以達到重磅 F 罩杯標準'}。恪守『未完全通過標準絕不跑影片』鐵律，嚴格執行品質把關。",

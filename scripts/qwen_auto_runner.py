@@ -42,11 +42,12 @@ from diffusers import QwenImage21Pipeline
 model_id = "Qwen/Qwen-Image-2.1-Turbo"
 print(f"💎 [新世代 MMDiT 挑戰者] 正在載入頂級通義千問影像模型: {{model_id}}...")
 
-# 啟用 CPU offload 確保 16GB 顯存毫無壓力
+# 啟用逐層序列化 CPU Offload (Sequential Offload)，確保 16GB 顯存零負擔 (峰值僅 4~6GB)
+print("⚙️ 啟用逐層序列化 CPU Offload (Sequential CPU Offload)...")
 pipe = QwenImage21Pipeline.from_pretrained(
     model_id, torch_dtype=torch.bfloat16
 )
-pipe.enable_model_cpu_offload()
+pipe.enable_sequential_cpu_offload()
 
 image_times = []
 image_peak_vram = 0.0
@@ -65,10 +66,11 @@ for i in range(num_imgs):
     t0 = time.time()
     gen = torch.Generator("cuda").manual_seed(recipe["seed"])
     
-    # Qwen-Image 2.1-Turbo 8-12 步超速收斂，原生支援超長自然語言語義
-    print(f"🎨 [Qwen-Image 生成中 #{{i+1}}/4] Seed: {{recipe['seed']}} ...")
+    # 徹底釋放 Qwen-Image-2.1 的 Qwen3-VL 多模態大語言解析力：
+    # 絕不再被 77-Token 限制！直接注入包含 3 位女孩完整五官、髮型、微觀毛孔、蕾絲雕花、趴姿深溝與電影級光影的 400+ 字全細節 Full Prompt！
+    print(f"🎨 [Qwen-Image 全細節長文本生成中 #{{i+1}}/4] Seed: {{recipe['seed']}} ...")
     base_img = pipe(
-        prompt=recipe["clip_short_prompt"],
+        prompt=recipe["full_prompt"],
         num_inference_steps=12,
         true_cfg_scale=1.0,
         generator=gen
