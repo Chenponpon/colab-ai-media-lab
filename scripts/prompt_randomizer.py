@@ -4,9 +4,10 @@ import time
 import random
 import shutil
 
-# ==================== 1. 絕對鎖定的核心人設 (四肢纖細精實、沙漏極致火辣、極致冷白牛奶肌、自然重磅柔軟 F 罩杯大胸深事業線) ====================
+# ==================== 1. 絕對鎖定的核心人設 (四肢纖細精實、沙漏極致火辣、極致冷白牛奶肌、自然重磅柔軟 F 罩杯大胸深事業線、完整全身身形絕不缺肢) ====================
 CORE_PERSONA = (
-    "Intimate waist-up boudoir photo of three distinct breathtakingly gorgeous 20yo French-Vietnamese mixed-race Eurasian beauties with unique angelic faces, "
+    "Full-body high-fashion boudoir editorial photo of three distinct breathtakingly gorgeous 20yo French-Vietnamese mixed-race Eurasian beauties with unique angelic faces, "
+    "gracefully reclining with complete visible posture, slender hips and toned legs, "
     "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace artfully covering bust apex, non-nude), "
     "extremely fair pale luminous milk-white skin tone, healthy soft rosy cheeks, authentic tender skin texture with visible micro-pores, "
     "slender toned limbs, slim graceful arms, delicate collarbones, flat toned stomach, tiny narrow waist, "
@@ -24,8 +25,10 @@ CORE_PERSONA = (
 # 8) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
 # 9) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
 # 10) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
+# 11) 嚴格封鎖下半身消失、半身截斷、懸空身體 (missing lower body, missing legs, floating torso, severed body, cropped torso, half body)
 DEFAULT_NEGATIVE_PROMPT = (
     "nude, topless, naked, exposed nipples, areola, "
+    "missing legs, missing lower body, floating torso, severed body, half body, cropped hips, "
     "fat, chubby, obese, flabby, thick arms, muscular, bodybuilder, "
     "flat chest, small breasts, "
     "4 persons, extra heads, extra faces, extra limbs, "
@@ -148,9 +151,9 @@ LINGERIE_COLORS = [
 
 POSES_AND_INTERACTIONS = [
     {
-        "zh": "【趴姿撐肘性感特寫】趴在純白柔軟床單上、雙肘自然撐在羽絨枕頭上微托下巴，胸口受重力自然微擠壓展現傲人重磅 F 罩杯深邃事業線，抬眸甜美看鏡頭",
-        "short_en": "lying prone on white bed propped on elbows, deep cleavage compressed against mattress, looking up",
-        "en": "sensual prone pose lying on their stomachs on plush white bedsheets, propped up gracefully on their elbows and forearms, soft breasts naturally compressed against the mattress creating dramatic deep F-cup cleavage, looking up captivatingly into the camera with soft alluring smiles"
+        "zh": "【趴姿撐肘優雅全身】趴在純白柔軟床單上、雙肘自然撐在羽絨枕頭上微托下巴，完整身形與修長雙腿自然向後延伸平放於床上，身形完整無遮擋，胸口受重力自然微擠壓展現傲人重磅 F 罩杯深邃事業線，抬眸甜美看鏡頭",
+        "short_en": "full body lying prone on white bed propped on elbows, complete anatomy with slender hips and legs extended back on bed, looking up",
+        "en": "full length prone pose lying gracefully on their stomachs on plush white bedsheets, propped up gracefully on their elbows and forearms, complete body clearly visible with slender hips and toned legs extended naturally back along the linen bed, continuous full anatomy with zero missing lower body, soft breasts naturally compressed against the mattress creating dramatic deep F-cup cleavage, looking up captivatingly into the camera with soft alluring smiles"
     },
     {
         "zh": "【正面仰躺親密特寫】親密並排正面仰躺在純白羽絨床單上，雙手自然舒展搭在枕邊，長髮絲滑散開在白色枕面上，傲人 F 罩杯自然柔軟微溢，直視鏡頭",
@@ -177,8 +180,8 @@ POSES_AND_INTERACTIONS = [
 BACKGROUNDS_AND_LIGHTING = [
     {
         "zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡清晰反射美背與全身曲線 ＋ 障子紙窗自然柔光（原始 Prompt 場景）",
-        "short_en": "in a Japanese washitsu tatami room with a large mirror behind them reflecting their backs, shoji window light",
-        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them clearly reflecting their full backs and bodies, natural window light from shoji screens"
+        "short_en": "in a Japanese washitsu tatami room with a large mirror behind them reflecting their complete bodies from shoulders to legs, shoji window light",
+        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them clearly reflecting their complete backs, hips, and full legs from shoulders down to feet, natural window light from shoji screens"
     },
     {
         "zh": "巴黎極簡純白床單臥室 ＋ 暖白牆面與側邊柔和晨光（完全對齊 ref_1 & ref_2 參考圖場景）",

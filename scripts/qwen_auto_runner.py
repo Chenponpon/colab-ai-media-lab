@@ -52,10 +52,10 @@ pipe.enable_sequential_cpu_offload()
 image_times = []
 image_peak_vram = 0.0
 human_ts = time.strftime("%Y-%m-%d %H:%M:%S")
-num_imgs = 4
+num_imgs = 3
 
 # 固定種子清單進行嚴格 1:1 橫向對比
-fixed_seeds = {identical_seeds or [42424242, 88888888, 12345678, 99999999]}
+fixed_seeds = {identical_seeds or [81524489, 13838649, 99346877]}
 
 for i in range(num_imgs):
     curr_seed = fixed_seeds[i] if i < len(fixed_seeds) else None
@@ -66,11 +66,13 @@ for i in range(num_imgs):
     t0 = time.time()
     gen = torch.Generator("cuda").manual_seed(recipe["seed"])
     
-    # 徹底釋放 Qwen-Image-2.1 的 Qwen3-VL 多模態大語言解析力：
-    # 絕不再被 77-Token 限制！直接注入包含 3 位女孩完整五官、髮型、微觀毛孔、蕾絲雕花、趴姿深溝與電影級光影的 400+ 字全細節 Full Prompt！
-    print(f"🎨 [Qwen-Image 全細節長文本生成中 #{{i+1}}/4] Seed: {{recipe['seed']}} ...")
+    # 鎖定原生直式 7:9 比例 (896x1152)，與 1792x2304 保持 100% 嚴格等比例，徹底消除人物縱向拉伸畸變
+    native_w, native_h = 896, 1152
+    print(f"🎨 [Qwen-Image 全身/高密度無畸變生成中 #{{i+1}}/{{num_imgs}}] Seed: {{recipe['seed']}} ({{native_w}}x{{native_h}}) ...")
     base_img = pipe(
         prompt=recipe["full_prompt"],
+        width=native_w,
+        height=native_h,
         num_inference_steps=12,
         true_cfg_scale=1.0,
         generator=gen
@@ -80,10 +82,10 @@ for i in range(num_imgs):
     if base_img.mode != "RGB":
         base_img = base_img.convert("RGB")
 
-    # 無損超取樣至 2K 超清規格
-    target_w, target_h = 1440, 1850
+    # 嚴格等比例雙倍超採樣 (1792x2304) ＋ 高頻細節強化 Unsharp Mask，徹底消除模糊感，釋放微觀毛孔與蕾絲纖維細節
+    target_w, target_h = int(base_img.width * 2), int(base_img.height * 2) # 1792 x 2304
     img_2k = base_img.resize((target_w, target_h), Image.LANCZOS)
-    img_2k = img_2k.filter(ImageFilter.UnsharpMask(radius=1.2, percent=45, threshold=3))
+    img_2k = img_2k.filter(ImageFilter.UnsharpMask(radius=1.5, percent=55, threshold=2))
     if img_2k.mode != "RGB":
         img_2k = img_2k.convert("RGB")
 
@@ -96,14 +98,16 @@ for i in range(num_imgs):
     recipe["model_engine"] = "Qwen-Image-2.1-Turbo (MMDiT + Qwen3-VL 語義理解)"
     recipe["elapsed_sec"] = dt
     recipe["peak_vram_gb"] = pk
-    recipe["resolution"] = f"{{target_w}}x{{target_h}} (2K Enhanced)"
+    recipe["resolution"] = f"{{target_w}}x{{target_h}} (2K Ultra-Density 嚴格等比例)"
 
     fname = f"portrait_{{i+1}}.jpg"
     rname = f"portrait_{{i+1}}_recipe.json"
-    img_2k.save(fname, quality=95)
+    # 以最高畫質 98 保存，關閉色彩子採樣 (subsampling=0)，確保真 4:4:4 色彩深度與細膩像素密度 (單張約 3~6MB)
+    img_2k.save(fname, format="JPEG", quality=98, subsampling=0)
     with open(rname, "w", encoding="utf-8") as rf:
         json.dump(recipe, rf, ensure_ascii=False, indent=2)
-    print(f"   ➔ 已產出 {{fname}} (耗時: {{dt}}s, 顯存: {{pk}} GB)")
+    file_kb = round(os.path.getsize(fname) / 1024, 1)
+    print(f"   ➔ 已產出 {{fname}} (耗時: {{dt}}s, 顯存: {{pk}} GB, 體積: {{file_kb}} KB)")
 
 bench = {{
     "engine": "Qwen-Image-2.1-Turbo (MMDiT + Qwen3-VL)",
@@ -226,7 +230,7 @@ def push_and_run_qwen_gpu(identical_seeds=None):
         json.dump(meta, f, indent=2)
 
     print(f"🚀 正在推送『Qwen-Image-2.1-Turbo A/B 橫向對比實測』至 Kaggle 雲端 GPU ({kernel_id})...")
-    res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir, "-t", "1800"], capture_output=True, text=True)
+    res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir, "-t", "3600"], capture_output=True, text=True)
     print(res.stdout)
     if res.returncode != 0:
         print(f"⚠️ 推送訊息: {res.stderr}")
@@ -236,5 +240,5 @@ def push_and_run_qwen_gpu(identical_seeds=None):
 
 
 if __name__ == "__main__":
-    seeds_v9 = [81524489, 13838649, 99346877, 38912080]
+    seeds_v9 = [81524489, 13838649, 99346877]
     push_and_run_qwen_gpu(identical_seeds=seeds_v9)
