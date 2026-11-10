@@ -179,9 +179,9 @@ POSES_AND_INTERACTIONS = [
 
 BACKGROUNDS_AND_LIGHTING = [
     {
-        "zh": "日式傳統和室榻榻米 ＋ 背後大型全身鏡清晰反射美背與全身曲線 ＋ 障子紙窗自然柔光（原始 Prompt 場景）",
-        "short_en": "in a Japanese washitsu tatami room with a large mirror behind them reflecting their complete bodies from shoulders to legs, shoji window light",
-        "en": "on Japanese tatami mats in a traditional washitsu room with a large clear mirror behind them clearly reflecting their complete backs, hips, and full legs from shoulders down to feet, natural window light from shoji screens"
+        "zh": "日式傳統和室榻榻米 ＋ 障子紙窗柔和晨光 ＋ 極簡純白羽絨床單（清雅通透、乾淨光影無鏡面干擾）",
+        "short_en": "in a serene Japanese washitsu tatami room with shoji screens, soft natural window light on white bedding",
+        "en": "in a serene traditional Japanese washitsu tatami room on crisp white futon bedding, soft diffused morning sunlight filtering through paper shoji screens, clean minimalist wooden aesthetic with warm natural shadows"
     },
     {
         "zh": "巴黎極簡純白床單臥室 ＋ 暖白牆面與側邊柔和晨光（完全對齊 ref_1 & ref_2 參考圖場景）",
@@ -189,9 +189,9 @@ BACKGROUNDS_AND_LIGHTING = [
         "en": "on crisp white linen bedsheets in a minimalist sunlit bedroom against a warm off-white wall, soft diffused morning window light casting gentle shadows"
     },
     {
-        "zh": "北歐落地窗陽光臥室 ＋ 無框大型全身鏡反射背影 ＋ 黃金時刻柔光",
-        "short_en": "in a bright bedroom studio with a large full-length mirror reflecting their backs, golden-hour window light",
-        "en": "in a bright Scandinavian bedroom with floor-to-ceiling windows and a large full-length frameless mirror reflecting their backs, bathed in soft golden-hour sunlight"
+        "zh": "法式採光臥室 ＋ 純白歐式輕奢床單 ＋ 黃金時刻側光（柔美漫射無畸變）",
+        "short_en": "in a sun-drenched Parisian bedroom with tall French windows, golden morning light on white sheets",
+        "en": "in an elegant Parisian bedroom with tall floor-to-ceiling French windows, soft golden-hour morning sunlight washing over pristine white linen sheets, subtle artistic shadows"
     }
 ]
 

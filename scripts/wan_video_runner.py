@@ -18,30 +18,19 @@ from prompt_randomizer import build_gallery_html
 from video_evaluator import generate_video_audit_report
 
 
-def build_video_worker_notebook(source_image_name="portrait_2.jpg", motion_prompt=None, video_name="changing_clothes_video.mp4"):
+def build_video_worker_notebook(source_image_name="portrait_2.jpg", video_name="changing_clothes_video.mp4"):
     """
-    建置超高效、零 OOM 風險的 LTX-Video 2B DiT 圖生影 Worker Notebook。
-    模型體積僅 ~4GB，可在 16GB VRAM 雲端 GPU 上極速流暢運行（生成 121 幀 / ~5 秒 24fps 電影級換裝短片）。
+    建置 SVD-XT 1.1 (Stable Video Diffusion) 頂級肖像保真圖生影 Worker Notebook。
+    杜絕 DiT 的融臉與手部變形問題，以 576x1024 直式超清解析度生成零溶臉、零畸變的高階微動態短片。
     """
     mother_raw_url = f"https://raw.githubusercontent.com/Chenponpon/colab-ai-media-lab/main/assets/mother_images/{source_image_name}"
 
-    default_prompt = (
-        "Three young breathtakingly gorgeous French-Vietnamese Eurasian women sitting together on crisp white bed, "
-        "gracefully changing clothes, gently adjusting the delicate floral lace straps on their shoulders, "
-        "natural subtle chest breathing movement, soft alluring smiles at camera, photorealistic live-action motion, "
-        "8k quality, cinematic morning bedroom lighting."
-    )
-    motion_prompt = motion_prompt or default_prompt
-    clean_prompt = motion_prompt.replace('"', '\\"').replace("\n", " ")
-
     worker_code = f'''# =========================================================================
-# LTX-Video (Lightricks 2B DiT) 圖生影換裝視頻生成 Worker (首幀合格母圖對齊版)
+# SVD-XT 1.1 (Stable Video Diffusion) 高清無崩壞圖生影 Worker
 # =========================================================================
 import os, sys, io, time, gc, json, urllib.request
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import torch, psutil
-torch.backends.cuda.enable_flash_sdp(True)
-torch.backends.cuda.enable_mem_efficient_sdp(True)
 from PIL import Image
 
 gpu_count = torch.cuda.device_count() if torch.cuda.is_available() else 0
@@ -50,21 +39,22 @@ vram_gb = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2)
 ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
 print(f"✅ 硬體檢測完成 | GPU: {{gpu_name}} | 單卡 VRAM: {{vram_gb}} GB | System RAM: {{ram_gb}} GB")
 
-print("📦 正在安裝與確認 LTX-Video 視頻生成專用依賴庫...")
+print("📦 正在安裝與確認 SVD-XT 視頻生成專用依賴庫...")
 import subprocess
 subprocess.run(["pip", "install", "-q", "diffusers>=0.41.0", "transformers>=5.17.0", "accelerate", "imageio[ffmpeg]"], check=False)
 
-from diffusers import LTXImageToVideoPipeline
+from diffusers import StableVideoDiffusionPipeline
 from diffusers.utils import export_to_video
 
-model_id = "Lightricks/LTX-Video"
-print(f"🎬 [新世代 2B DiT 頂級寫實視頻模型] 正在載入: {{model_id}}...")
+model_id = "stabilityai/stable-video-diffusion-img2vid-xt-1-1"
+print(f"🎬 [頂級肖像保真圖生影模型] 正在載入: {{model_id}}...")
 
-# 啟用 bfloat16 精度載入，並啟用逐組件 CPU Offload (顯存僅需 ~6GB，徹底杜絕 OOM)
-pipe = LTXImageToVideoPipeline.from_pretrained(
-    model_id, torch_dtype=torch.bfloat16
+# 啟用 FP16 精度與逐組件 CPU Offload，顯存僅需 ~6GB，零 OOM 且五官保真度極高
+pipe = StableVideoDiffusionPipeline.from_pretrained(
+    model_id, 
+    torch_dtype=torch.float16, 
+    variant="fp16"
 )
-print("⚙️ 啟用 Model CPU Offload 節能模式 (零 OOM 保證)...")
 pipe.enable_model_cpu_offload()
 
 # 載入通過 7 項品質檢驗的首幀 2K 母圖
@@ -75,44 +65,40 @@ input_img = Image.open("input_mother.jpg").convert("RGB")
 orig_w, orig_h = input_img.size
 print(f"   首幀原始解析度: {{orig_w}}x{{orig_h}}")
 
-# 鎖定 LTX-Video 直式最佳規格 (448x576，寬高均能被 32 整除，長寬比 0.7778 精準完美吻合母圖 896x1152，絕不拉伸)
-vid_w, vid_h = 448, 576
+# 鎖定 SVD-XT 原生直式超清規格 (576x1024，長寬比 0.5625，高度契合直式人物視角)
+vid_w, vid_h = 576, 1024
 input_img = input_img.resize((vid_w, vid_h), Image.LANCZOS)
 print(f"   縮放至視頻標準解析度: {{vid_w}}x{{vid_h}}")
 
-motion_prompt = "{clean_prompt}"
-negative_prompt = "nude, nudity, naked, topless, exposed nipples, areola, static image, worst quality, inconsistent motion, blurry, jittery, distorted, morphing limbs"
+generator = torch.manual_seed(42)
 
-# 幀數滿足 8k + 1 規則：k=8 => 65 幀 (65 / 16fps = 4.06 秒高階動態)
-total_frames = 65
-target_fps = 16
-print(f"⏳ 正在啟動 LTX-Video 圖生影管線 ({{total_frames}} 幀 / ~4 秒 {{target_fps}}fps 高階合規換裝動態)...")
+print("⏳ 正在啟動 SVD-XT 高保真圖生影管線 (25 幀 / 零溶臉零畸變電影級微動態)...")
 t0 = time.time()
 video_frames = pipe(
-    image=input_img,
-    prompt=motion_prompt,
-    negative_prompt=negative_prompt,
-    width=vid_w,
+    input_img,
     height=vid_h,
-    num_frames=total_frames,
-    num_inference_steps=25,
-    guidance_scale=3.5
+    width=vid_w,
+    num_frames=25,
+    decode_chunk_size=4,
+    motion_bucket_id=45,
+    noise_aug_strength=0.02,
+    generator=generator
 ).frames[0]
 
 dt = round(time.time() - t0, 2)
 print(f"✨ 視頻生成完畢！耗時: {{dt}} 秒，正在輸出 MP4...")
 
 out_vid_name = "{video_name}"
-export_to_video(video_frames, out_vid_name, fps=target_fps)
+export_to_video(video_frames, out_vid_name, fps=12)
 vid_sz_mb = round(os.path.getsize(out_vid_name) / (1024 * 1024), 2)
 print(f"🎉 影片已成功輸出為 {{out_vid_name}} (體積: {{vid_sz_mb}} MB)！")
 
 bench = {{
-    "engine": "Lightricks/LTX-Video (2B DiT Image-to-Video)",
+    "engine": "Stable Video Diffusion (SVD-XT 1.1)",
     "gpu": gpu_name,
     "elapsed_sec": dt,
-    "frames": total_frames,
-    "fps": target_fps,
+    "frames": 25,
+    "fps": 12,
     "resolution": f"{{vid_w}}x{{vid_h}}",
     "video_file": out_vid_name,
     "file_size_mb": vid_sz_mb
@@ -149,7 +135,7 @@ with open("video_benchmark_report.json", "w", encoding="utf-8") as bf:
     nb_path = os.path.join(REPO_DIR, "auto_worker_wan.ipynb")
     with open(nb_path, "w", encoding="utf-8") as f:
         json.dump(nb, f, ensure_ascii=False, indent=2)
-    print(f"✅ LTX-Video 視頻 Worker Notebook 已就緒: {nb_path} (體積: {round(os.path.getsize(nb_path)/1024, 2)} KB)")
+    print(f"✅ SVD-XT 視頻 Worker Notebook 已就緒: {nb_path} (體積: {round(os.path.getsize(nb_path)/1024, 2)} KB)")
     return nb_path
 
 
@@ -180,13 +166,13 @@ def monitor_and_download_video(target_batch_dir, video_name="changing_clothes_vi
         time.sleep(15)
 
 
-def push_and_run_video(source_image_name, target_batch_dir, motion_prompt=None, video_name="changing_clothes_video.mp4"):
-    nb_path = build_video_worker_notebook(source_image_name=source_image_name, motion_prompt=motion_prompt, video_name=video_name)
+def push_and_run_video(source_image_name, target_batch_dir, video_name="changing_clothes_video.mp4"):
+    nb_path = build_video_worker_notebook(source_image_name=source_image_name, video_name=video_name)
 
-    # Git 同步 (包含 assets/mother_images/ 中的高階首幀母圖)
+    # Git 同步
     git_exe = r"C:\Users\user\AppData\Local\Programs\MinGit\cmd\git.exe"
     subprocess.run([git_exe, "-C", REPO_DIR, "add", "assets/", "auto_worker_wan.ipynb", "scripts/"], check=False)
-    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(video): deploy LTX-Video 2B DiT worker with mother image"], check=False)
+    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(video): deploy SVD-XT 1.1 portrait video worker"], check=False)
     subprocess.run([git_exe, "-C", REPO_DIR, "push", "origin", "main"], check=False)
 
     username = "chenponpon"
@@ -218,7 +204,7 @@ def push_and_run_video(source_image_name, target_batch_dir, motion_prompt=None, 
     with open(os.path.join(build_dir, "kernel-metadata.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
 
-    print(f"🚀 正在推送『LTX-Video 2B DiT 換裝動態視頻』至 Kaggle 雲端 GPU ({kernel_id})...")
+    print(f"🚀 正在推送『SVD-XT 1.1 高保真換裝動態視頻』至 Kaggle 雲端 GPU ({kernel_id})...")
     res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir, "-t", "3600"], capture_output=True, text=True)
     print(res.stdout)
     if res.returncode != 0:
@@ -231,12 +217,4 @@ def push_and_run_video(source_image_name, target_batch_dir, motion_prompt=None, 
 if __name__ == "__main__":
     latest_run = os.path.join(OUT_DIR, "run_20261110_100246_qwen21")
     best_img_name = "portrait_2.jpg"
-    recipe_file = os.path.join(latest_run, "portrait_2_recipe.json")
-    
-    motion_prompt = None
-    if os.path.exists(recipe_file):
-        with open(recipe_file, "r", encoding="utf-8") as f:
-            rdata = json.load(f)
-            motion_prompt = rdata.get("video_motion_prompt")
-
-    push_and_run_video(best_img_name, latest_run, motion_prompt=motion_prompt)
+    push_and_run_video(best_img_name, latest_run)
