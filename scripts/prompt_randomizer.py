@@ -329,6 +329,60 @@ def build_gallery_html(output_dir):
                 <strong>🎬 圖生影引擎：</strong><code>{bdata.get('video_model')}</code> (均速 <code>{bdata.get('avg_video_time_sec')} 秒/支</code>)
             </div>"""
 
+        audit_path = os.path.join(rdir, "audit_report.json")
+        audit_html = ""
+        if os.path.exists(audit_path):
+            try:
+                with open(audit_path, "r", encoding="utf-8") as af:
+                    adata = json.load(af)
+                
+                st = adata.get("status", "NEEDS_ITERATION")
+                status_color = "#34a853" if st == "PASS" else ("#ea4335" if st == "FAILED" else "#fbbc04")
+                status_bg = "rgba(52, 168, 83, 0.12)" if st == "PASS" else ("rgba(234, 67, 53, 0.12)" if st == "FAILED" else "rgba(251, 188, 4, 0.12)")
+                
+                crit_rows = ""
+                for c in adata.get("criteria", []):
+                    c_badge = "<span style='color:#34a853;font-weight:bold;'>✅ 通過</span>" if c.get("status") == "PASS" else ("<span style='color:#ea4335;font-weight:bold;'>❌ 不合格</span>" if c.get("status") == "FAIL" else "<span style='color:#fbbc04;font-weight:bold;'>⚠️ 待強化</span>")
+                    crit_rows += f"""
+                    <tr>
+                        <td style='font-weight:bold; width:220px; color:#e8eaed;'>{c.get('name')}</td>
+                        <td style='width:80px; color:#8ab4f8; font-weight:bold;'>{c.get('score')} 分</td>
+                        <td style='width:90px;'>{c_badge}</td>
+                        <td style='color:#bdc1c6; font-size:13px;'>{c.get('comment')}</td>
+                    </tr>"""
+
+                video_lock_badge = "<span style='background:#188038; color:#fff; font-size:13px; font-weight:bold; padding:4px 12px; border-radius:20px;'>🟢 100% 達標 (已授權解鎖圖生影)</span>" if adata.get("allowed_for_video") else "<span style='background:#d93025; color:#fff; font-size:13px; font-weight:bold; padding:4px 12px; border-radius:20px;'>🔒 圖片未完全達標 (嚴禁跑影片 / 自主優化中)</span>"
+
+                audit_html = f"""
+                <div style='background: {status_bg}; border: 1.5px solid {status_color}; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px;'>
+                    <div style='display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;'>
+                        <h3 style='margin:0; color:{status_color}; display:flex; align-items:center; gap:8px;'>
+                            🔍 AI 自主迭代審核與品質質檢報告 — 批次評分：<span style='font-size:24px; font-weight:bold;'>{adata.get('overall_score', 0)} / 100</span>
+                        </h3>
+                        {video_lock_badge}
+                    </div>
+                    <p style='margin: 6px 0 14px 0; font-size:14.5px; font-weight:bold; color:#f1f3f4;'>
+                        當前狀態判定：{adata.get('status_zh')}
+                    </p>
+                    <table style='margin-bottom:14px; background:rgba(0,0,0,0.3);'>
+                        <thead>
+                            <tr style='background:rgba(255,255,255,0.06);'>
+                                <th>檢驗核心指標</th>
+                                <th>得分</th>
+                                <th>判定</th>
+                                <th>AI 審視細部評語</th>
+                            </tr>
+                        </thead>
+                        <tbody>{crit_rows}</tbody>
+                    </table>
+                    <div style='background:rgba(0,0,0,0.35); padding:12px 16px; border-radius:8px; font-size:13.5px; line-height:1.6;'>
+                        <strong>📝 審核總評：</strong>{adata.get('audit_summary')}<br>
+                        <strong>🚀 下一步自主決策：</strong><span style='color:#8ab4f8;'>{adata.get('next_action')}</span>
+                    </div>
+                </div>"""
+            except Exception as e:
+                audit_html = f"<div style='color:#ea4335;'>⚠️ 讀取審核報告出錯: {e}</div>"
+
         video_cards = ""
         for v_file in videos:
             rel_v = f"{run_name}/{v_file}"
@@ -425,6 +479,7 @@ def build_gallery_html(output_dir):
         <div class="batch-section">
             <h2>📂 批次資料夾：<code>outputs/{run_name}/</code> （{'⏳ 雲端執行中...' if total_media == 0 else f'共 {len(cards_html)} 張照片、{len(videos)} 支影片'}）</h2>
             {bench_html}
+            {audit_html}
             {f'<div class="bench-box" style="border-color:#fbbc04;background:#2b2618;">⏳ <strong>狀態：</strong>此批次目前正在雲端執行中，完成後將自動填入下方內容。</div>' if total_media == 0 else ''}
             {f'<h3>🎬 本批次圖生影動態成果</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
             {f'<h3>📸 本批次照片展示</h3>{"".join(cards_html)}' if cards_html else ''}
