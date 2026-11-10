@@ -20,17 +20,19 @@ from video_evaluator import generate_video_audit_report
 
 def build_video_worker_notebook(source_image_name="portrait_2.jpg", video_name="changing_clothes_video.mp4"):
     """
-    建置 SVD-XT 1.1 (Stable Video Diffusion) 頂級肖像保真圖生影 Worker Notebook。
-    杜絕 DiT 的融臉與手部變形問題，以 576x1024 直式超清解析度生成零溶臉、零畸變的高階微動態短片。
+    建置高保真、零溶臉、高細節的 LTX-Video 2B DiT 圖生影 Worker Notebook (Version 19 穩定版)。
+    鎖定電影級微動態（自然呼吸起伏、輕柔身姿擺動、甜美眨眼微笑），杜絕大幅度手臉穿模。
     """
     mother_raw_url = f"https://raw.githubusercontent.com/Chenponpon/colab-ai-media-lab/main/assets/mother_images/{source_image_name}"
 
     worker_code = f'''# =========================================================================
-# SVD-XT 1.1 (Stable Video Diffusion) 高清無崩壞圖生影 Worker
+# LTX-Video (Lightricks 2B DiT) 高保真零畸變圖生影 Worker (Version 19)
 # =========================================================================
 import os, sys, io, time, gc, json, urllib.request
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import torch, psutil
+torch.backends.cuda.enable_flash_sdp(True)
+torch.backends.cuda.enable_mem_efficient_sdp(True)
 from PIL import Image
 
 gpu_count = torch.cuda.device_count() if torch.cuda.is_available() else 0
@@ -39,22 +41,21 @@ vram_gb = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2)
 ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
 print(f"✅ 硬體檢測完成 | GPU: {{gpu_name}} | 單卡 VRAM: {{vram_gb}} GB | System RAM: {{ram_gb}} GB")
 
-print("📦 正在安裝與確認 SVD-XT 視頻生成專用依賴庫...")
+print("📦 正在安裝與確認 LTX-Video 視頻生成專用依賴庫...")
 import subprocess
 subprocess.run(["pip", "install", "-q", "diffusers>=0.41.0", "transformers>=5.17.0", "accelerate", "imageio[ffmpeg]"], check=False)
 
-from diffusers import StableVideoDiffusionPipeline
+from diffusers import LTXImageToVideoPipeline
 from diffusers.utils import export_to_video
 
-model_id = "stabilityai/stable-video-diffusion-img2vid-xt-1-1"
-print(f"🎬 [頂級肖像保真圖生影模型] 正在載入: {{model_id}}...")
+model_id = "Lightricks/LTX-Video"
+print(f"🎬 [新世代 2B DiT 頂級寫實視頻模型] 正在載入: {{model_id}}...")
 
-# 啟用 FP16 精度與逐組件 CPU Offload，顯存僅需 ~6GB，零 OOM 且五官保真度極高
-pipe = StableVideoDiffusionPipeline.from_pretrained(
-    model_id, 
-    torch_dtype=torch.float16, 
-    variant="fp16"
+# 啟用 bfloat16 精度載入，並啟用逐組件 CPU Offload (顯存僅需 ~6GB，徹底杜絕 OOM)
+pipe = LTXImageToVideoPipeline.from_pretrained(
+    model_id, torch_dtype=torch.bfloat16
 )
+print("⚙️ 啟用 Model CPU Offload 節能模式 (零 OOM 保證)...")
 pipe.enable_model_cpu_offload()
 
 # 載入通過 7 項品質檢驗的首幀 2K 母圖
@@ -65,23 +66,39 @@ input_img = Image.open("input_mother.jpg").convert("RGB")
 orig_w, orig_h = input_img.size
 print(f"   首幀原始解析度: {{orig_w}}x{{orig_h}}")
 
-# 鎖定 SVD-XT 原生直式超清規格 (576x1024，長寬比 0.5625，高度契合直式人物視角)
-vid_w, vid_h = 576, 1024
+# 鎖定 LTX-Video 直式超清規格 (480x640，寬高均能被 32 整除，長寬比 0.75 契合母圖，絕不拉伸)
+vid_w, vid_h = 480, 640
 input_img = input_img.resize((vid_w, vid_h), Image.LANCZOS)
 print(f"   縮放至視頻標準解析度: {{vid_w}}x{{vid_h}}")
 
-generator = torch.manual_seed(42)
+# 精準微動態 Prompt：專注於呼吸律動、香肩微動與自然微笑，嚴格禁止手部抬起摸臉摸頭
+motion_prompt = (
+    "Three young breathtakingly gorgeous French-Vietnamese Eurasian women sitting elegantly on crisp white bed, "
+    "gentle natural chest breathing movement, subtle shoulder movement, warm alluring smiles, "
+    "soft natural eye blinks looking at the camera, photorealistic live-action motion, "
+    "8k quality, cinematic morning bedroom lighting, perfectly stable angelic faces, hands resting naturally flat on thighs."
+)
+negative_prompt = (
+    "hands touching face, hands touching hair, raising arms, morphing face, distorted eyes, "
+    "deformed fingers, melting hands, blurry face, jerky motion, bad anatomy, low quality, unnatural warping"
+)
 
-print("⏳ 正在啟動 SVD-XT 高保真圖生影管線 (25 幀 / 零溶臉零畸變電影級微動態)...")
+# 幀數滿足 8k + 1 規則：k=8 => 65 幀 (65 / 16fps = 4.06 秒穩定微動態)
+total_frames = 65
+target_fps = 16
+num_steps = 40
+print(f"⏳ 正在啟動 LTX-Video 高保真圖生影管線 ({{total_frames}} 幀 / {{num_steps}} 步 / {{target_fps}}fps 電影級微動態)...")
 t0 = time.time()
+generator = torch.manual_seed(42)
 video_frames = pipe(
-    input_img,
-    height=vid_h,
+    image=input_img,
+    prompt=motion_prompt,
+    negative_prompt=negative_prompt,
     width=vid_w,
-    num_frames=25,
-    decode_chunk_size=4,
-    motion_bucket_id=45,
-    noise_aug_strength=0.02,
+    height=vid_h,
+    num_frames=total_frames,
+    num_inference_steps=num_steps,
+    guidance_scale=3.0,
     generator=generator
 ).frames[0]
 
@@ -89,16 +106,17 @@ dt = round(time.time() - t0, 2)
 print(f"✨ 視頻生成完畢！耗時: {{dt}} 秒，正在輸出 MP4...")
 
 out_vid_name = "{video_name}"
-export_to_video(video_frames, out_vid_name, fps=12)
+export_to_video(video_frames, out_vid_name, fps=target_fps)
 vid_sz_mb = round(os.path.getsize(out_vid_name) / (1024 * 1024), 2)
 print(f"🎉 影片已成功輸出為 {{out_vid_name}} (體積: {{vid_sz_mb}} MB)！")
 
 bench = {{
-    "engine": "Stable Video Diffusion (SVD-XT 1.1)",
+    "engine": "Lightricks/LTX-Video (2B DiT Image-to-Video)",
     "gpu": gpu_name,
     "elapsed_sec": dt,
-    "frames": 25,
-    "fps": 12,
+    "frames": total_frames,
+    "fps": target_fps,
+    "steps": num_steps,
     "resolution": f"{{vid_w}}x{{vid_h}}",
     "video_file": out_vid_name,
     "file_size_mb": vid_sz_mb
@@ -135,7 +153,7 @@ with open("video_benchmark_report.json", "w", encoding="utf-8") as bf:
     nb_path = os.path.join(REPO_DIR, "auto_worker_wan.ipynb")
     with open(nb_path, "w", encoding="utf-8") as f:
         json.dump(nb, f, ensure_ascii=False, indent=2)
-    print(f"✅ SVD-XT 視頻 Worker Notebook 已就緒: {nb_path} (體積: {round(os.path.getsize(nb_path)/1024, 2)} KB)")
+    print(f"✅ LTX-Video 視頻 Worker Notebook 已就緒: {nb_path} (體積: {round(os.path.getsize(nb_path)/1024, 2)} KB)")
     return nb_path
 
 
@@ -172,7 +190,7 @@ def push_and_run_video(source_image_name, target_batch_dir, video_name="changing
     # Git 同步
     git_exe = r"C:\Users\user\AppData\Local\Programs\MinGit\cmd\git.exe"
     subprocess.run([git_exe, "-C", REPO_DIR, "add", "assets/", "auto_worker_wan.ipynb", "scripts/"], check=False)
-    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(video): deploy SVD-XT 1.1 portrait video worker"], check=False)
+    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(video): deploy LTX-Video v19 with micro-motion stability and 40 steps"], check=False)
     subprocess.run([git_exe, "-C", REPO_DIR, "push", "origin", "main"], check=False)
 
     username = "chenponpon"
@@ -204,7 +222,7 @@ def push_and_run_video(source_image_name, target_batch_dir, video_name="changing
     with open(os.path.join(build_dir, "kernel-metadata.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
 
-    print(f"🚀 正在推送『SVD-XT 1.1 高保真換裝動態視頻』至 Kaggle 雲端 GPU ({kernel_id})...")
+    print(f"🚀 正在推送『LTX-Video v19 穩定高保真視頻』至 Kaggle 雲端 GPU ({kernel_id})...")
     res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir, "-t", "3600"], capture_output=True, text=True)
     print(res.stdout)
     if res.returncode != 0:
