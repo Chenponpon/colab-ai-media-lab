@@ -32,11 +32,11 @@ def generate_audit_report(batch_folder_path, version_num=None):
     model_engine = meta.get("model_engine", "")
 
     # 動態分析本批次參數與品質
-    is_f_cup_boosted = "F-cup breasts:1.4" in full_prompt or "F-cup breasts:1.5" in full_prompt
-    is_slender_limbs = "slender toned limbs" in full_prompt or "tiny narrow waist" in full_prompt
+    is_f_cup_boosted = "F-cup breasts" in full_prompt
+    is_slender_limbs = "slender toned limbs" in full_prompt or "tiny narrow waist" in full_prompt or "tiny wasp waist" in full_prompt
     is_milk_white = "milk-white" in full_prompt or "fair pale" in full_prompt
     is_slider_lora = "Asian Slider LoRA" in model_engine or "slider.asian" in full_prompt
-    is_dynamic_pose = any(p in full_prompt for p in ["prone", "side-lying", "on their backs", "leaning forward"])
+    is_dynamic_pose = any(p in full_prompt for p in ["prone", "side-lying", "on their backs", "leaning forward", "on backs", "bed edge"])
 
     # 1. 膚色指標
     if is_slider_lora:
