@@ -148,19 +148,29 @@ LINGERIE_COLORS = [
 
 POSES_AND_INTERACTIONS = [
     {
-        "zh": "三人親密依偎坐在純白床單上（腰部以上特寫），雙手自然輕撫身側，眼神甜美誘惑凝視鏡頭，展現深邃 F 罩杯事業線與白皙鎖骨",
-        "short_en": "intimate waist-up portrait sitting closely together on white bed, hands relaxed, showcasing deep F-cup cleavage",
-        "en": "intimate waist-up portrait of three women sitting closely together on crisp white bedsheets, leaning tenderly toward one another with captivating warm gazes at the camera, hands resting naturally at their sides, showcasing dramatic F-cup cleavage, soft natural breast curves, and radiant fair shoulders"
+        "zh": "【趴姿撐肘性感特寫】趴在純白柔軟床單上、雙肘自然撐在羽絨枕頭上微托下巴，胸口受重力自然微擠壓展現傲人重磅 F 罩杯深邃事業線，抬眸甜美看鏡頭",
+        "short_en": "lying prone on white bed propped up on elbows, dramatic natural F-cup breast cleavage compression, looking up alluringly",
+        "en": "sensual prone pose lying on their stomachs on plush white bedsheets, propped up gracefully on their elbows and forearms, soft breasts naturally compressed against the mattress creating dramatic deep F-cup cleavage, looking up captivatingly into the camera with soft alluring smiles"
     },
     {
-        "zh": "三人上半身親密貼近微傾，雙手自然垂放身前，柔和晨光灑在極致白皙透亮肌膚上，直視鏡頭微笑",
-        "short_en": "close waist-up portrait, three gorgeous women leaning together, hands visible, radiant fair skin",
-        "en": "close intimate waist-up composition of three beauties close together facing the camera, full upper bodies clearly visible, arms resting softly at their sides with clear fingers, soft window light highlighting their translucent milk-white skin and voluptuous soft F-cup curves"
+        "zh": "【正面仰躺親密特寫】親密並排正面仰躺在純白羽絨床單上，雙手自然舒展搭在枕邊，長髮絲滑散開在白色枕面上，傲人 F 罩杯自然柔軟微溢，直視鏡頭",
+        "short_en": "lying on their backs closely together on white bed, long hair spread on pillows, soft heavy F-cup curves, direct eye contact",
+        "en": "intimate overhead view of the three women lying comfortably on their backs closely together on soft white linen bedsheets, silky hair spread like a dark fan across white pillows, large natural soft F-cup breasts resting softly with deep natural cleavage, gazing alluringly directly at the camera"
     },
     {
-        "zh": "微倚靠在純白羽絨枕頭上（腰部以上特寫），雙手平放床單，微露甜美笑容直視鏡頭，凸顯精緻混血五官與傲人胸型",
-        "short_en": "intimate upper-body pose leaning back on pillows, hands on bedsheets, full F-cup cleavage",
-        "en": "intimate upper-body boudoir composition leaning gently back against plush white pillows, hands placed relaxed and flat on the linen, displaying breathtaking delicate Eurasian facial features, sparkling symmetrical eyes, and prominent natural soft heavy F-cup breasts with deep cleavage"
+        "zh": "【優雅側臥曼妙 S 曲線】優雅側臥在蓬鬆羽絨被上，單手微枕頭部、另一手自然平放床面，極致沙漏身材與爆乳 F 罩杯在側光下一覽無遺",
+        "short_en": "side-lying gracefully on soft duvet, resting head on arm, showcasing hourglass waist and heavy F-cup curves",
+        "en": "sensual side-lying pose reclining gracefully on a plush white duvet, one arm propping up the head, the other resting gently flat on the linen, showcasing dramatic hourglass hip-to-waist curves, soft heavy F-cup breasts, and enchanting direct gaze"
+    },
+    {
+        "zh": "【床沿微傾親密依偎】坐在柔軟床沿上半身親密微傾朝鏡頭，雙手自然平放於膝上身側，深 V 薄紗透膚蕾絲垂墜勾勒深邃事業線與白皙美肩",
+        "short_en": "sitting on bed edge leaning forward together, hands on knees, deep plunging neckline with F-cup cleavage",
+        "en": "sitting closely along the edge of a soft white bed leaning gently forward toward the camera, hands resting naturally flat on their thighs, deep plunging V-neck floral lace bodices revealing spectacular F-cup cleavage and delicate porcelain shoulders"
+    },
+    {
+        "zh": "【高低錯落親密互動】三人高低層次錯落：一人側臥床邊、一人趴姿撐肘托腮、一人微靠床頭，生動自然且極具層次感，三人神情甜美各異",
+        "short_en": "dynamic boudoir composition, one side-lying, one prone on elbows, one seated, rich intimate interaction",
+        "en": "dynamic multi-level boudoir composition on crisp white bedding, one woman lounging on her side, one lying prone propped on elbows, and one sitting leaning back on soft pillows, each showing different flattering angles of their natural heavy F-cup curves and sheer floral lace bodysuits"
     }
 ]
 
