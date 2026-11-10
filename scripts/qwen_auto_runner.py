@@ -76,10 +76,16 @@ for i in range(num_imgs):
         generator=gen
     ).images[0]
 
+    # Qwen-Image-2.1 原生支援 RGBA 透明通道，儲存 JPEG 前必須轉為標準 RGB
+    if base_img.mode != "RGB":
+        base_img = base_img.convert("RGB")
+
     # 無損超取樣至 2K 超清規格
     target_w, target_h = 1440, 1850
     img_2k = base_img.resize((target_w, target_h), Image.LANCZOS)
     img_2k = img_2k.filter(ImageFilter.UnsharpMask(radius=1.2, percent=45, threshold=3))
+    if img_2k.mode != "RGB":
+        img_2k = img_2k.convert("RGB")
 
     dt = round(time.time() - t0, 2)
     pk = round(torch.cuda.max_memory_allocated() / (1024**3), 2) if torch.cuda.is_available() else 0.0
