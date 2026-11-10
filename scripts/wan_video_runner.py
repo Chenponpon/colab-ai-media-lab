@@ -40,6 +40,8 @@ def build_video_worker_notebook(source_image_name="portrait_2.jpg", motion_promp
 import os, sys, io, time, gc, json, urllib.request
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import torch, psutil
+torch.backends.cuda.enable_flash_sdp(True)
+torch.backends.cuda.enable_mem_efficient_sdp(True)
 from PIL import Image
 
 gpu_count = torch.cuda.device_count() if torch.cuda.is_available() else 0
@@ -73,17 +75,18 @@ input_img = Image.open("input_mother.jpg").convert("RGB")
 orig_w, orig_h = input_img.size
 print(f"   首幀原始解析度: {{orig_w}}x{{orig_h}}")
 
-# 鎖定 LTX-Video 直式最佳規格 (512x672，寬高均能被 32 整除，長寬比 0.7619 吻合母圖 0.7778，絕不拉伸)
-vid_w, vid_h = 512, 672
+# 鎖定 LTX-Video 直式最佳規格 (448x576，寬高均能被 32 整除，長寬比 0.7778 精準完美吻合母圖 896x1152，絕不拉伸)
+vid_w, vid_h = 448, 576
 input_img = input_img.resize((vid_w, vid_h), Image.LANCZOS)
 print(f"   縮放至視頻標準解析度: {{vid_w}}x{{vid_h}}")
 
 motion_prompt = "{clean_prompt}"
 negative_prompt = "nude, nudity, naked, topless, exposed nipples, areola, static image, worst quality, inconsistent motion, blurry, jittery, distorted, morphing limbs"
 
-# 幀數滿足 8k + 1 規則：k=12 => 97 幀 (97 / 24fps = 4.04 秒高階動態)
-total_frames = 97
-print(f"⏳ 正在啟動 LTX-Video 圖生影管線 ({{total_frames}} 幀 / ~4 秒 24fps 高階合規換裝動態)...")
+# 幀數滿足 8k + 1 規則：k=8 => 65 幀 (65 / 16fps = 4.06 秒高階動態)
+total_frames = 65
+target_fps = 16
+print(f"⏳ 正在啟動 LTX-Video 圖生影管線 ({{total_frames}} 幀 / ~4 秒 {{target_fps}}fps 高階合規換裝動態)...")
 t0 = time.time()
 video_frames = pipe(
     image=input_img,
@@ -92,7 +95,7 @@ video_frames = pipe(
     width=vid_w,
     height=vid_h,
     num_frames=total_frames,
-    num_inference_steps=30,
+    num_inference_steps=25,
     guidance_scale=3.5
 ).frames[0]
 
@@ -100,7 +103,7 @@ dt = round(time.time() - t0, 2)
 print(f"✨ 視頻生成完畢！耗時: {{dt}} 秒，正在輸出 MP4...")
 
 out_vid_name = "{video_name}"
-export_to_video(video_frames, out_vid_name, fps=24)
+export_to_video(video_frames, out_vid_name, fps=target_fps)
 vid_sz_mb = round(os.path.getsize(out_vid_name) / (1024 * 1024), 2)
 print(f"🎉 影片已成功輸出為 {{out_vid_name}} (體積: {{vid_sz_mb}} MB)！")
 
@@ -109,7 +112,7 @@ bench = {{
     "gpu": gpu_name,
     "elapsed_sec": dt,
     "frames": total_frames,
-    "fps": 24,
+    "fps": target_fps,
     "resolution": f"{{vid_w}}x{{vid_h}}",
     "video_file": out_vid_name,
     "file_size_mb": vid_sz_mb
