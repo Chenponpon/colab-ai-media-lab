@@ -149,7 +149,7 @@ LINGERIE_COLORS = [
 POSES_AND_INTERACTIONS = [
     {
         "zh": "【趴姿撐肘性感特寫】趴在純白柔軟床單上、雙肘自然撐在羽絨枕頭上微托下巴，胸口受重力自然微擠壓展現傲人重磅 F 罩杯深邃事業線，抬眸甜美看鏡頭",
-        "short_en": "lying prone on white bed propped up on elbows, looking up alluringly",
+        "short_en": "lying prone on white bed propped on elbows, deep cleavage compressed against mattress, looking up",
         "en": "sensual prone pose lying on their stomachs on plush white bedsheets, propped up gracefully on their elbows and forearms, soft breasts naturally compressed against the mattress creating dramatic deep F-cup cleavage, looking up captivatingly into the camera with soft alluring smiles"
     },
     {
