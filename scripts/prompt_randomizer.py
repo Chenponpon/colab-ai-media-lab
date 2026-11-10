@@ -4,26 +4,32 @@ import time
 import random
 import shutil
 
-# ==================== 1. 絕對鎖定的核心人設 (拒絕黑皮排骨、盛世美顏法越混血、極致冷白牛奶肌、自然重磅柔軟 F 罩杯大胸深事業線) ====================
+# ==================== 1. 絕對鎖定的核心人設 (四肢纖細精實、沙漏極致火辣、極致冷白牛奶肌、自然重磅柔軟 F 罩杯大胸深事業線) ====================
 CORE_PERSONA = (
     "Intimate waist-up boudoir photo of three distinct breathtakingly gorgeous 20yo French-Vietnamese mixed-race Eurasian beauties with unique angelic faces, "
     "wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace artfully covering bust apex, non-nude), "
     "extremely fair pale luminous milk-white skin tone, healthy soft rosy cheeks, authentic tender skin texture with visible micro-pores, "
-    "curvy hourglass bodies, ((voluptuous large natural heavy soft F-cup breasts:1.4)), ((prominent deep cleavage:1.3)), (plump full bust:1.3)."
+    "slender toned limbs, slim graceful arms, delicate collarbones, flat toned stomach, tiny narrow waist, "
+    "voluptuous curvy hourglass proportions, ((voluptuous large natural heavy soft F-cup breasts:1.4)), ((prominent deep cleavage:1.3)), (plump full bust:1.3)."
 )
 
 # 雙重防線：
 # 1) 嚴格封鎖露點/全裸/違規字眼 (保護帳號 100% 安全不越界)
-# 2) 嚴格封鎖黑皮、曬黑、黃黑皮 (dark skin, tanned skin, brown skin, sunburn, dusky)
-# 3) 嚴格封鎖營養不良、排骨肋骨、乾癟瘦弱 (malnourished, skinny, bony, visible ribs, gaunt, hollow cheeks)
-# 4) 嚴格封鎖小胸、平胸、縮胸 (small breasts:1.4, flat chest:1.4, modest bust:1.3, petite breasts:1.3, A-cup, B-cup, C-cup)
-# 5) 嚴格封鎖塑料人偶、陶瓷磨皮、美顏濾鏡 (porcelain, plastic, mannequin, doll, airbrushed, silicone)
-# 6) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
-# 7) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
-# 8) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
+# 2) 嚴格封鎖過肥、臃腫、粗手臂、粗腰 (fat, chubby, overweight, flabby, thick arms, thick waist, plus-size)
+# 3) 嚴格封鎖過壯、肌肉金剛、虎背熊腰 (muscular, bodybuilder, buff, broad masculine shoulders, masculine physique)
+# 4) 嚴格封鎖營養不良、排骨肋骨、乾癟 (malnourished, skinny, bony, visible ribs, gaunt, hollow cheeks)
+# 5) 嚴格封鎖小胸、平胸、縮胸 (small breasts:1.4, flat chest:1.4, modest bust:1.3, petite breasts:1.3)
+# 6) 嚴格封鎖黑皮、曬黑、黃黑皮 (dark skin, tanned skin, brown skin, sunburn, dusky)
+# 7) 嚴格封鎖塑料人偶、陶瓷磨皮、美顏濾鏡 (porcelain, plastic, mannequin, doll, airbrushed, silicone)
+# 8) 嚴格封鎖眼歪嘴斜、瞳孔不對稱 (asymmetrical eyes, crooked eyes, misaligned pupils, crooked mouth)
+# 9) 嚴格封鎖多頭、額外人頭、撞臉/複製人臉 (extra heads, 4 persons, clone faces)
+# 10) 嚴格封鎖手指畸變、多手指 (bad hands, missing fingers, extra fingers, mutated hands)
 DEFAULT_NEGATIVE_PROMPT = (
     "extra heads, extra faces, extra persons, 4 persons, 5 persons, more than 3 persons, "
-    "small breasts, flat chest, modest bust, petite breasts, skinny, bony, visible ribs, malnourished, gaunt, hollow cheeks, "
+    "fat, chubby, overweight, flabby, thick arms, fat arms, thick waist, thick legs, plus-size, obese, bulky, "
+    "muscular, bodybuilder, buff, ripped, six-pack abs, broad masculine shoulders, masculine physique, manly, "
+    "skinny, bony, visible ribs, malnourished, gaunt, hollow cheeks, "
+    "small breasts, flat chest, modest bust, petite breasts, "
     "dark skin, tanned skin, brown skin, dark complexion, sunburn, bronze skin, dusky, dark tone, "
     "asymmetrical eyes, crooked eyes, misaligned pupils, crossed eyes, distorted mouth, crooked smile, crooked lips, "
     "porcelain, plastic skin, silicone skin, smooth skin, airbrushed, mannequin, wax figure, beauty filter, doll, cgi, 3d render, cartoon, anime, over-smoothed skin, "
@@ -243,7 +249,7 @@ def generate_diversified_prompt(seed=None, **kwargs):
         f"Intimate indoor RAW photo of 3 distinct 20yo French-Vietnamese mixed-race women with completely different unique faces, "
         f"wearing deep-V sheer mesh floral lace lingerie bodysuits in {short_color_list} (lace covering apex, non-nude), "
         f"extremely fair pale milk-white skin tone with subtle rosy flush, authentic unretouched skin, visible microscopic skin pores, fine epidermal texture, natural skin creases, clear symmetrical eyes, "
-        f"curvy hourglass body, ((voluptuous large natural heavy soft F-cup breasts:1.4)), ((prominent deep cleavage:1.3)), (plump full bust:1.3), "
+        f"slender toned limbs, tiny narrow waist, curvy hourglass body, ((voluptuous large natural heavy soft F-cup breasts:1.4)), ((prominent deep cleavage:1.3)), (plump full bust:1.3), "
         f"{pose['short_en']} {bg['short_en']}."
     )
 
