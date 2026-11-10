@@ -13,3 +13,5 @@ test_image_*.png
 .DS_Store
 Thumbs.db
 .vscode/
+
+models/
