@@ -421,7 +421,7 @@ def build_gallery_html(output_dir):
                 video_audit_html = f"""
                 <div style='background: rgba(138, 180, 248, 0.08); border: 1.5px solid #8ab4f8; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px;'>
                     <h3 style='margin:0 0 10px 0; color:#8ab4f8; display:flex; align-items:center; gap:8px;'>
-                        🎬 Wan 2.1 換裝視頻品質質檢卡 — 視頻評分：<span style='font-size:24px; font-weight:bold;'>{vdata.get('overall_score', 0)} / 100</span>
+                        🎬 {vdata.get('model_engine', 'LTX-Video 2B DiT')} 換裝視頻品質質檢卡 — 視頻評分：<span style='font-size:24px; font-weight:bold;'>{vdata.get('overall_score', 0)} / 100</span>
                     </h3>
                     <p style='margin: 4px 0 12px 0; font-size:14px; font-weight:bold; color:#f1f3f4;'>
                         動態狀態：{vdata.get('status_zh')}
