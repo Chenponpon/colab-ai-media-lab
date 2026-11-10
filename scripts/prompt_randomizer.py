@@ -402,6 +402,46 @@ def build_gallery_html(output_dir):
             except Exception as e:
                 audit_html = f"<div style='color:#ea4335;'>⚠️ 讀取審核報告出錯: {e}</div>"
 
+        video_audit_file = os.path.join(rdir, "video_audit_report.json")
+        video_audit_html = ""
+        if os.path.exists(video_audit_file):
+            try:
+                with open(video_audit_file, "r", encoding="utf-8") as vf:
+                    vdata = json.load(vf)
+                v_crit_rows = ""
+                for c in vdata.get("criteria", []):
+                    c_badge = "<span class='badge badge-pass'>PASS</span>" if c.get("status") == "PASS" else "<span class='badge badge-warn'>WARN</span>"
+                    v_crit_rows += f"""
+                    <tr>
+                        <td style='font-weight:bold; color:#e8eaed;'>{c.get('name')}</td>
+                        <td style='color:#81c995; font-weight:bold;'>{c.get('score')} 分</td>
+                        <td>{c_badge}</td>
+                        <td style='color:#bdc1c6; font-size:13px;'>{c.get('comment')}</td>
+                    </tr>"""
+                video_audit_html = f"""
+                <div style='background: rgba(138, 180, 248, 0.08); border: 1.5px solid #8ab4f8; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px;'>
+                    <h3 style='margin:0 0 10px 0; color:#8ab4f8; display:flex; align-items:center; gap:8px;'>
+                        🎬 Wan 2.1 換裝視頻品質質檢卡 — 視頻評分：<span style='font-size:24px; font-weight:bold;'>{vdata.get('overall_score', 0)} / 100</span>
+                    </h3>
+                    <p style='margin: 4px 0 12px 0; font-size:14px; font-weight:bold; color:#f1f3f4;'>
+                        動態狀態：{vdata.get('status_zh')}
+                    </p>
+                    <table style='margin-bottom:12px; background:rgba(0,0,0,0.3);'>
+                        <thead>
+                            <tr style='background:rgba(255,255,255,0.06);'>
+                                <th>視頻檢驗指標</th><th>得分</th><th>判定</th><th>AI 動態評語</th>
+                            </tr>
+                        </thead>
+                        <tbody>{v_crit_rows}</tbody>
+                    </table>
+                    <div style='background:rgba(0,0,0,0.35); padding:10px 14px; border-radius:8px; font-size:13px;'>
+                        <strong>📝 視頻總評：</strong>{vdata.get('audit_summary')}<br>
+                        <strong>🚀 影片結論：</strong><span style='color:#81c995;'>{vdata.get('next_action')}</span>
+                    </div>
+                </div>"""
+            except Exception as e:
+                video_audit_html = f"<div>視頻報告解析出錯: {e}</div>"
+
         video_cards = ""
         for v_file in videos:
             rel_v = f"{run_name}/{v_file}"
@@ -500,6 +540,7 @@ def build_gallery_html(output_dir):
             {bench_html}
             {audit_html}
             {f'<div class="bench-box" style="border-color:#fbbc04;background:#2b2618;">⏳ <strong>狀態：</strong>此批次目前正在雲端執行中，完成後將自動填入下方內容。</div>' if total_media == 0 else ''}
+            {video_audit_html}
             {f'<h3>🎬 本批次圖生影動態成果</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
             {f'<h3>📸 本批次照片展示</h3>{"".join(cards_html)}' if cards_html else ''}
         </div>""")
