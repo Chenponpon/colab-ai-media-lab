@@ -1,9 +1,7 @@
 import os
 import sys
-import io
 import json
 import time
-import base64
 import shutil
 import subprocess
 from PIL import Image
@@ -20,13 +18,12 @@ from prompt_randomizer import build_gallery_html
 from video_evaluator import generate_video_audit_report
 
 
-def build_wan_worker_notebook(source_image_path, motion_prompt=None, video_name="changing_clothes_wan21.mp4"):
+def build_wan_worker_notebook(source_image_name="portrait_2.jpg", motion_prompt=None, video_name="changing_clothes_wan21.mp4"):
     """
-    建置 100% 自包含的 Wan2.1 圖生影 Worker Notebook。
-    將通過 7 大質檢的 2K 首幀母圖轉為 base64 內嵌，徹底杜絕外部依賴遺失。
+    建置輕量級 Wan2.1 圖生影 Worker Notebook。
+    直接從 GitHub 存儲庫讀取首幀母圖，Notebook 體積 <5KB，杜絕 Kaggle API 400 負載超限。
     """
-    with open(source_image_path, "rb") as f:
-        img_b64 = base64.b64encode(f.read()).decode("utf-8")
+    mother_raw_url = f"https://raw.githubusercontent.com/Chenponpon/colab-ai-media-lab/main/assets/mother_images/{source_image_name}"
 
     default_prompt = (
         "Three young breathtakingly gorgeous French-Vietnamese Eurasian women sitting together on crisp white bed, "
@@ -40,7 +37,7 @@ def build_wan_worker_notebook(source_image_path, motion_prompt=None, video_name=
     worker_code = f'''# =========================================================================
 # Wan2.1-I2V-14B-480P 圖生影換裝視頻生成 Worker (首幀合格母圖對齊版)
 # =========================================================================
-import os, sys, io, time, gc, json, base64
+import os, sys, io, time, gc, json, urllib.request
 import torch, psutil
 from PIL import Image
 
@@ -66,10 +63,11 @@ pipe = WanImageToVideoPipeline.from_pretrained(
 )
 pipe.enable_model_cpu_offload()
 
-# 載入內嵌之通過 7 項品質檢驗的首幀 2K 母圖
-print("🖼️ 正在解碼首幀母圖 (Base64 零依賴安全讀取)...")
-b64_data = "{img_b64}"
-input_img = Image.open(io.BytesIO(base64.b64decode(b64_data))).convert("RGB")
+# 載入通過 7 項品質檢驗的首幀 2K 母圖
+mother_url = "{mother_raw_url}"
+print(f"📥 正在從 GitHub 載入母圖: {{mother_url}} ...")
+urllib.request.urlretrieve(mother_url, "input_mother.jpg")
+input_img = Image.open("input_mother.jpg").convert("RGB")
 orig_w, orig_h = input_img.size
 print(f"   首幀原始解析度: {{orig_w}}x{{orig_h}}")
 
@@ -144,7 +142,7 @@ with open("video_benchmark_report.json", "w", encoding="utf-8") as bf:
     nb_path = os.path.join(REPO_DIR, "auto_worker_wan.ipynb")
     with open(nb_path, "w", encoding="utf-8") as f:
         json.dump(nb, f, ensure_ascii=False, indent=2)
-    print(f"✅ Wan2.1 視頻 Worker Notebook 已就緒: {nb_path}")
+    print(f"✅ Wan2.1 視頻 Worker Notebook 已就緒: {nb_path} (體積: {round(os.path.getsize(nb_path)/1024, 2)} KB)")
     return nb_path
 
 
@@ -175,13 +173,13 @@ def monitor_and_download_wan(target_batch_dir, kernel_id="chenponpon/colab-ai-me
         time.sleep(15)
 
 
-def push_and_run_wan_video(source_image_path, target_batch_dir, motion_prompt=None):
-    nb_path = build_wan_worker_notebook(source_image_path, motion_prompt=motion_prompt)
+def push_and_run_wan_video(source_image_name, target_batch_dir, motion_prompt=None):
+    nb_path = build_wan_worker_notebook(source_image_name=source_image_name, motion_prompt=motion_prompt)
 
-    # Git 同步
+    # Git 同步 (包含 assets/mother_images/ 中的高階首幀母圖)
     git_exe = r"C:\Users\user\AppData\Local\Programs\MinGit\cmd\git.exe"
-    subprocess.run([git_exe, "-C", REPO_DIR, "add", "auto_worker_wan.ipynb", "scripts/"], check=False)
-    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(wan): deploy Wan2.1-I2V-14B video generation worker"], check=False)
+    subprocess.run([git_exe, "-C", REPO_DIR, "add", "assets/", "auto_worker_wan.ipynb", "scripts/"], check=False)
+    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(wan): deploy lightweight Wan2.1 video worker with mother image"], check=False)
     subprocess.run([git_exe, "-C", REPO_DIR, "push", "origin", "main"], check=False)
 
     username = "chenponpon"
@@ -225,7 +223,7 @@ def push_and_run_wan_video(source_image_path, target_batch_dir, motion_prompt=No
 
 if __name__ == "__main__":
     latest_run = os.path.join(OUT_DIR, "run_20261110_100246_qwen21")
-    best_img = os.path.join(latest_run, "portrait_2.jpg")
+    best_img_name = "portrait_2.jpg"
     recipe_file = os.path.join(latest_run, "portrait_2_recipe.json")
     
     motion_prompt = None
@@ -234,4 +232,4 @@ if __name__ == "__main__":
             rdata = json.load(f)
             motion_prompt = rdata.get("video_motion_prompt")
 
-    push_and_run_wan_video(best_img, latest_run, motion_prompt=motion_prompt)
+    push_and_run_wan_video(best_img_name, latest_run, motion_prompt=motion_prompt)
