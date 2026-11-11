@@ -4,7 +4,7 @@
   "active_switch": {
     "model": "wan21_14b",
     "server": "colab_a100",
-    "task": "video_i2v"
+    "task": "end_to_end_auto"
   },
   "golden_standard": {
     "mother_image_id": "portrait_2.jpg",
@@ -28,10 +28,85 @@
     "total_frames": 81,
     "fps": 16,
     "prompts": {
-      "golden_image_prompt": "Intimate waist-up boudoir portrait of three distinct breathtakingly gorgeous 20yo French-Vietnamese mixed-race Eurasian beauties with unique angelic faces and sweet soft smiles, wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace artfully covering bust apex, strictly non-nude), extremely fair pale luminous milk-white skin tone with subtle rosy flush, visible micro-pores, slender toned limbs, slim graceful arms, delicate collarbones, flat toned stomach, tiny narrow wasp waist, voluptuous curvy hourglass proportions, ((voluptuous large natural heavy soft F-cup breasts:1.4)), ((prominent deep cleavage:1.3)), in an elegant Paris boudoir on a crisp white bed, cinematic soft warm morning light, photorealistic documentary quality, 8k, master photography.",
+      "golden_image_prompt": "Intimate waist-up boudoir portrait of three distinct breathtakingly gorgeous 20yo French-Vietnamese mixed-race Eurasian beauties with unique angelic faces and sweet soft smiles, wearing alluring deep-V sheer tulle mesh and floral lace bodysuits (floral lace artfully covering bust apex, strictly non-nude), ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), visible natural micro-pores and authentic skin texture, ((extremely slender toned limbs, slim graceful arms, delicate collarbones, flat toned abdomen, tiny wasp waist:1.2)), voluptuous curvy hourglass proportions, ((voluptuous heavy natural soft full F-cup breasts:1.45)), ((prominent deep cleavage:1.35)), in an elegant Paris boudoir on a crisp white bed, cinematic soft warm morning light, subsurface scattering, photorealistic documentary quality, 8k, master photography.",
       "golden_motion_prompt": "Three breathtakingly gorgeous 20-year-old French-Vietnamese mixed-race women in an elegant Paris boudoir on a crisp white bed, delicate sheer silk morning robes gently slipping off smooth pale shoulders, revealing intricate sheer floral lace bodysuits artfully covering bust apex, hands naturally adjusting thin lingerie shoulder straps, gentle chest breathing movement, lively boudoir interaction with shared sweet smiles, cinematic warm morning lighting, photorealistic documentary quality, 8k, authentic physical motion of slipping silk fabric, perfectly stable angelic faces, non-nude.",
-      "golden_negative_prompt": "nude, naked, exposed nipples, areola, genitals, bad hands, comb fingers, missing fingers, extra fingers, extra limbs, deformed limbs, melting face, plastic skin, mannequin, distorted eyes, asymmetrical eyes, jerky motion, bad anatomy, low quality, dark skin, tanned, sunburn, muscular bodybuilder, flat chest, extra people, 4 persons, clone faces"
+      "golden_negative_prompt": "nude, naked, exposed nipples, areola, genitals, bad hands, comb fingers, missing fingers, extra fingers, extra limbs, deformed limbs, melting face, plastic skin, doll skin, mannequin, artificial smoothing, distorted eyes, asymmetrical eyes, jerky motion, bad anatomy, low quality, dark skin, tanned, sunburn, small breasts, flat chest, muscular bodybuilder, extra people, 4 persons, clone faces"
     }
+  },
+  "hardware_arbitration_rules": {
+    "colab_runtime_options_mapping": {
+      "H100 GPU": "tier_0_h100",
+      "A100 GPU": "tier_1_a100",
+      "L4 GPU": "tier_2_l4_g4",
+      "G4 GPU": "tier_2_l4_g4",
+      "T4 GPU": "tier_3_t4",
+      "v6e-1 TPU": "tpu_incompatible",
+      "v5e-1 TPU": "tpu_incompatible",
+      "CPU": "cpu_unsupported",
+      "大量 RAM": "high_ram_policy"
+    },
+    "tier_0_h100": {
+      "match": "H100 or vram >= 70.0",
+      "best_video_model": "Wan-AI/Wan2.1-I2V-14B-720P-Diffusers",
+      "best_image_model": "Qwen/Qwen-Image-2.1-Turbo",
+      "video_strategy": "pure_gpu_cuda",
+      "image_strategy": "pure_gpu_cuda",
+      "precision": "bfloat16",
+      "vae_tiling": true,
+      "est_speed": "極限神速 (視頻 1~2 分鐘, 圖片 10 秒)"
+    },
+    "tier_1_a100": {
+      "match": "A100 or 38.0 <= vram < 70.0",
+      "best_video_model": "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers",
+      "best_image_model": "Qwen/Qwen-Image-2.1-Turbo",
+      "video_strategy": "pure_gpu_cuda",
+      "image_strategy": "pure_gpu_cuda",
+      "precision": "bfloat16",
+      "vae_tiling": true,
+      "est_speed": "極速旗艦 (視頻 2~3 分鐘, 圖片 15 秒)"
+    },
+    "tier_2_l4_g4": {
+      "match": "L4, G4 or 20.0 <= vram < 38.0",
+      "best_video_model": "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers",
+      "best_image_model": "Qwen/Qwen-Image-2.1-Turbo",
+      "video_strategy": "model_cpu_offload",
+      "image_strategy": "model_cpu_offload",
+      "precision": "bfloat16",
+      "vae_tiling": true,
+      "est_speed": "次旗艦高畫質 (視頻 6~8 分鐘, 圖片 25~35 秒, 100% 杜絕 OOM)"
+    },
+    "tier_3_t4": {
+      "match": "T4 or 10.0 <= vram < 20.0",
+      "best_video_model": "Wan-AI/Wan2.1-I2V-1.3B-480P-Diffusers",
+      "best_video_model_alt_14b": "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers",
+      "best_image_model": "SG161222/RealVisXL_V5.0",
+      "video_strategy": "model_cpu_offload",
+      "video_strategy_14b": "sequential_cpu_offload",
+      "image_strategy": "pure_gpu_cuda",
+      "precision": "float16",
+      "vae_tiling": true,
+      "est_speed": "穩健最適化 (RealVisXL 圖片 25 秒, 萬相 1.3B 視頻 5 分鐘, 14B 視頻 18~25 分鐘)"
+    },
+    "tpu_incompatible": {
+      "match": "v5e-1 TPU, v6e-1 TPU",
+      "status": "NOT_RECOMMENDED",
+      "guidance": "SOTA 影音擴散模型 (Wan2.1 / Qwen2.1) 均依賴 NVIDIA CUDA 與 FlashAttention 深度底層指令集。TPU 環境缺少對應支援，請切換至 A100、L4 或 T4 GPU！"
+    },
+    "cpu_unsupported": {
+      "match": "CPU",
+      "status": "UNSUPPORTED",
+      "guidance": "純 CPU 顯存為 0GB，擴散生成模型在 CPU 上單幀運算極其緩慢（耗時數小時），請至「變更執行階段類型」選用 GPU！"
+    },
+    "high_ram_policy": {
+      "high_ram_threshold_gb": 35.0,
+      "on_high_ram": "大量 RAM 開啟 (>50GB)：支援大模型 CPU 完整快取，無分頁擠壓風險",
+      "on_standard_ram": "大量 RAM 未開啟 (<35GB，約 12.7GB)：自動啟用低系統記憶體加載模式 (low_cpu_mem_usage) 並強制 VAE 分塊分片防爆"
+    },
+    "banned_lousy_models": [
+      "stabilityai/stable-video-diffusion-img2vid-xt (SVD-XT: 3人同框切人、梳子多指怪物爪，徹底封殺)",
+      "Lightricks/LTX-Video (2B: 臉部溶化、微幅晃動無換裝動態，徹底封殺)",
+      "runwayml/stable-diffusion-v1-5 (SD 1.5: 塑料芭比假人皮、解析度低劣，徹底封殺)"
+    ]
   },
   "supported_servers": {
     "colab_a100": {
