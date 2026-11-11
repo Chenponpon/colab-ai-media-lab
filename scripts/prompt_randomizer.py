@@ -567,6 +567,47 @@ def build_gallery_html(output_dir):
             {f'<h3>📸 本批次照片展示</h3>{"".join(cards_html)}' if cards_html else ''}
         </div>""")
 
+    # 載入集中式模型切換註冊表 (Model Pipeline Hub)
+    repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    registry_path = os.path.join(repo_dir, "configs", "model_registry.json")
+    model_hub_html = ""
+    if os.path.exists(registry_path):
+        try:
+            with open(registry_path, "r", encoding="utf-8") as rf:
+                reg_data = json.load(rf)
+            pipe_rows = ""
+            for pid, p in reg_data.get("pipelines", {}).items():
+                is_active = (pid == reg_data.get("active_video_pipeline") or pid == reg_data.get("active_image_pipeline"))
+                tag = "⭐ <strong>啟用中</strong>" if is_active else "備用"
+                tag_color = "#81c995" if is_active else "#9aa0a6"
+                pipe_rows += f"""
+                <tr>
+                    <td style='color:{tag_color}; font-weight:bold;'>{tag}</td>
+                    <td style='font-weight:bold; color:#8ab4f8;'><code>{pid}</code></td>
+                    <td>{p.get('name')}</td>
+                    <td><span class='badge'>{p.get('type').upper()}</span></td>
+                    <td>{p.get('inference_time_est')}</td>
+                    <td>{p.get('vram_gb_required')} GB</td>
+                    <td style='font-size:12px; color:#bdc1c6;'>{p.get('strengths')}</td>
+                </tr>"""
+            model_hub_html = f"""
+            <details style='background:#181a1f; border:1px solid #3b5998; border-radius:12px; padding:16px 22px; margin-bottom:28px;' open>
+                <summary style='font-size:16px; font-weight:bold; color:#8ab4f8; cursor:pointer;'>
+                    ⚙️ 集中式模型管線切換中心 (Model Pipeline Hub) — 隨選即切換，無需重寫程式碼
+                </summary>
+                <p style='font-size:13px; color:#bdc1c6; margin:8px 0 14px 0;'>
+                    所有生圖與圖生影管線代碼、權重配置與超參數已完全持久化於 <code>configs/model_registry.json</code>，可透過 <code>python scripts/pipeline_manager.py --switch &lt;id&gt;</code> 一鍵無縫切換！
+                </p>
+                <table>
+                    <thead>
+                        <tr><th>狀態</th><th>管線 ID</th><th>模型名稱</th><th>類型</th><th>預估耗時</th><th>顯存</th><th>演算法機制與優勢</th></tr>
+                    </thead>
+                    <tbody>{pipe_rows}</tbody>
+                </table>
+            </details>"""
+        except Exception:
+            pass
+
     html = f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -599,6 +640,7 @@ pre {{ background: #101214; padding: 10px; border-radius: 6px; white-space: pre-
         <button onclick="location.reload()" style="background:#1a73e8; color:#fff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">🔄 重新整理相簿</button>
     </div>
 </div>
+{model_hub_html}
 {''.join(batches_html) if batches_html else '<p>尚無批次紀錄</p>'}
 </body>
 </html>"""

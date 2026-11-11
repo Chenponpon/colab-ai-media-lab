@@ -5,15 +5,22 @@ import time
 
 OUTPUTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outputs"))
 
-def generate_video_audit_report(batch_folder_path, video_file_name="changing_clothes_wan21.mp4"):
+def generate_video_audit_report(batch_folder_path, video_file_name=None):
     """
     對指定批次產出的視頻進行 5 大維度自動化審核，產出標準化 video_audit_report.json。
     """
     run_name = os.path.basename(batch_folder_path)
-    vid_path = os.path.join(batch_folder_path, video_file_name)
-    
-    if not os.path.exists(vid_path):
+    if not os.path.exists(batch_folder_path):
         return None
+
+    if video_file_name and os.path.exists(os.path.join(batch_folder_path, video_file_name)):
+        vid_path = os.path.join(batch_folder_path, video_file_name)
+    else:
+        mp4s = [f for f in os.listdir(batch_folder_path) if f.lower().endswith(".mp4")]
+        if not mp4s:
+            return None
+        video_file_name = mp4s[0]
+        vid_path = os.path.join(batch_folder_path, video_file_name)
 
     vid_size_mb = round(os.path.getsize(vid_path) / (1024 * 1024), 2)
     audit_file = os.path.join(batch_folder_path, "video_audit_report.json")

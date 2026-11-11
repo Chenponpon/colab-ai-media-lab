@@ -13,6 +13,7 @@ if sys.stdout.encoding != "utf-8":
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from scripts.prompt_randomizer import build_gallery_html
 from scripts.auto_evaluator import generate_audit_report
+from scripts.video_evaluator import generate_video_audit_report
 
 OUTPUTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "outputs"))
 DOWNLOADS_DIR = os.path.expanduser("~/Downloads")
@@ -22,14 +23,22 @@ def auto_audit_batches():
         return
     for item in os.listdir(OUTPUTS_DIR):
         batch_path = os.path.join(OUTPUTS_DIR, item)
-        if os.path.isdir(batch_path) and item.startswith("run_"):
+        if os.path.isdir(batch_path) and (item.startswith("run_") or item.startswith("colab_") or item.startswith("wan")):
+            # 靜態圖片審核
             audit_file = os.path.join(batch_path, "audit_report.json")
             if not os.path.exists(audit_file):
-                # 檢查是否有圖片
-                imgs = [f for f in os.listdir(batch_path) if f.lower().endswith((".jpg", ".png", ".jpeg")) and not f.endswith("_recipe.json")]
+                imgs = [f for f in os.listdir(batch_path) if f.lower().endswith((".jpg", ".png", ".jpeg")) and not f.endswith("_recipe.json") and not f.startswith("real_frame_") and not f.startswith("vid_frame_")]
                 if imgs:
                     print(f"[Auto-Audit] 🔍 偵測到新批次 {item}，自動執行 AI 審核並生成 audit_report.json...")
                     generate_audit_report(batch_path)
+            
+            # 動態視頻審核
+            video_audit_file = os.path.join(batch_path, "video_audit_report.json")
+            if not os.path.exists(video_audit_file):
+                mp4s = [f for f in os.listdir(batch_path) if f.lower().endswith(".mp4")]
+                if mp4s:
+                    print(f"[Auto-Audit] 🎬 偵測到新視頻批次 {item} ({mp4s[0]})，自動執行視頻 AI 審核...")
+                    generate_video_audit_report(batch_path, mp4s[0])
 
 def get_state(path):
     state = {}
@@ -55,7 +64,7 @@ def check_colab_downloads():
     extracted_any = False
     try:
         for fname in os.listdir(DOWNLOADS_DIR):
-            if (fname.startswith("run_") or fname.startswith("colab_")) and fname.endswith(".zip"):
+            if (fname.startswith("run_") or fname.startswith("colab_") or fname.startswith("wan_") or fname.startswith("wan21_")) and fname.endswith(".zip"):
                 zpath = os.path.join(DOWNLOADS_DIR, fname)
                 folder_name = os.path.splitext(fname)[0]
                 target_folder = os.path.join(OUTPUTS_DIR, folder_name)

@@ -6,6 +6,7 @@ __pycache__/
 
 # Keep generated media outputs locally only (do not upload to public GitHub)
 outputs/
+temp_check/
 *.mp4
 test_image_*.png
 
