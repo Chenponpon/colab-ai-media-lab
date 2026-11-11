@@ -517,21 +517,42 @@ def build_gallery_html(output_dir):
                 </div>
             </div>""")
 
-        # 2. 自動抓取「沒有 recipe 依然存在（例如手動拖入、Colab 產出）」的所有孤立照片，絕不遺漏！
+        # 2. 自動抓取「沒有 recipe 依然存在（例如手動拖入、Colab 產出、抽幀檢驗照）」的照片
+        frame_cards_html = []
         for img_file in jpg_images:
             if img_file not in handled_images:
                 rel_img = f"{run_name}/{img_file}"
-                cards_html.append(f"""
-                <div class="card">
-                    <div class="media-col">
-                        <a href="{rel_img}" target="_blank"><img src="{rel_img}" alt="{img_file}"></a>
-                        <div class="fname">{run_name}/{img_file}</div>
-                    </div>
-                    <div class="info-col">
-                        <h4>📸 {img_file} (外部 / Colab 自動匯入圖片)</h4>
-                        <p>已自動由資料夾動態掃描載入展示。</p>
-                    </div>
-                </div>""")
+                if "frame" in img_file or "mother" in img_file:
+                    frame_cards_html.append(f"""
+                    <div style="background:#1e2025; border:1px solid #3c4043; border-radius:8px; padding:10px; width:220px; text-align:center;">
+                        <a href="{rel_img}" target="_blank"><img src="{rel_img}" alt="{img_file}" style="width:100%; border-radius:6px;"></a>
+                        <div style="font-size:12px; color:#8ab4f8; margin-top:6px; font-weight:bold;">🔍 {img_file}</div>
+                        <div style="font-size:11px; color:#9aa0a6;">影片逐幀時序檢驗幀</div>
+                    </div>""")
+                else:
+                    cards_html.append(f"""
+                    <div class="card">
+                        <div class="media-col">
+                            <a href="{rel_img}" target="_blank"><img src="{rel_img}" alt="{img_file}"></a>
+                            <div class="fname">{run_name}/{img_file}</div>
+                        </div>
+                        <div class="info-col">
+                            <h4>📸 {img_file} (外部 / Colab 自動匯入圖片)</h4>
+                            <p>已自動由資料夾動態掃描載入展示。</p>
+                        </div>
+                    </div>""")
+
+        frame_section_html = ""
+        if frame_cards_html:
+            frame_section_html = f"""
+            <details style="margin-bottom:20px; background:#16181c; border:1px solid #2d3139; border-radius:10px; padding:12px 18px;">
+                <summary style="font-size:14px; font-weight:bold; color:#8ab4f8; cursor:pointer;">
+                    🔬 展開查看本批次視頻「首幀、中幀、末幀」逐幀品質抽檢比對 ({len(frame_cards_html)} 張檢驗幀)
+                </summary>
+                <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:14px;">
+                    {''.join(frame_cards_html)}
+                </div>
+            </details>"""
 
         total_media = len(cards_html) + len(videos)
         batches_html.append(f"""
@@ -541,6 +562,7 @@ def build_gallery_html(output_dir):
             {audit_html}
             {f'<div class="bench-box" style="border-color:#fbbc04;background:#2b2618;">⏳ <strong>狀態：</strong>此批次目前正在雲端執行中，完成後將自動填入下方內容。</div>' if total_media == 0 else ''}
             {video_audit_html}
+            {frame_section_html}
             {f'<h3>🎬 本批次圖生影動態成果</h3><div class="vid-grid">{video_cards}</div>' if video_cards else ''}
             {f'<h3>📸 本批次照片展示</h3>{"".join(cards_html)}' if cards_html else ''}
         </div>""")
