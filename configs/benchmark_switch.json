@@ -9,7 +9,8 @@
   "golden_standard": {
     "mother_image_id": "portrait_2.jpg",
     "mother_image_url": "https://raw.githubusercontent.com/Chenponpon/colab-ai-media-lab/main/assets/mother_images/portrait_2.jpg",
-    "mother_image_score": 98,
+    "mother_image_score": 71,
+    "mother_image_status": "REJECTED_NEEDS_ITERATION (卓越標準下判定僅 71 分，充斥 AI 假人感與塑膠皮，已退回重新文生圖)",
     "seed": 42,
     "native_aspect_ratio": "7:9 (0.7778)",
     "video_resolution": {
