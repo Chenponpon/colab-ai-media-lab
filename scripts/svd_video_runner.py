@@ -300,6 +300,8 @@ def monitor_and_download_svd(kernel_id="chenponpon/colab-ai-media-lab-gpu-v2", t
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--push":
         push_and_run_svd_video()
+    elif len(sys.argv) > 1 and sys.argv[1] == "--monitor":
+        monitor_and_download_svd()
     elif len(sys.argv) > 1 and sys.argv[1] == "--run":
         push_and_run_svd_video()
         monitor_and_download_svd()

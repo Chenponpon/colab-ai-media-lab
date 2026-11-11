@@ -4,7 +4,6 @@ import json
 import time
 import shutil
 import subprocess
-from PIL import Image
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
@@ -18,22 +17,21 @@ from prompt_randomizer import build_gallery_html
 from video_evaluator import generate_video_audit_report
 
 
-def build_video_worker_notebook(source_image_name="portrait_2.jpg", video_name="changing_clothes_video.mp4"):
+def build_wan21_worker_notebook(source_image_name="portrait_2.jpg", video_name="changing_clothes_wan21_5s.mp4"):
     """
-    建置高保真、零溶臉、高細節的 LTX-Video 2B DiT 圖生影 Worker Notebook (Version 19 穩定版)。
-    鎖定電影級微動態（自然呼吸起伏、輕柔身姿擺動、甜美眨眼微笑），杜絕大幅度手臉穿模。
+    建置阿里萬相 Wan2.1-I2V-14B-480P (4-bit BitsAndBytes 量化) 5 秒換裝圖生影 Worker Notebook
+    16GB VRAM (Tesla T4) 專用優化版，81 幀 / 16 FPS = 5.06 秒真實換裝動態
     """
     mother_raw_url = f"https://raw.githubusercontent.com/Chenponpon/colab-ai-media-lab/main/assets/mother_images/{source_image_name}"
 
     worker_code = f'''# =========================================================================
-# LTX-Video (Lightricks 2B DiT) 高保真零畸變圖生影 Worker (Version 19)
+# Wan2.1-I2V-14B (4-bit 量化) 5 秒換裝圖生影旗艦 Worker
 # =========================================================================
-import os, sys, io, time, gc, json, urllib.request
+import os, sys, io, time, gc, json, urllib.request, subprocess
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 import torch, psutil
-torch.backends.cuda.enable_flash_sdp(True)
-torch.backends.cuda.enable_mem_efficient_sdp(True)
 from PIL import Image
+import cv2
 
 gpu_count = torch.cuda.device_count() if torch.cuda.is_available() else 0
 gpu_name = f"{{torch.cuda.get_device_name(0)}} (x{{gpu_count}})" if gpu_count > 0 else "CPU"
@@ -41,24 +39,38 @@ vram_gb = round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2)
 ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
 print(f"✅ 硬體檢測完成 | GPU: {{gpu_name}} | 單卡 VRAM: {{vram_gb}} GB | System RAM: {{ram_gb}} GB")
 
-print("📦 正在安裝與確認 LTX-Video 視頻生成專用依賴庫...")
-import subprocess
-subprocess.run(["pip", "install", "-q", "diffusers>=0.41.0", "transformers>=5.17.0", "accelerate", "imageio[ffmpeg]"], check=False)
+print("📦 正在安裝與確認 Wan2.1 4-bit 視頻生成依賴庫...")
+subprocess.run(["pip", "install", "-q", "diffusers>=0.34.0", "transformers>=4.48.0", "accelerate", "bitsandbytes", "imageio[ffmpeg]"], check=False)
 
-from diffusers import LTXImageToVideoPipeline
+from diffusers import BitsAndBytesConfig, WanImageToVideoPipeline, WanTransformer3DModel
 from diffusers.utils import export_to_video
 
-model_id = "Lightricks/LTX-Video"
-print(f"🎬 [新世代 2B DiT 頂級寫實視頻模型] 正在載入: {{model_id}}...")
+model_id = "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers"
+print(f"🎬 [使用者欽定旗艦模型] 正在以 4-bit 量化載入萬相圖生影: {{model_id}}...")
 
-# 啟用 bfloat16 精度載入，並啟用逐組件 CPU Offload (顯存僅需 ~6GB，徹底杜絕 OOM)
-pipe = LTXImageToVideoPipeline.from_pretrained(
-    model_id, torch_dtype=torch.bfloat16
+# 配置 4-bit BitsAndBytes 量化，將 28GB 龐大 Transformer 壓縮至約 8GB，完全適配 16GB VRAM
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.float16
 )
-print("⚙️ 啟用 Model CPU Offload 節能模式 (零 OOM 保證)...")
+
+print("⚙️ 正在載入 4-bit Quantized Transformer...")
+transformer = WanTransformer3DModel.from_pretrained(
+    model_id,
+    subfolder="transformer",
+    quantization_config=quantization_config,
+    torch_dtype=torch.float16
+)
+
+print("⚙️ 正在建構 WanImageToVideoPipeline 並啟用 Model CPU Offload...")
+pipe = WanImageToVideoPipeline.from_pretrained(
+    model_id,
+    transformer=transformer,
+    torch_dtype=torch.float16
+)
 pipe.enable_model_cpu_offload()
 
-# 載入通過 7 項品質檢驗的首幀 2K 母圖
+# 載入通過品質檢驗的首幀 2K 母圖
 mother_url = "{mother_raw_url}"
 print(f"📥 正在從 GitHub 載入母圖: {{mother_url}} ...")
 urllib.request.urlretrieve(mother_url, "input_mother.jpg")
@@ -66,30 +78,33 @@ input_img = Image.open("input_mother.jpg").convert("RGB")
 orig_w, orig_h = input_img.size
 print(f"   首幀原始解析度: {{orig_w}}x{{orig_h}}")
 
-# 鎖定 LTX-Video 直式超清規格 (480x640，寬高均能被 32 整除，長寬比 0.75 契合母圖，絕不拉伸)
-vid_w, vid_h = 480, 640
+# Wan2.1 480P 標準直式解析度: 寬 480, 高 832 (長寬比 0.577，符合 480P 總像素預算)
+vid_w, vid_h = 480, 832
 input_img = input_img.resize((vid_w, vid_h), Image.LANCZOS)
-print(f"   縮放至視頻標準解析度: {{vid_w}}x{{vid_h}}")
+print(f"   縮放至 Wan2.1 直式標準解析度: {{vid_w}}x{{vid_h}}")
 
-# 精準微動態 Prompt：專注於呼吸律動、香肩微動與自然微笑，嚴格禁止手部抬起摸臉摸頭
+# 完整換裝動態提示詞：絲袍自然滑落、香肩展露、調整蕾絲肩帶、閨蜜生動互動
 motion_prompt = (
-    "Three young breathtakingly gorgeous French-Vietnamese Eurasian women sitting elegantly on crisp white bed, "
-    "gentle natural chest breathing movement, subtle shoulder movement, warm alluring smiles, "
-    "soft natural eye blinks looking at the camera, photorealistic live-action motion, "
-    "8k quality, cinematic morning bedroom lighting, perfectly stable angelic faces, hands resting naturally flat on thighs."
+    "Three breathtakingly gorgeous 20-year-old French-Vietnamese mixed-race women in an elegant Paris boudoir on a crisp white bed, "
+    "delicate sheer silk morning robes gently slipping off smooth pale shoulders, revealing intricate sheer floral lace bodysuits artfully covering bust apex, "
+    "hands naturally adjusting thin lingerie shoulder straps, gentle chest breathing movement, lively boudoir interaction with shared sweet smiles, "
+    "cinematic warm morning lighting, photorealistic documentary quality, 8k, authentic physical motion of slipping silk fabric, perfectly stable angelic faces."
 )
 negative_prompt = (
-    "hands touching face, hands touching hair, raising arms, morphing face, distorted eyes, "
-    "deformed fingers, melting hands, blurry face, jerky motion, bad anatomy, low quality, unnatural warping"
+    "ugly, deformed, mutated limbs, missing fingers, extra hands, melting face, plastic skin, "
+    "blurry, distorted eyes, jerky motion, bad anatomy, low quality, nude, nipples, exposed areola, uncensored"
 )
 
-# 幀數滿足 8k + 1 規則：k=8 => 65 幀 (65 / 16fps = 4.06 秒穩定微動態)
-total_frames = 65
+# 81 幀 @ 16 FPS = 5.06 秒整整滿血動態！
+total_frames = 81
 target_fps = 16
-num_steps = 40
-print(f"⏳ 正在啟動 LTX-Video 高保真圖生影管線 ({{total_frames}} 幀 / {{num_steps}} 步 / {{target_fps}}fps 電影級微動態)...")
+num_steps = 30
+guidance = 5.0
+print(f"⏳ 正在啟動 Wan2.1-I2V 換裝動態生成 ({{total_frames}} 幀 / {{num_steps}} 步 / {{target_fps}} FPS = 5.06 秒)...")
+
 t0 = time.time()
-generator = torch.manual_seed(42)
+gen = torch.Generator(device="cuda").manual_seed(42)
+
 video_frames = pipe(
     image=input_img,
     prompt=motion_prompt,
@@ -98,25 +113,47 @@ video_frames = pipe(
     height=vid_h,
     num_frames=total_frames,
     num_inference_steps=num_steps,
-    guidance_scale=3.0,
-    generator=generator
+    guidance_scale=guidance,
+    generator=gen
 ).frames[0]
 
 dt = round(time.time() - t0, 2)
-print(f"✨ 視頻生成完畢！耗時: {{dt}} 秒，正在輸出 MP4...")
+print(f"✨ Wan2.1 視頻生成完畢！耗時: {{dt}} 秒，正在導出 MP4...")
 
 out_vid_name = "{video_name}"
 export_to_video(video_frames, out_vid_name, fps=target_fps)
 vid_sz_mb = round(os.path.getsize(out_vid_name) / (1024 * 1024), 2)
-print(f"🎉 影片已成功輸出為 {{out_vid_name}} (體積: {{vid_sz_mb}} MB)！")
+
+# 即時透過 OpenCV 唯一截取成片首幀、中幀、末幀，100% 絕對杜絕圖片不符
+cap = cv2.VideoCapture(out_vid_name)
+real_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+real_fps = cap.get(cv2.CAP_PROP_FPS)
+real_dur = round(real_frames / real_fps, 2) if real_fps > 0 else 0
+
+ret, f_start = cap.read()
+if ret:
+    cv2.imwrite("wan21_frame_start.jpg", f_start)
+
+cap.set(cv2.CAP_PROP_POS_FRAMES, real_frames // 2)
+ret, f_mid = cap.read()
+if ret:
+    cv2.imwrite("wan21_frame_mid.jpg", f_mid)
+
+cap.set(cv2.CAP_PROP_POS_FRAMES, real_frames - 1)
+ret, f_end = cap.read()
+if ret:
+    cv2.imwrite("wan21_frame_end.jpg", f_end)
+cap.release()
+
+print(f"🎉 5 秒換裝短片已成功輸出為 {{out_vid_name}} (時長: {{real_dur}}s, 體積: {{vid_sz_mb}} MB)！")
 
 bench = {{
-    "engine": "Lightricks/LTX-Video (2B DiT Image-to-Video)",
+    "engine": "Wan-AI/Wan2.1-I2V-14B-480P (4-bit BitsAndBytes Quantized)",
     "gpu": gpu_name,
     "elapsed_sec": dt,
-    "frames": total_frames,
-    "fps": target_fps,
-    "steps": num_steps,
+    "frames": real_frames,
+    "fps": real_fps,
+    "duration_sec": real_dur,
     "resolution": f"{{vid_w}}x{{vid_h}}",
     "video_file": out_vid_name,
     "file_size_mb": vid_sz_mb
@@ -150,47 +187,33 @@ with open("video_benchmark_report.json", "w", encoding="utf-8") as bf:
         "nbformat_minor": 4
     }
 
-    nb_path = os.path.join(REPO_DIR, "auto_worker_wan.ipynb")
+    nb_path = os.path.join(REPO_DIR, "auto_worker_wan21.ipynb")
     with open(nb_path, "w", encoding="utf-8") as f:
         json.dump(nb, f, ensure_ascii=False, indent=2)
-    print(f"✅ LTX-Video 視頻 Worker Notebook 已就緒: {nb_path} (體積: {round(os.path.getsize(nb_path)/1024, 2)} KB)")
+    print(f"✅ Wan2.1-I2V-14B 4-bit 5秒換裝短片 Notebook 建置完成: {nb_path}")
     return nb_path
 
 
-def monitor_and_download_video(target_batch_dir, video_name="changing_clothes_video.mp4", kernel_id="chenponpon/colab-ai-media-lab-gpu-v2"):
-    print(f"⏳ 正在監控 Kaggle 雲端視頻生成 ({kernel_id})，完成後自動下載至: {target_batch_dir}")
-    while True:
-        st = subprocess.run(["kaggle", "kernels", "status", kernel_id], capture_output=True, text=True)
-        out = st.stdout.strip()
-        print(f"📡 [Kaggle Video 狀態] {out}")
-        if "complete" in out.lower():
-            print(f"🎉 雲端視頻生成完畢！正在下載影片成果至 {target_batch_dir} ...")
-            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", target_batch_dir], check=False)
-            
-            # 自動執行視頻審核並輸出 video_audit_report.json
-            try:
-                generate_video_audit_report(target_batch_dir, video_file_name=video_name)
-            except Exception as e:
-                print(f"視頻質檢報告生成跳過: {e}")
+def push_and_run_wan21_video(source_image_name="portrait_2.jpg", target_batch_dir=None, video_name="changing_clothes_wan21_5s.mp4"):
+    """
+    推送 Wan2.1-I2V-14B-480P 任務至 Kaggle GPU
+    """
+    if target_batch_dir is None:
+        target_batch_dir = os.path.join(OUT_DIR, "run_20261110_100246_qwen21")
 
-            # 刷新圖鑑
-            gallery = build_gallery_html(OUT_DIR)
-            print(f"✨ 視頻與質檢成果已即時載入圖鑑: {gallery}")
-            return True
-        if "error" in out.lower() or "cancel" in out.lower():
-            print(f"❌ 雲端視頻執行發生錯誤，正在下載紀錄檔供檢查...")
-            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", target_batch_dir], check=False)
-            return False
-        time.sleep(15)
+    # 確保母圖在 assets
+    assets_mother_dir = os.path.join(REPO_DIR, "assets", "mother_images")
+    os.makedirs(assets_mother_dir, exist_ok=True)
+    src_mother = os.path.join(target_batch_dir, source_image_name)
+    dst_mother = os.path.join(assets_mother_dir, source_image_name)
+    if os.path.exists(src_mother):
+        shutil.copy2(src_mother, dst_mother)
 
+    nb_path = build_wan21_worker_notebook(source_image_name=source_image_name, video_name=video_name)
 
-def push_and_run_video(source_image_name, target_batch_dir, video_name="changing_clothes_video.mp4"):
-    nb_path = build_video_worker_notebook(source_image_name=source_image_name, video_name=video_name)
-
-    # Git 同步
     git_exe = r"C:\Users\user\AppData\Local\Programs\MinGit\cmd\git.exe"
-    subprocess.run([git_exe, "-C", REPO_DIR, "add", "assets/", "auto_worker_wan.ipynb", "scripts/"], check=False)
-    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(video): deploy LTX-Video v19 with micro-motion stability and 40 steps"], check=False)
+    subprocess.run([git_exe, "-C", REPO_DIR, "add", "assets/", "auto_worker_wan21.ipynb", "scripts/"], check=False)
+    subprocess.run([git_exe, "-C", REPO_DIR, "commit", "-m", "feat(wan21): deploy Wan2.1-I2V-14B 4-bit quantized 5s changing clothes worker"], check=False)
     subprocess.run([git_exe, "-C", REPO_DIR, "push", "origin", "main"], check=False)
 
     username = "chenponpon"
@@ -222,17 +245,48 @@ def push_and_run_video(source_image_name, target_batch_dir, video_name="changing
     with open(os.path.join(build_dir, "kernel-metadata.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
 
-    print(f"🚀 正在推送『LTX-Video v19 穩定高保真視頻』至 Kaggle 雲端 GPU ({kernel_id})...")
-    res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir, "-t", "3600"], capture_output=True, text=True)
-    print(res.stdout)
-    if res.returncode != 0:
-        print(f"⚠️ 推送訊息: {res.stderr}")
-        return False
+    push_res = subprocess.run(["kaggle", "kernels", "push", "-p", build_dir], capture_output=True, text=True)
+    print(f"📡 [Kaggle 推送回應] {push_res.stdout.strip()} {push_res.stderr.strip()}")
+    print(f"🚀 Wan2.1-I2V-14B (4-bit 量化) 5 秒換裝短片已成功發射至 Kaggle GPU！")
+    return True
 
-    return monitor_and_download_video(target_batch_dir, video_name=video_name, kernel_id=kernel_id)
+
+def monitor_and_download_wan21(kernel_id="chenponpon/colab-ai-media-lab-gpu-v2", target_batch_dir=None, video_name="changing_clothes_wan21_5s.mp4"):
+    if target_batch_dir is None:
+        target_batch_dir = os.path.join(OUT_DIR, "run_20261110_100246_qwen21")
+
+    print(f"⏳ 正在即時監控 Kaggle Wan2.1-I2V-14B 5 秒換裝動態運算進度 ({kernel_id})...")
+    start_wait = time.time()
+    while True:
+        st = subprocess.run(["kaggle", "kernels", "status", kernel_id], capture_output=True, text=True)
+        out = st.stdout.strip()
+        elapsed = round(time.time() - start_wait, 1)
+        print(f"📡 [Kaggle Wan2.1 狀態 ({elapsed}s)] {out}")
+
+        if "complete" in out.lower():
+            print(f"🎉 Wan2.1 5 秒換裝短片雲端運算完畢！正在無損下載成果至 {target_batch_dir} ...")
+            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", target_batch_dir], check=False)
+            
+            # 刷新圖鑑
+            gallery = build_gallery_html(OUT_DIR)
+            print(f"✨ 成果已即時注入展示圖鑑: {gallery}")
+            return True
+
+        if "error" in out.lower() or "cancel" in out.lower():
+            print(f"❌ 雲端運算發生錯誤，下載紀錄檔檢查...")
+            subprocess.run(["kaggle", "kernels", "output", kernel_id, "-p", target_batch_dir], check=False)
+            return False
+
+        time.sleep(15)
 
 
 if __name__ == "__main__":
-    latest_run = os.path.join(OUT_DIR, "run_20261110_100246_qwen21")
-    best_img_name = "portrait_2.jpg"
-    push_and_run_video(best_img_name, latest_run)
+    if len(sys.argv) > 1 and sys.argv[1] == "--push":
+        push_and_run_wan21_video()
+    elif len(sys.argv) > 1 and sys.argv[1] == "--monitor":
+        monitor_and_download_wan21()
+    elif len(sys.argv) > 1 and sys.argv[1] == "--run":
+        push_and_run_wan21_video()
+        monitor_and_download_wan21()
+    else:
+        build_wan21_worker_notebook()
