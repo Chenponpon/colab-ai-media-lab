@@ -569,40 +569,74 @@ def build_gallery_html(output_dir):
 
     # 載入集中式模型切換註冊表 (Model Pipeline Hub)
     repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    registry_path = os.path.join(repo_dir, "configs", "model_registry.json")
+    switch_path = os.path.join(repo_dir, "configs", "benchmark_switch.json")
     model_hub_html = ""
-    if os.path.exists(registry_path):
+    if os.path.exists(switch_path):
         try:
-            with open(registry_path, "r", encoding="utf-8") as rf:
-                reg_data = json.load(rf)
+            with open(switch_path, "r", encoding="utf-8") as rf:
+                s_data = json.load(rf)
+            active_m = s_data.get("active_switch", {}).get("model")
+            active_s = s_data.get("active_switch", {}).get("server")
+            gold_prompts = s_data.get("golden_standard", {}).get("prompts", {})
+            v_res = s_data.get("golden_standard", {}).get("video_resolution", {})
+
             pipe_rows = ""
-            for pid, p in reg_data.get("pipelines", {}).items():
-                is_active = (pid == reg_data.get("active_video_pipeline") or pid == reg_data.get("active_image_pipeline"))
+            for mid, m in s_data.get("supported_models", {}).items():
+                is_active = (mid == active_m)
                 tag = "⭐ <strong>啟用中</strong>" if is_active else "備用"
                 tag_color = "#81c995" if is_active else "#9aa0a6"
                 pipe_rows += f"""
                 <tr>
                     <td style='color:{tag_color}; font-weight:bold;'>{tag}</td>
-                    <td style='font-weight:bold; color:#8ab4f8;'><code>{pid}</code></td>
-                    <td>{p.get('name')}</td>
-                    <td><span class='badge'>{p.get('type').upper()}</span></td>
-                    <td>{p.get('inference_time_est')}</td>
-                    <td>{p.get('vram_gb_required')} GB</td>
-                    <td style='font-size:12px; color:#bdc1c6;'>{p.get('strengths')}</td>
+                    <td style='font-weight:bold; color:#8ab4f8;'><code>{mid}</code></td>
+                    <td>{m.get('name')}</td>
+                    <td><span class='badge'>{m.get('type').upper()}</span></td>
+                    <td>{m.get('parameters')}</td>
+                    <td>{m.get('aspect_ratio_mode', 'standard')}</td>
+                    <td style='font-size:12px; color:#bdc1c6;'>{m.get('status')}</td>
                 </tr>"""
+
+            srv_rows = ""
+            for sid, s in s_data.get("supported_servers", {}).items():
+                is_active = (sid == active_s)
+                tag = "⭐ <strong>啟用中</strong>" if is_active else "備用"
+                tag_color = "#81c995" if is_active else "#9aa0a6"
+                srv_rows += f"""
+                <tr>
+                    <td style='color:{tag_color}; font-weight:bold;'>{tag}</td>
+                    <td style='font-weight:bold; color:#f28b82;'><code>{sid}</code></td>
+                    <td>{s.get('name')}</td>
+                    <td>{s.get('vram_gb')} GB</td>
+                    <td>{s.get('speed_rating')}</td>
+                </tr>"""
+
             model_hub_html = f"""
             <details style='background:#181a1f; border:1px solid #3b5998; border-radius:12px; padding:16px 22px; margin-bottom:28px;' open>
                 <summary style='font-size:16px; font-weight:bold; color:#8ab4f8; cursor:pointer;'>
-                    ⚙️ 集中式模型管線切換中心 (Model Pipeline Hub) — 隨選即切換，無需重寫程式碼
+                    🎛️ 全域統一模型與算力總控中心 (Unified Benchmark Switch) — 統一提示詞、鎖定母圖、隨選即切換
                 </summary>
-                <p style='font-size:13px; color:#bdc1c6; margin:8px 0 14px 0;'>
-                    所有生圖與圖生影管線代碼、權重配置與超參數已完全持久化於 <code>configs/model_registry.json</code>，可透過 <code>python scripts/pipeline_manager.py --switch &lt;id&gt;</code> 一鍵無縫切換！
-                </p>
+                <div style='margin-top:14px; background:#202124; padding:14px 18px; border-radius:8px; border-left:4px solid #8ab4f8;'>
+                    <div style='font-size:14px; color:#e8eaed; line-height:1.7;'>
+                        🎯 <strong>當前鎖定模型</strong>: <span style='color:#81c995; font-weight:bold;'>{active_m}</span> &nbsp;|&nbsp;
+                        🖥️ <strong>當前鎖定伺服器</strong>: <span style='color:#f28b82; font-weight:bold;'>{active_s}</span> &nbsp;|&nbsp;
+                        📐 <strong>視頻解析度</strong>: <span style='color:#fdd663; font-weight:bold;'>{v_res.get('width')}x{v_res.get('height')} (7:9 原圖等比零裁切)</span><br>
+                        🌟 <strong>全模型一致之 Golden Motion Prompt</strong>:<br>
+                        <code style='color:#bdc1c6; font-size:12px; display:block; background:#121316; padding:8px 12px; border-radius:6px; margin-top:6px;'>{gold_prompts.get('golden_motion_prompt')}</code>
+                    </div>
+                </div>
+                <h4 style='color:#8ab4f8; margin:18px 0 8px 0;'>🤖 支援模型清單 (Models)</h4>
                 <table>
                     <thead>
-                        <tr><th>狀態</th><th>管線 ID</th><th>模型名稱</th><th>類型</th><th>預估耗時</th><th>顯存</th><th>演算法機制與優勢</th></tr>
+                        <tr><th>狀態</th><th>模型 ID</th><th>模型名稱</th><th>類型</th><th>參數量</th><th>畫面比例模式</th><th>狀態評級</th></tr>
                     </thead>
                     <tbody>{pipe_rows}</tbody>
+                </table>
+                <h4 style='color:#f28b82; margin:18px 0 8px 0;'>🖥️ 支援伺服器算力 (Servers)</h4>
+                <table>
+                    <thead>
+                        <tr><th>狀態</th><th>伺服器 ID</th><th>伺服器名稱</th><th>顯存 (VRAM)</th><th>預估速度評級</th></tr>
+                    </thead>
+                    <tbody>{srv_rows}</tbody>
                 </table>
             </details>"""
         except Exception:
