@@ -40,7 +40,8 @@ ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
 print(f"✅ 硬體檢測完成 | GPU: {{gpu_name}} | 單卡 VRAM: {{vram_gb}} GB | System RAM: {{ram_gb}} GB")
 
 print("📦 正在安裝與確認 Wan2.1 4-bit 視頻生成依賴庫...")
-subprocess.run(["pip", "install", "-q", "diffusers>=0.34.0", "transformers>=4.48.0", "accelerate", "bitsandbytes", "imageio[ffmpeg]"], check=False)
+subprocess.run(["pip", "install", "-q", "diffusers>=0.34.0", "transformers>=4.48.0", "accelerate", "bitsandbytes", "imageio[ffmpeg]", "ftfy"], check=False)
+import ftfy
 
 from diffusers import BitsAndBytesConfig, WanImageToVideoPipeline, WanTransformer3DModel
 from diffusers.utils import export_to_video
