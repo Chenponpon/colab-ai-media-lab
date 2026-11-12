@@ -240,7 +240,7 @@
     ]
   },
   "storyboard_20s": {
-    "title": "四段式20秒法式兩截式高訂時尚大片 (20-Second Two-Piece Luxury Storyboard Pipeline)",
+    "title": "四段式20秒法式兩截式蕾絲大片 (20-Second Reference-Aligned Lace Boudoir Pipeline)",
     "total_duration_sec": 20.24,
     "total_frames": 324,
     "fps": 16,
@@ -252,43 +252,43 @@
     "shots": [
       {
         "shot_index": 1,
-        "name": "鏡頭一：外裝晨袍優雅褪下 (0 ~ 5.06 秒)",
+        "name": "鏡頭一：輕透絲質晨袍自然滑落 (0 ~ 5.06 秒)",
         "duration_sec": 5.06,
         "frames": 81,
         "keyframe_name": "keyframe_1_outerwear.jpg",
-        "keyframe_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race Eurasian beauties with totally unique individual facial structures (strictly non-twins): the left girl has wavy honey-chestnut brown hair with curtain bangs; the center girl has silky raven-black straight hair falling over shoulders; the right girl has soft caramel-blonde wavy locks and warm amber eyes. All three wearing flowing silk satin morning robes loosely draped over their shoulders, ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), natural skin texture, slender graceful arms, in an elegant sunlit Parisian suite, warm cinematic morning light, photorealistic documentary quality, 8k, master photography.",
-        "action": "奢華絲質晨袍自然自雙肩滑落褪下，搭在手臂上，顯露內層兩截式套裝輪廓",
-        "prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race beauties in a luxury Parisian suite, flowing silk morning robes gently slipping off smooth pale shoulders and sliding down graceful arms, revealing elegant two-piece silk top underneath, gentle chest breathing, playful smiles and eye contact, cinematic warm lighting, photorealistic documentary quality, 8k, authentic physical motion of sliding fabric, non-nude."
+        "keyframe_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race Eurasian beauties with totally unique individual facial structures (strictly non-twins): the left girl has wavy honey-chestnut brown hair; the center girl has raven-black straight hair; the right girl has soft caramel-blonde wavy locks. All three kneeling gracefully side-by-side on a crisp white bed, wearing delicate sheer silk chiffon morning robes loosely draped over their shoulders, revealing glimpses of exquisite floral lace two-piece sets underneath, ((translucent porcelain milk-white pale skin, subtle rosy blush:1.3)), natural skin texture, slender graceful limbs, in an elegant sunlit Parisian boudoir, warm cinematic morning light, photorealistic documentary quality, 8k.",
+        "action": "輕薄透膚絲質晨袍自然自雙肩滑落，搭在手臂兩側，露出內層兩截式精緻蕾絲輪廓",
+        "prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race beauties on a white bed, delicate sheer silk chiffon robes gently slipping off smooth pale shoulders and gliding down graceful arms, revealing intricate floral lace tops underneath, gentle relaxed chest breathing, playful sweet smiles, cinematic warm morning sunlight, photorealistic documentary quality, 8k, authentic physical motion of sliding fabric, non-nude."
       },
       {
         "shot_index": 2,
-        "name": "鏡頭二：完全顯露兩截式高訂絲綢套裝 (5.06 ~ 10.12 秒)",
+        "name": "鏡頭二：【1:1 復刻參考圖】完全展現兩截式蕾絲套裝 (5.06 ~ 10.12 秒)",
         "duration_sec": 5.06,
         "frames": 81,
         "keyframe_name": "keyframe_2_twopiece.jpg",
-        "keyframe_prompt": "Cinematic fashion portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique facial structures (strictly non-twins, honey-chestnut, raven-black, and caramel-blonde hair): morning robes completely removed, wearing bespoke two-piece luxury French silk lounge sets: fitted cropped satin camisole tops paired with high-waisted flowing silk wide-leg palazzo trousers: the left girl in champagne-gold silk, the center girl in deep midnight-navy satin, and the right girl in pearl-rose silk. Exquisite collarbones, toned slender midriff, curvy hourglass silhouettes, ((translucent porcelain milk-white pale skin:1.3)), luxury dressing suite background, soft morning rim lighting, 8k, master photography.",
-        "action": "晨袍完全脫下，展現兩截式高訂絲綢短背心與高腰寬腿褲，顯露優雅鎖骨與腰線身段",
-        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women in sunlit suite, wearing bespoke two-piece silk camisole tops and high-waisted palazzo pants in champagne, navy, and pearl-rose, graceful movement showing elegant collarbones and midriff, natural relaxed chest breathing, playful shared smiles, photorealistic documentary quality, 8k, fluid motion, stable angelic faces, non-nude."
+        "keyframe_prompt": "Masterpiece cinematic photograph of three completely distinct 20yo French-Vietnamese mixed-race Eurasian beauties with totally unique facial features (strictly non-twins, honey-chestnut wavy hair, raven-black hair, caramel-blonde hair): kneeling side-by-side on a crisp white bed, wearing bespoke floral lace two-piece sets: the left girl wears a sheer black floral lace top with a light sheer black robe draped off her arms; the center girl wears a delicate powder-blue floral lace corset bodysuit; the right girl wears a warm champagne-nude floral lace two-piece bralette set. All three have opaque floral lace artfully covering bust apex (strictly non-nude), prominent natural cleavage, slender toned arms, delicate collarbones, voluptuous curvy hourglass figures, hands resting gently on their knees, looking directly into the camera with soft sweet smiles, ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), master boudoir photography, 8k, photorealistic documentary quality.",
+        "action": "晨袍完全褪至臂彎，三位主角並肩跪坐白床，展現黑、水藍、香檳米三套兩截式蕾絲套裝與曼妙身段",
+        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women kneeling side-by-side on white bed in black, powder-blue, and champagne lace two-piece sets, gentle rhythmic chest breathing movement, delicate collarbones and hourglass silhouettes in soft morning light, relaxed posture, subtle micro-sway of soft hair strands, captivating sweet eye contact with camera, photorealistic documentary quality, 8k, fluid motion, stable angelic faces, non-nude."
       },
       {
         "shot_index": 3,
-        "name": "鏡頭三：梳妝鏡前相互佩戴首飾整理儀容 (10.12 ~ 15.18 秒)",
+        "name": "鏡頭三：微調細肩帶與秀髮親密互動 (10.12 ~ 15.18 秒)",
         "duration_sec": 5.06,
         "frames": 81,
         "keyframe_name": "keyframe_3_styling.jpg",
-        "keyframe_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique facial structures (non-twins) in a luxury Paris dressing salon before glowing vanity mirrors: wearing their bespoke two-piece champagne, navy, and pearl-rose silk sets, slender delicate fingers gently helping each other adjust pearl drop earrings, fastening necklace clasps, and smoothing hair strands, laughing warmly together in genuine friendship, ((translucent porcelain milk-white skin:1.3)), elegant posture, soft bokeh vanity lights, 8k, award-winning photography.",
-        "action": "閨蜜間湊近互相幫忙配戴耳環、整理項鍊鎖扣、撫平秀髮，對視甜笑",
-        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women in two-piece silk lounge sets before vanity mirror, slender fingers delicately fastening necklaces and adjusting sparkling earrings on each other, smoothing soft hair, shared genuine laughs and admiring glances, gentle chest breathing, warm golden vanity mirror lighting, photorealistic documentary quality, 8k, stable angelic faces, non-nude."
+        "keyframe_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique facial structures (non-twins) on a plush white bed: wearing their bespoke black, powder-blue, and champagne lace sets, slender delicate fingers gently adjusting thin lace shoulder straps, tucking soft strands of hair behind ears, smiling warmly and laughing together in genuine sisterly friendship, ((translucent porcelain milk-white skin:1.3)), opaque lace covering bust apex, soft warm morning lighting, 8k, award-winning photography.",
+        "action": "指尖微調薄紗細肩帶、撫順秀髮、對視嬌笑與親密微動態",
+        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women on white bed in lace sets, slender fingers delicately adjusting thin lace shoulder straps, smoothing soft hair strands, shared genuine giggles and playful eye contact, gentle relaxed chest breathing, warm morning sunbeams, photorealistic documentary quality, 8k, fluid micro-motion, stable angelic faces, non-nude."
       },
       {
         "shot_index": 4,
-        "name": "鏡頭四：對著鏡頭展現自信名模定裝 (15.18 ~ 20.24 秒)",
+        "name": "鏡頭四：直視鏡頭展現自信神仙顏值定裝 (15.18 ~ 20.24 秒)",
         "duration_sec": 5.06,
         "frames": 81,
         "keyframe_name": "keyframe_4_confidence.jpg",
-        "keyframe_prompt": "Magnificent high-fashion portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique individual facial structures (strictly non-twins, honey-chestnut, raven-black, and caramel-blonde hair): standing side-by-side with poised, confident model posture in bespoke luxury two-piece silk sets (champagne gold, midnight navy, pearl rose), looking directly into the camera lens with captivating radiant smiles and undeniable self-assurance. Flawless porcelain milk-white pale skin, curvy hourglass proportions, cinematic golden studio rim light, photorealistic documentary quality, 8k, master fashion photography.",
-        "action": "三位主角身著兩截式高訂套裝並肩面對鏡頭，微風輕拂秀髮，展現大氣從容的品牌代言人自信微笑",
-        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women standing side-by-side in bespoke two-piece silk sets, gently turning and looking directly towards the camera with radiant, confident smiles and poised red-carpet postures, soft breeze naturally swaying fine strands of hair, gentle natural chest breathing, cinematic studio lighting, photorealistic documentary quality, 8k, stable angelic faces, non-nude."
+        "keyframe_prompt": "Magnificent master portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique individual facial structures (strictly non-twins, honey-chestnut, raven-black, and caramel-blonde hair): sitting gracefully together on a crisp white bed in their fitted black, powder-blue, and champagne lace two-piece sets, looking directly into the camera lens with captivating radiant smiles and undeniable confidence. Flawless porcelain milk-white pale skin, natural micro-pores, curvy hourglass proportions, soft golden morning rim light, photorealistic documentary quality, 8k, master photography.",
+        "action": "三位主角直視鏡頭展現自信甜美微笑，微風輕拂秀髮，晨光灑落定裝",
+        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women on white bed in lace two-piece sets, looking directly towards the camera with radiant, confident smiles and poised graceful postures, soft morning light naturally catching fine strands of hair, gentle natural chest breathing, cinematic warm bedroom lighting, photorealistic documentary quality, 8k, stable angelic faces, non-nude."
       }
     ]
   }
