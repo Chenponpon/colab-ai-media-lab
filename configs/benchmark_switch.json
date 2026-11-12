@@ -28,9 +28,9 @@
     "total_frames": 81,
     "fps": 16,
     "prompts": {
-      "golden_image_prompt": "Intimate waist-up boudoir portrait of three completely distinct 20yo French-Vietnamese mixed-race Eurasian beauties with totally unique individual facial structures and zero resemblance to each other (strictly non-twins, three different women): the left girl has wavy honey-chestnut brown hair with soft curtain bangs and playful sparkling doe eyes with sweet dimples; the center girl has silky raven-black straight hair falling over pale shoulders, mesmerizing almond-shaped hazel eyes and refined delicate features; the right girl has soft caramel-blonde wavy locks, alluring warm amber eyes and sculpted cheekbones. All three have distinct facial bone structures, wearing chic Parisian daytime silk blouses and soft knit cardigans draped naturally over smooth pale shoulders, revealing glimpses of alluring deep-V sheer floral lace underlayers (floral lace artfully covering bust apex, strictly non-nude), ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), visible natural micro-pores and authentic skin texture, ((extremely slender toned limbs, slim graceful arms, delicate collarbones, flat toned abdomen, tiny wasp waist:1.2)), voluptuous curvy hourglass proportions, ((voluptuous heavy natural soft full F-cup breasts:1.45)), ((prominent deep cleavage:1.35)), in an elegant Paris boudoir on a crisp white bed, cinematic soft warm morning light, subsurface scattering, photorealistic documentary quality, 8k, master photography.",
-      "golden_motion_prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race women with unique individual faces in an elegant Paris boudoir on a crisp white bed, delicate sheer silk morning robes gently slipping off smooth pale shoulders, revealing intricate sheer floral lace bodysuits artfully covering bust apex, hands naturally adjusting thin lingerie shoulder straps, gentle chest breathing movement, lively boudoir interaction with shared sweet smiles, cinematic warm morning lighting, photorealistic documentary quality, 8k, authentic physical motion of slipping silk fabric, perfectly stable unique angelic faces, non-nude.",
-      "golden_negative_prompt": "clone faces, same face syndrome, identical twins, triplets, duplicate faces, copy-paste faces, identical features, repetitive faces, nude, naked, exposed nipples, areola, genitals, bad hands, comb fingers, missing fingers, extra fingers, extra limbs, deformed limbs, melting face, plastic skin, doll skin, mannequin, artificial smoothing, distorted eyes, asymmetrical eyes, jerky motion, bad anatomy, low quality, dark skin, tanned, sunburn, small breasts, flat chest, muscular bodybuilder, extra people, 4 persons"
+      "golden_image_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique individual facial structures and zero resemblance to each other (strictly non-twins): the left girl has wavy honey-chestnut brown hair with soft curtain bangs and sparkling doe eyes; the center girl has silky raven-black straight hair falling over pale shoulders and almond-shaped hazel eyes; the right girl has soft caramel-blonde wavy locks and warm amber eyes. All three wearing chic Parisian daytime silk white blouses and soft cashmere knit cardigans loosely draped over smooth pale shoulders, collarbones visible, ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), natural skin texture, slender toned arms, voluptuous curvy hourglass figures, in an elegant sunlit Paris boudoir on a crisp white bed, warm cinematic morning light, photorealistic documentary quality, 8k, master photography.",
+      "golden_motion_prompt": "Three distinct 20-year-old French-Vietnamese mixed-race beauties in an elegant Paris boudoir, delicate soft knit cardigans and chic silk blouses gently slipping off smooth pale shoulders and gliding down graceful arms, revealing glimpses of elegant silk camisole slip dresses underneath, gentle chest breathing movement, playful intimate glances with shared sweet smiles, cinematic warm morning sunlight, photorealistic documentary quality, 8k, authentic physical motion of sliding fabric, perfectly stable unique angelic faces, non-nude.",
+      "golden_negative_prompt": "clone faces, same face syndrome, identical twins, triplets, duplicate faces, copy-paste faces, nude, naked, exposed nipples, areola, genitals, bad hands, comb fingers, missing fingers, extra fingers, extra limbs, deformed limbs, melting face, plastic skin, doll skin, mannequin, artificial smoothing, distorted eyes, asymmetrical eyes, jerky motion, bad anatomy, low quality, dark skin, tanned, sunburn, extra people, 4 persons"
     }
   },
   "hardware_arbitration_rules": {
@@ -197,7 +197,7 @@
     }
   },
   "storyboard_15s": {
-    "title": "三段式15秒連貫換裝電影大片 (15-Second Progressive Changing Clothes Pipeline)",
+    "title": "三段式15秒法式時尚換裝大片 (15-Second Fashion Keyframe Storyboard Pipeline)",
     "total_duration_sec": 15.18,
     "total_frames": 243,
     "fps": 16,
@@ -209,27 +209,33 @@
     "shots": [
       {
         "shot_index": 1,
-        "name": "鏡頭一：優雅褪去日常外裝 (0 ~ 5.06 秒)",
+        "name": "鏡頭一：日常外裝自然輕褪滑落 (0 ~ 5.06 秒)",
         "duration_sec": 5.06,
         "frames": 81,
-        "action": "外裝絲綢開衫自然自肩頭滑落，顯露內層透膚蕾絲邊緣",
-        "prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race women with unique individual faces in an elegant Paris boudoir on a crisp white bed, chic silk blouses and soft cashmere cardigans gently slipping off smooth pale shoulders and gliding down graceful arms, subtly revealing glimpses of intricate sheer floral lace bodysuits artfully covering bust apex, gentle chest breathing movement, lively boudoir interaction with shared sweet smiles, cinematic warm morning lighting, photorealistic documentary quality, 8k, authentic physical motion of sliding fabric, perfectly stable unique angelic faces, non-nude."
+        "keyframe_name": "keyframe_1_daywear.jpg",
+        "keyframe_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique individual facial structures and zero resemblance to each other (strictly non-twins): the left girl has wavy honey-chestnut brown hair with soft curtain bangs and sparkling doe eyes; the center girl has silky raven-black straight hair falling over pale shoulders and almond-shaped hazel eyes; the right girl has soft caramel-blonde wavy locks and warm amber eyes. All three wearing chic Parisian daytime silk white blouses and soft cashmere knit cardigans loosely draped over smooth pale shoulders, collarbones visible, ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), natural skin texture, slender toned arms, voluptuous curvy hourglass figures, in an elegant sunlit Paris boudoir on a crisp white bed, warm cinematic morning light, photorealistic documentary quality, 8k, master photography.",
+        "action": "外裝針織開衫與絲綢白襯衫自然自肩頭滑落，顯露內搭法式絲質吊帶長裙",
+        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race beauties in an elegant Paris boudoir, delicate soft knit cardigans and chic silk blouses gently slipping off smooth pale shoulders and gliding down graceful arms, revealing glimpses of elegant silk camisole slip dresses underneath, gentle chest breathing movement, playful intimate glances with shared sweet smiles, cinematic warm morning sunlight, photorealistic documentary quality, 8k, authentic physical motion of sliding fabric, perfectly stable unique angelic faces, non-nude."
       },
       {
         "shot_index": 2,
-        "name": "鏡頭二：揭開晨袍顯露深V透膚蕾絲 (5.06 ~ 10.12 秒)",
+        "name": "鏡頭二：互換試穿絲質吊帶裙與互調肩帶 (5.06 ~ 10.12 秒)",
         "duration_sec": 5.06,
         "frames": 81,
-        "action": "外衣滑落至腰間，晨袍絲帶解開，完全展現深V透膚刺繡蕾絲與F罩杯深邃事業線",
-        "prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race women with unique individual faces in an elegant Paris boudoir on a crisp white bed, outer blouses and morning robes fully sliding down to waist and onto white bed, completely revealing alluring deep-V sheer tulle mesh and floral lace bodysuits with delicate embroidery artfully covering bust apex, voluptuous natural heavy soft F-cup breasts with deep cleavage, slender toned limbs, smooth pale shoulders, gentle relaxed chest breathing, playful intimate eye contact with sweet soft smiles, cinematic morning light, photorealistic documentary quality, 8k, authentic physical motion, stable faces, non-nude."
+        "keyframe_name": "keyframe_2_swapped_styling.jpg",
+        "keyframe_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique individual facial structures (non-twins): the left girl has wavy honey-chestnut brown hair, the center girl has raven-black straight hair, the right girl has caramel-blonde wavy hair. The three beauties have switched and exchanged into each other's exquisite French luxury silk slip dresses: the left girl wears a champagne-gold silk slip dress, the center girl wears a deep midnight-navy satin dress, and the right girl wears a delicate pearl-rose silk dress. Slender delicate fingers gently helping each other adjust thin silk shoulder straps and neckline, smiling warmly and laughing together in playful boutique camaraderie, ((translucent porcelain milk-white pale skin:1.3)), slender graceful arms, voluptuous curvy hourglass silhouettes, on a crisp white bed in a Parisian suite, soft morning glow, 8k, master photography.",
+        "action": "換上彼此推薦交換的精緻絲質吊帶裙（香檳金、海軍藍、珍珠粉），閨蜜間伸手互調肩帶與衣領親密互動",
+        "prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race women with unique individual faces in Parisian suite, wearing exchanged elegant champagne, navy, and pearl-rose silk slip dresses, slender delicate fingers gently adjusting thin silk shoulder straps on each other, smoothing fabric over shoulders, lively boutique camaraderie with shared genuine giggles and playful eye contact, gentle chest breathing, photorealistic documentary quality, 8k, authentic fabric texture and light reflections, stable angelic faces, non-nude."
       },
       {
         "shot_index": 3,
-        "name": "鏡頭三：微調肩帶撫順秀髮與親密動態 (10.12 ~ 15.18 秒)",
+        "name": "鏡頭三：換裝完成自信展現與定裝比美 (10.12 ~ 15.18 秒)",
         "duration_sec": 5.06,
         "frames": 81,
-        "action": "指尖微調薄紗肩帶、撫順長髮、相視甜笑呼吸起伏",
-        "prompt": "Three completely distinct 20-year-old French-Vietnamese mixed-race women with unique individual faces in boudoir on crisp white bed, slender fingers delicately adjusting thin lingerie lace shoulder straps, smoothing soft hair strands, voluptuous natural soft heavy F-cup breasts with deep cleavage under sheer floral lace covering bust apex, lively boudoir interaction with shared sweet smiles, gentle chest breathing movement, cinematic warm morning sunlight, photorealistic documentary quality, 8k, authentic physical micro-motion, stable angelic faces, non-nude."
+        "keyframe_name": "keyframe_3_finished_look.jpg",
+        "keyframe_prompt": "Radiant cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with unique individual facial structures (strictly non-twins, honey-chestnut, raven-black, and caramel-blonde hair): sitting close together on an ivory bed in a luxury Parisian apartment, fully dressed in fitted bespoke French silk slip dresses (champagne gold, midnight navy, pearl rose) with delicate lace embroidery along the neckline. Voluptuous curvy hourglass proportions, smooth milk-white pale skin, slender toned arms, confident relaxed smiles, looking towards the camera with captivating gaze, warm morning sunshine casting soft shadows, 8k, award-winning photography.",
+        "action": "換裝完成，並肩坐在床前，輕撫秀髮，自信展現全新穿搭與迷人身段",
+        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women with unique individual faces sitting together on crisp white bed in bespoke silk slip dresses, slender fingers gracefully tucking soft strands of hair behind ears, smoothing silk fabric over lap, gentle natural chest breathing, exchanging confident admiring glances and looking warmly at the camera with radiant smiles, cinematic soft morning sunbeams, photorealistic documentary quality, 8k, fluid micro-motion, perfectly stable angelic faces, non-nude."
       }
     ]
   }
