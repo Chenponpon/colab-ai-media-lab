@@ -69,11 +69,11 @@
       "match": "L4, G4 or 20.0 <= vram < 38.0",
       "best_video_model": "Wan-AI/Wan2.1-I2V-14B-480P-Diffusers",
       "best_image_model": "Qwen/Qwen-Image-2.1-Turbo",
-      "video_strategy": "model_cpu_offload",
+      "video_strategy": "sequential_cpu_offload",
       "image_strategy": "model_cpu_offload",
       "precision": "bfloat16",
       "vae_tiling": true,
-      "est_speed": "次旗艦高畫質 (視頻 6~8 分鐘, 圖片 25~35 秒, 100% 杜絕 OOM)"
+      "est_speed": "次旗艦安全防爆 (啟用 Sequential Offload，100% 杜絕 OOM)"
     },
     "tier_3_t4": {
       "match": "T4 or 10.0 <= vram < 20.0",
