@@ -28,9 +28,9 @@
     "total_frames": 81,
     "fps": 16,
     "prompts": {
-      "golden_image_prompt": "Intimate cinematic portrait of three completely distinct 20yo French-Vietnamese mixed-race beauties with totally unique individual facial structures and zero resemblance to each other (strictly non-twins): the left girl has wavy honey-chestnut brown hair with soft curtain bangs and sparkling doe eyes; the center girl has silky raven-black straight hair falling over pale shoulders and almond-shaped hazel eyes; the right girl has soft caramel-blonde wavy locks and warm amber eyes. All three wearing chic Parisian daytime silk white blouses and soft cashmere knit cardigans loosely draped over smooth pale shoulders, collarbones visible, ((translucent porcelain milk-white pale skin, subtle rosy flush:1.3)), natural skin texture, slender toned arms, voluptuous curvy hourglass figures, in an elegant sunlit Paris boudoir on a crisp white bed, warm cinematic morning light, photorealistic documentary quality, 8k, master photography.",
-      "golden_motion_prompt": "Three distinct 20-year-old French-Vietnamese mixed-race beauties in an elegant Paris boudoir, delicate soft knit cardigans and chic silk blouses gently slipping off smooth pale shoulders and gliding down graceful arms, revealing glimpses of elegant silk camisole slip dresses underneath, gentle chest breathing movement, playful intimate glances with shared sweet smiles, cinematic warm morning sunlight, photorealistic documentary quality, 8k, authentic physical motion of sliding fabric, perfectly stable unique angelic faces, non-nude.",
-      "golden_negative_prompt": "one-piece, bodysuit, corset, nightgown, granny dress, slip dress, baggy clothes, frumpy dress, clone faces, same face syndrome, identical twins, triplets, duplicate faces, all black hair, messy bun, nude, naked, exposed nipples, areola, genitals, bad hands, comb fingers, missing fingers, extra fingers, extra limbs, deformed limbs, melting face, plastic skin, doll skin, mannequin, artificial smoothing, distorted eyes, asymmetrical eyes, jerky motion, bad anatomy, low quality, dark skin, tanned, sunburn, extra people, 4 persons"
+      "golden_image_prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography.",
+      "golden_motion_prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography. Smooth gentle breathing and subtle natural head tilts and soft eye contact toward the camera, maintaining exact poses, hairstyles, and pastel pink, black, and dusty mauve two-piece lace sets.",
+      "golden_negative_prompt": "one-piece, bodysuit, corset, nightgown, granny dress, slip dress, baggy clothes, all black hair, identical faces, nude, topless, exposed nipples, exposed areola, explicit nudity, deformed hands, extra fingers, blurry, lowres, watermark, dark background, cluttered room, harsh flash, neon lights, sudden outfit change, morphing faces"
     }
   },
   "hardware_arbitration_rules": {
@@ -240,57 +240,40 @@
     ]
   },
   "storyboard_20s": {
-    "title": "四段式20秒法式兩截式蕾絲一致性大片 (Anchor-Locked Two-Piece Pipeline)",
-    "total_duration_sec": 20.24,
-    "total_frames": 324,
-    "fps": 16,
-    "resolution": {
-      "width": 560,
-      "height": 720,
-      "aspect_ratio": "7:9 (0.7778 原圖等比雙側零裁切)"
-    },
-    "anchor_prompt": "Masterpiece cinematic photograph of three completely distinct 20yo French-Vietnamese mixed-race Eurasian beauties (strictly non-twins: left girl has wavy honey-chestnut brown hair with soft curtain bangs; center girl has silky raven-black straight hair; right girl has soft caramel-blonde wavy locks) kneeling side-by-side on a plush white bed in an elegant Parisian bedroom with paneled beige walls and soft morning window light on the right. ALL THREE women are wearing modern fitted TWO-PIECE floral lace sets (cropped lace bralette top with matching separate lace shorts, visible bare midriff and waist, strictly NO one-piece bodysuit, strictly NO nightgown, strictly NO dress): left girl wears a black two-piece floral lace bralette and matching black lace shorts; center girl wears a powder-blue two-piece floral lace bralette and matching powder-blue lace shorts; right girl wears a champagne-beige two-piece floral lace bralette and matching champagne lace shorts. Opaque floral lace artfully covering bust apex (strictly non-nude), ((translucent porcelain milk-white pale skin, subtle rosy blush:1.3)), slender toned arms, delicate collarbones, voluptuous curvy hourglass figures, 8k, photorealistic master photography.",
     "shots": [
       {
-        "shot_index": 1,
-        "name": "鏡頭一：輕透絲質晨袍自然滑落 (0 ~ 5.06 秒)",
-        "duration_sec": 5.06,
-        "frames": 81,
+        "shot": 1,
+        "title": "Shot 1: Flowing Sheer Robes Over Two-Piece Lace",
+        "duration_sec": 5,
         "keyframe_name": "keyframe_1_outerwear.jpg",
-        "keyframe_prompt": "Keep the exact same three women, exact same faces and hair colors (chestnut brown, raven black, caramel blonde), exact same Parisian paneled bedroom background, and exact same black, powder-blue, and champagne TWO-PIECE floral lace bralette and shorts sets with bare midriffs. Add delicate sheer chiffon morning robes loosely draped off their shoulders and arms, softly framing their two-piece lace sets underneath.",
-        "action": "輕薄透膚晨袍自然自雙肩滑落至臂彎，露出內層黑、水藍、香檳米兩截式蕾絲套裝",
-        "prompt": "Same three distinct 20-year-old French-Vietnamese mixed-race beauties on the white bed, delicate sheer silk chiffon robes gently slipping off smooth pale shoulders and sliding down graceful arms, revealing their fitted black, powder-blue, and champagne two-piece floral lace bralettes and shorts underneath, gentle relaxed chest breathing, soft smiles, warm morning sunlight, photorealistic 8k, non-nude."
+        "keyframe_prompt": "Edit the reference photo while keeping the exact same three women, faces, hairstyles, makeup, two-piece lace sets (pink, black, dusty mauve), white bedsheets, and light gray-beige wall. Drape open, sheer pastel silk-chiffon lounge robes loosely over their shoulders so their matching two-piece floral lace sets underneath remain clearly visible. Soft natural side-lighting, strictly non-nude.",
+        "prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography. Each wears an open, lightweight sheer silk-chiffon robe draped loosely over her shoulders, gently sliding the sheer fabric off her shoulders to reveal the tailored pastel pink, black, and dusty mauve two-piece floral lace sets underneath. Smooth natural motion, editorial fashion video."
       },
       {
-        "shot_index": 2,
-        "name": "鏡頭二：完全展現兩截式蕾絲套裝 (5.06 ~ 10.12 秒)",
-        "duration_sec": 5.06,
-        "frames": 81,
+        "shot": 2,
+        "title": "Shot 2: Pure Two-Piece Lace Anchor Pose",
+        "duration_sec": 5,
         "keyframe_name": "keyframe_2_twopiece.jpg",
-        "keyframe_prompt": "Masterpiece cinematic photograph of three completely distinct 20yo French-Vietnamese mixed-race Eurasian beauties (strictly non-twins: left girl has wavy honey-chestnut brown hair with soft curtain bangs; center girl has silky raven-black straight hair; right girl has soft caramel-blonde wavy locks) kneeling side-by-side on a plush white bed in an elegant Parisian bedroom with paneled beige walls and soft morning window light on the right. ALL THREE women are wearing modern fitted TWO-PIECE floral lace sets (cropped lace bralette top with matching separate lace shorts, visible bare midriff and waist, strictly NO one-piece bodysuit, strictly NO nightgown, strictly NO dress): left girl wears a black two-piece floral lace bralette and matching black lace shorts; center girl wears a powder-blue two-piece floral lace bralette and matching powder-blue lace shorts; right girl wears a champagne-beige two-piece floral lace bralette and matching champagne lace shorts. Opaque floral lace artfully covering bust apex (strictly non-nude), ((translucent porcelain milk-white pale skin, subtle rosy blush:1.3)), slender toned arms, delicate collarbones, voluptuous curvy hourglass figures, 8k, photorealistic master photography.",
-        "action": "晨袍完全褪去，三人維持同場景與同造型，完整展現現代感十足的兩截式蕾絲套裝與曼妙腰線",
-        "prompt": "Three distinct 20-year-old French-Vietnamese mixed-race women kneeling side-by-side on the white bed in their black, powder-blue, and champagne two-piece floral lace bralettes and shorts, gentle rhythmic chest breathing movement, delicate collarbones and toned bare midriffs in soft morning light, relaxed posture, sweet eye contact with camera, photorealistic documentary quality, 8k, fluid motion, stable angelic faces, non-nude."
+        "keyframe_prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography.",
+        "prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography. Smooth gentle breathing and subtle natural head tilts and soft eye contact toward the camera, maintaining exact poses, hairstyles, and pastel pink, black, and dusty mauve two-piece lace sets."
       },
       {
-        "shot_index": 3,
-        "name": "鏡頭三：同場景相互微調細肩帶與秀髮 (10.12 ~ 15.18 秒)",
-        "duration_sec": 5.06,
-        "frames": 81,
+        "shot": 3,
+        "title": "Shot 3: Playful Hair & Lace Styling Interaction",
+        "duration_sec": 5,
         "keyframe_name": "keyframe_3_styling.jpg",
-        "keyframe_prompt": "Keep the exact same three women, exact same faces and hair colors (left chestnut brown wavy hair, center raven black straight hair, right caramel blonde wavy hair), exact same Parisian paneled bedroom background, and exact same black, powder-blue, and champagne TWO-PIECE floral lace bralette and shorts sets with bare midriffs (strictly NO nightgown, NO one-piece dress). Change only their poses so they turn slightly toward each other with warm smiles, slender fingers gently adjusting their thin lace shoulder straps and smoothing hair strands.",
-        "action": "保持同人物、同背景與同套兩截式蕾絲，指尖微調細肩帶與秀髮，相視甜笑互動",
-        "prompt": "Same three distinct 20-year-old French-Vietnamese mixed-race women on the same white bed in their black, powder-blue, and champagne two-piece lace sets, slender fingers delicately adjusting thin lace shoulder straps, smoothing soft hair strands, shared genuine smiles and playful eye contact, gentle relaxed chest breathing, warm morning sunbeams, photorealistic 8k, stable faces, non-nude."
+        "keyframe_prompt": "Edit the reference photo while keeping the exact same three women, faces, hairstyles (long straight black hair on left, dark brown bob in center, long wavy chestnut hair on right), exact two-piece lace sets (pastel pink, black, dusty mauve), white bedsheets, and light gray-beige wall. Have them lean slightly closer together in a warm, natural sisterhood moment—the center woman gently tucking a strand of hair behind her ear while the left and right women smile softly and adjust their delicate lace straps. Strictly non-nude.",
+        "prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography. They lean slightly closer together on the white bed, sharing warm soft smiles as they gently adjust a stray lock of hair and delicate lace shoulder straps in a graceful, cohesive editorial fashion motion."
       },
       {
-        "shot_index": 4,
-        "name": "鏡頭四：直視鏡頭展現自信定裝 (15.18 ~ 20.24 秒)",
-        "duration_sec": 5.06,
-        "frames": 81,
+        "shot": 4,
+        "title": "Shot 4: Confident Editorial Finale",
+        "duration_sec": 5,
         "keyframe_name": "keyframe_4_confidence.jpg",
-        "keyframe_prompt": "Keep the exact same three women, exact same faces and hair colors (chestnut brown, raven black, caramel blonde), exact same Parisian paneled bedroom background, and exact same black, powder-blue, and champagne TWO-PIECE floral lace bralette and shorts sets with bare midriffs. Have all three looking directly into the camera lens with radiant confident smiles and poised graceful posture.",
-        "action": "同場景同套兩截式蕾絲直視鏡頭展現自信甜美微笑，微風輕拂秀髮定裝",
-        "prompt": "Same three distinct 20-year-old French-Vietnamese mixed-race women on the same white bed in their black, powder-blue, and champagne two-piece lace sets, looking directly towards the camera with radiant, confident smiles and poised graceful postures, soft morning light naturally catching fine strands of hair, gentle chest breathing, photorealistic 8k, stable angelic faces, non-nude."
+        "keyframe_prompt": "Edit the reference photo while keeping the exact same three women, faces, hairstyles, makeup, exact two-piece lace sets (pastel pink, black, dusty mauve), white bedsheets, and light gray-beige wall. Have all three look directly at the camera with poised, confident, radiant editorial expressions and relaxed graceful posture. Strictly non-nude.",
+        "prompt": "Three young women sitting together on crisp white bedsheets against a smooth minimalist matte light gray-beige bedroom wall in soft diffused natural side-lighting: left foreground woman with long straight raven-black hair and rosy blush wearing a pastel baby-pink floral lace two-piece bralette and matching bottoms; center woman with chin-length dark brown bob hair and wispy bangs wearing a black floral lace two-piece bralette and matching bottoms; right Eurasian woman with long wavy chestnut-brown hair wearing a dusty mauve lavender-gray floral lace two-piece bralette and matching bottoms. All three wear tailored two-piece sets with opaque floral lace covering bust apex, strictly non-nude, photorealistic editorial fashion photography. All three look directly into the lens with confident, radiant editorial poise and subtle graceful shoulder and hand movements, soft natural daylight, smooth slow camera push-in."
       }
     ]
-  }
+  },
+  "golden_negative_prompt": "one-piece, bodysuit, corset, nightgown, granny dress, slip dress, baggy clothes, all black hair, identical faces, nude, topless, exposed nipples, exposed areola, explicit nudity, deformed hands, extra fingers, blurry, lowres, watermark, dark background, cluttered room, harsh flash, neon lights, sudden outfit change, morphing faces"
 }
